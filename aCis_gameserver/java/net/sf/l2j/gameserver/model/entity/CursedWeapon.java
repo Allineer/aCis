@@ -25,6 +25,7 @@ import net.sf.l2j.L2DatabaseFactory;
 import net.sf.l2j.gameserver.ThreadPoolManager;
 import net.sf.l2j.gameserver.datatables.SkillTable;
 import net.sf.l2j.gameserver.model.L2Effect;
+import net.sf.l2j.gameserver.model.L2Party.MessageType;
 import net.sf.l2j.gameserver.model.actor.L2Attackable;
 import net.sf.l2j.gameserver.model.actor.L2Character;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
@@ -494,7 +495,7 @@ public class CursedWeapon
 		_player.setPkKills(0);
 		
 		if (_player.isInParty())
-			_player.getParty().removePartyMember(_player);
+			_player.getParty().removePartyMember(_player, MessageType.Expelled);
 		
 		// Disable active toggles
 		for (L2Effect effect : _player.getAllEffects())

@@ -1,4 +1,25 @@
 ====================================================================================================
+Changeset 332 @ 2014.09.14
+
+Quests, Party, Misc
+
+Quests
+    - Q235: drop few qItems before the end of the quest. Add Mimir's Elixir skill effect. Cleanup hasQuestItems checks. Ty Root.
+
+Party
+    - Fix a ConcurrentException on L2Party.
+    - Add disband and expel messages.
+    - Add AltLeavePartyLeader config to edit the way the party lead change is processed.
+
+Misc
+    - Revert rev 313 bow change, cleanup calculateTimeBetweenAttacks().
+    - Cleanup ClanHall.java, fix a ConcurrentException. Add removeAllFunctions(), which avoid to generate one db connection per deleted function.
+    - Drop redundant BeginRotation serverpacket. Activate those packets on L2GamePacketHandler. Allows to rotate using arrows keys.
+    - Cleanup AdminDoorControl handler, fixing redundant open/close process, pointless checks and making error handling more friendly.
+    - Make Exception on client packets more informative, which avoid to look on logs.
+    - Edit Zariche to be considered as NONE weapon instead of FIST (avoid double hit system).
+
+====================================================================================================
 Changeset 331 @ 2014.08.31
 
 Quests rework (part 2), Misc

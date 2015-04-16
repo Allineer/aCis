@@ -689,9 +689,11 @@ public abstract class L2Character extends L2Object
 		boolean wasSSCharged = isChargedShot(ShotType.SOULSHOT);
 		
 		// Get the Attack Speed of the L2Character (delay (in milliseconds) before next attack)
-		int timeAtk = calculateTimeBetweenAttacks(target, weaponItem);
+		int timeAtk = calculateTimeBetweenAttacks(target, weaponItemType);
+		
 		// the hit is calculated to happen halfway to the animation - might need further tuning e.g. in bow case
 		int timeToHit = timeAtk / 2;
+		
 		_attackEndTime = GameTimeController.getGameTicks();
 		_attackEndTime += (timeAtk / GameTimeController.MILLIS_IN_TICK);
 		_attackEndTime -= 1;
@@ -798,7 +800,7 @@ public abstract class L2Character extends L2Object
 			broadcastPacket(attack);
 		
 		// Notify AI with EVT_READY_TO_ACT
-		ThreadPoolManager.getInstance().scheduleAi(new NotifyAITask(CtrlEvent.EVT_READY_TO_ACT), (weaponItemType == WeaponType.BOW) ? timeAtk : timeAtk + reuse);
+		ThreadPoolManager.getInstance().scheduleAi(new NotifyAITask(CtrlEvent.EVT_READY_TO_ACT), timeAtk + reuse);
 	}
 	
 	/**
@@ -4353,32 +4355,19 @@ public abstract class L2Character extends L2Object
 	
 	/**
 	 * @param target The target to test.
-	 * @param weapon The wepaon to test.
+	 * @param weaponType The weapon type to test.
 	 * @return The Attack Speed of the L2Character (delay (in milliseconds) before next attack).
 	 */
-	public int calculateTimeBetweenAttacks(L2Character target, Weapon weapon)
+	public int calculateTimeBetweenAttacks(L2Character target, WeaponType weaponType)
 	{
-		double atkSpd = 0;
-		if (weapon != null)
+		switch (weaponType)
 		{
-			switch (weapon.getItemType())
-			{
-				case BOW:
-					atkSpd = getStat().getPAtkSpd();
-					return (int) (1500 * 345 / atkSpd);
-					
-				case DAGGER:
-					atkSpd = getStat().getPAtkSpd();
-					break;
+			case BOW:
+				return 1500 * 345 / getStat().getPAtkSpd();
 				
-				default:
-					atkSpd = getStat().getPAtkSpd();
-			}
+			default:
+				return Formulas.calcPAtkSpd(this, target, getStat().getPAtkSpd());
 		}
-		else
-			atkSpd = getPAtkSpd();
-		
-		return Formulas.calcPAtkSpd(this, target, atkSpd);
 	}
 	
 	public int calculateReuseTime(L2Character target, Weapon weapon)

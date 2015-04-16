@@ -455,6 +455,7 @@ public final class Config
 	public static double PARTY_XP_CUTOFF_PERCENT;
 	public static int ALT_PARTY_RANGE;
 	public static int ALT_PARTY_RANGE2;
+	public static boolean ALT_LEAVE_PARTY_LEADER;
 	
 	/** GMs & Admin Stuff */
 	public static boolean EVERYBODY_HAS_ADMIN_RIGHTS;
@@ -1079,6 +1080,7 @@ public final class Config
 			PARTY_XP_CUTOFF_LEVEL = players.getProperty("PartyXpCutoffLevel", 20);
 			ALT_PARTY_RANGE = players.getProperty("AltPartyRange", 1600);
 			ALT_PARTY_RANGE2 = players.getProperty("AltPartyRange2", 1400);
+			ALT_LEAVE_PARTY_LEADER = players.getProperty("AltLeavePartyLeader", false);
 			
 			EVERYBODY_HAS_ADMIN_RIGHTS = players.getProperty("EverybodyHasAdminRights", false);
 			MASTERACCESS_LEVEL = players.getProperty("MasterAccessLevel", 127);

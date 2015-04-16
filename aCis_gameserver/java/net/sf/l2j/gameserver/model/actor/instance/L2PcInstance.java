@@ -89,6 +89,7 @@ import net.sf.l2j.gameserver.model.L2Macro;
 import net.sf.l2j.gameserver.model.L2ManufactureList;
 import net.sf.l2j.gameserver.model.L2Object;
 import net.sf.l2j.gameserver.model.L2Party;
+import net.sf.l2j.gameserver.model.L2Party.MessageType;
 import net.sf.l2j.gameserver.model.L2PetData;
 import net.sf.l2j.gameserver.model.L2PetData.L2PetLevelData;
 import net.sf.l2j.gameserver.model.L2Radar;
@@ -5254,7 +5255,7 @@ public final class L2PcInstance extends L2Playable
 	{
 		if (isInParty())
 		{
-			_party.removePartyMember(this);
+			_party.removePartyMember(this, MessageType.Disconnected);
 			_party = null;
 		}
 	}
@@ -7844,7 +7845,7 @@ public final class L2PcInstance extends L2Playable
 		dropAllSummons();
 		
 		if (getParty() != null)
-			getParty().removePartyMember(this, true);
+			getParty().removePartyMember(this, MessageType.Expelled);
 		
 		_olympiadGameId = id;
 		
