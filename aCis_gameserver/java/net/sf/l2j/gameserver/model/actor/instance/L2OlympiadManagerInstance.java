@@ -177,7 +177,7 @@ public class L2OlympiadManagerInstance extends L2NpcInstance
 					break;
 				
 				default:
-					_log.warning("Olympiad System: Couldnt send packet for request: " + val);
+					_log.warning("Olympiad: Couldnt send packet for request: " + val);
 					break;
 			}
 		}
@@ -290,7 +290,7 @@ public class L2OlympiadManagerInstance extends L2NpcInstance
 					break;
 				
 				default:
-					_log.warning("Olympiad System: Couldnt send packet for request: " + val);
+					_log.warning("Olympiad: Couldnt send packet for request: " + val);
 					break;
 			}
 		}

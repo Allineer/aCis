@@ -1,4 +1,30 @@
 ====================================================================================================
+Changeset 319 @ 2014.03.06
+
+GM commands, Skills / Formulas, Misc - Part I
+
+GM commands
+    - Addition of //knownlist: allow to check target's knownlist. Eventually, the use of that command would be extended later.
+    - From now, //gm schedules the rollback of the previous accesslevel (allow easy testing without manual accessLevel drop/add + character relog). Default 1 minute.
+
+Skills / Formulas
+    - Rework Func and classes holding such data (notably moving from [] to List).
+    - Rework Env to match with latest L2J (getters / setters, "div/mul/add/sub"Value methods, getPlayer() addition).
+    - Drop numerous unused Conditions (9 overall).
+    - Rework calcHitMiss method (roughly -10% success compared to before), add night and Z+- modifiers, lower behind and side modifiers (from 20/10 to 10/5).
+    - Fix gladiators charge system. It matches L2OFF IL.
+    - matkModifier && levelModifier ratios from skills % landrate are reworked, as it is currently totally breaking formulas.
+
+Misc
+    - Numerous cleanups (complete some javadoc, drop useless methods, reorganize checks in order to avoid to calculate not needed stuff).
+    - Fix a NPE caused by selecting "show skills" chat option on a skill trainer NPC with no active target.
+    - Doors getName() is correctly setted, while internal getDoorName() and _name dissapear.
+    - Revert some sections of rev 239 concerning sieges dates. Drop 7 signs period check aswell (not existing on retail).
+    - Fix few concurrency weaknesses.
+
+Part I means there's a part II, it's UNSTABLE. Use it at your own risks. There were too much edits to be able to re-read what I edited, I decided to commit it like that.
+
+====================================================================================================
 Changeset 318 @ 2014.03.01
 
 Quests, Skills, Misc

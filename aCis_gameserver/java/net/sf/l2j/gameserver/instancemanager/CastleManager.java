@@ -90,8 +90,6 @@ public class CastleManager
 	
 	public final void load()
 	{
-		final Calendar cal = Calendar.getInstance();
-		
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
 		{
 			PreparedStatement statement = con.prepareStatement("SELECT * FROM castle ORDER BY id");
@@ -107,10 +105,10 @@ public class CastleManager
 				castle.setCastleId(id);
 				castle.setName(rs.getString("name"));
 				
-				castle.setSiegeDate(cal);
+				castle.setSiegeDate(Calendar.getInstance());
 				castle.getSiegeDate().setTimeInMillis(rs.getLong("siegeDate"));
 				
-				castle.setSiegeRegistrationEndDate(cal);
+				castle.setSiegeRegistrationEndDate(Calendar.getInstance());
 				castle.getSiegeRegistrationEndDate().setTimeInMillis(rs.getLong("regTimeEnd"));
 				
 				castle.setTimeRegistrationOver(rs.getBoolean("regTimeOver"));

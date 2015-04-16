@@ -216,10 +216,10 @@ public class L2NpcInstance extends L2Npc
 		if (command.startsWith("SkillList"))
 		{
 			player.setSkillLearningClassId(player.getClassId());
-			showSkillList(player, player.getCurrentFolkNPC(), player.getClassId());
+			showSkillList(player, this, player.getClassId());
 		}
 		else if (command.startsWith("EnchantSkillList"))
-			showEnchantSkillList(player, player.getCurrentFolkNPC(), player.getClassId());
+			showEnchantSkillList(player, this, player.getClassId());
 		else if (command.startsWith("GiveBlessing"))
 			giveBlessingSupport(player);
 		else

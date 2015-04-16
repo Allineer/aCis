@@ -815,7 +815,7 @@ public final class L2ItemInstance extends L2Object
 	 * @param player : L2Character designating the player
 	 * @return Func[]
 	 */
-	public Func[] getStatFuncs(L2Character player)
+	public List<Func> getStatFuncs(L2Character player)
 	{
 		return getItem().getStatFuncs(this, player);
 	}

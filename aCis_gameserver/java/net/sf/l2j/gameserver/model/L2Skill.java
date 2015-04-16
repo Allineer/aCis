@@ -15,6 +15,7 @@
 package net.sf.l2j.gameserver.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
@@ -119,9 +120,6 @@ public abstract class L2Skill implements IChanceSkillTrigger
 	public final static int COND_ROBES = 0x0040;
 	public final static int COND_CHARGES = 0x0080;
 	public final static int COND_SHIELD = 0x0100;
-	
-	private static final Func[] _emptyFunctionSet = new Func[0];
-	private static final L2Effect[] _emptyEffectSet = new L2Effect[0];
 	
 	private final int _id;
 	private final int _level;
@@ -238,9 +236,9 @@ public abstract class L2Skill implements IChanceSkillTrigger
 	
 	protected List<Condition> _preCondition;
 	protected List<Condition> _itemPreCondition;
-	protected FuncTemplate[] _funcTemplates;
-	protected EffectTemplate[] _effectTemplates;
-	protected EffectTemplate[] _effectTemplatesSelf;
+	protected List<FuncTemplate> _funcTemplates;
+	protected List<EffectTemplate> _effectTemplates;
+	protected List<EffectTemplate> _effectTemplatesSelf;
 	
 	private final String _attribute;
 	
@@ -647,20 +645,24 @@ public abstract class L2Skill implements IChanceSkillTrigger
 	public final double getEffectPower()
 	{
 		if (_effectTemplates != null)
+		{
 			for (EffectTemplate et : _effectTemplates)
+			{
 				if (et.effectPower > 0)
 					return et.effectPower;
+			}
+		}
 		
 		if (_effectPower > 0)
 			return _effectPower;
 		
-		// to let damage dealing skills having proper resist even without specified effectPower
+		// Allow damage dealing skills having proper resist even without specified effectPower.
 		switch (_skillType)
 		{
 			case PDAM:
-				return 20;
 			case MDAM:
 				return 20;
+				
 			default:
 				// to let debuffs succeed even without specified power
 				return (_power <= 0 || 100 < _power) ? 20 : _power;
@@ -694,9 +696,13 @@ public abstract class L2Skill implements IChanceSkillTrigger
 	public final L2SkillType getEffectType()
 	{
 		if (_effectTemplates != null)
+		{
 			for (EffectTemplate et : _effectTemplates)
+			{
 				if (et.effectType != null)
 					return et.effectType;
+			}
+		}
 		
 		if (_effectType != null)
 			return _effectType;
@@ -1212,25 +1218,22 @@ public abstract class L2Skill implements IChanceSkillTrigger
 	
 	public boolean checkCondition(L2Character activeChar, L2Object target, boolean itemOrWeapon)
 	{
-		List<Condition> preCondition = _preCondition;
-		if (itemOrWeapon)
-			preCondition = _itemPreCondition;
-		
+		final List<Condition> preCondition = (itemOrWeapon) ? _itemPreCondition : _preCondition;
 		if (preCondition == null || preCondition.isEmpty())
 			return true;
 		
+		final Env env = new Env();
+		env.setCharacter(activeChar);
+		if (target instanceof L2Character)
+			env.setTarget((L2Character) target);
+		
+		env.setSkill(this);
+		
 		for (Condition cond : preCondition)
 		{
-			Env env = new Env();
-			env.player = activeChar;
-			if (target instanceof L2Character)
-				env.target = (L2Character) target;
-			env.skill = this;
-			
 			if (!cond.test(env))
 			{
-				String msg = cond.getMessage();
-				int msgId = cond.getMessageId();
+				final int msgId = cond.getMessageId();
 				if (msgId != 0)
 				{
 					SystemMessage sm = SystemMessage.getSystemMessage(msgId);
@@ -1238,9 +1241,11 @@ public abstract class L2Skill implements IChanceSkillTrigger
 						sm.addSkillName(_id);
 					activeChar.sendPacket(sm);
 				}
-				else if (msg != null)
+				else
 				{
-					activeChar.sendMessage(msg);
+					final String msg = cond.getMessage();
+					if (msg != null)
+						activeChar.sendMessage(msg);
 				}
 				return false;
 			}
@@ -2127,51 +2132,44 @@ public abstract class L2Skill implements IChanceSkillTrigger
 			return false;
 		
 		return true;
-		
 	}
 	
-	public final Func[] getStatFuncs(L2Effect effect, L2Character player)
+	public final List<Func> getStatFuncs(L2Effect effect, L2Character player)
 	{
 		if (_funcTemplates == null)
-			return _emptyFunctionSet;
+			return Collections.emptyList();
 		
 		if (!(player instanceof L2Playable) && !(player instanceof L2Attackable))
-			return _emptyFunctionSet;
+			return Collections.emptyList();
 		
-		ArrayList<Func> funcs = new ArrayList<>(_funcTemplates.length);
+		final List<Func> funcs = new ArrayList<>(_funcTemplates.size());
 		
-		Env env = new Env();
-		env.player = player;
-		env.skill = this;
-		
-		Func f;
+		final Env env = new Env();
+		env.setCharacter(player);
+		env.setSkill(this);
 		
 		for (FuncTemplate t : _funcTemplates)
 		{
-			
-			f = t.getFunc(env, this); // skill is owner
+			final Func f = t.getFunc(env, this); // skill is owner
 			if (f != null)
 				funcs.add(f);
 		}
-		if (funcs.isEmpty())
-			return _emptyFunctionSet;
-		
-		return funcs.toArray(new Func[funcs.size()]);
+		return funcs;
 	}
 	
 	public boolean hasEffects()
 	{
-		return (_effectTemplates != null && _effectTemplates.length > 0);
+		return (_effectTemplates != null && !_effectTemplates.isEmpty());
 	}
 	
-	public EffectTemplate[] getEffectTemplates()
+	public List<EffectTemplate> getEffectTemplates()
 	{
 		return _effectTemplates;
 	}
 	
 	public boolean hasSelfEffects()
 	{
-		return (_effectTemplatesSelf != null && _effectTemplatesSelf.length > 0);
+		return (_effectTemplatesSelf != null && !_effectTemplatesSelf.isEmpty());
 	}
 	
 	/**
@@ -2180,50 +2178,50 @@ public abstract class L2Skill implements IChanceSkillTrigger
 	 * @param env parameters for secondary effects (shield and ss/bss/bsss)
 	 * @return an array with the effects that have been added to effector
 	 */
-	public final L2Effect[] getEffects(L2Character effector, L2Character effected, Env env)
+	public final List<L2Effect> getEffects(L2Character effector, L2Character effected, Env env)
 	{
 		if (!hasEffects() || isPassive())
-			return _emptyEffectSet;
+			return Collections.emptyList();
 		
 		// doors and siege flags cannot receive any effects
 		if (effected instanceof L2DoorInstance || effected instanceof L2SiegeFlagInstance)
-			return _emptyEffectSet;
+			return Collections.emptyList();
 		
 		if (effector != effected)
 		{
 			if (isOffensive() || isDebuff())
 			{
 				if (effected.isInvul())
-					return _emptyEffectSet;
+					return Collections.emptyList();
 				
 				if (effector instanceof L2PcInstance && ((L2PcInstance) effector).isGM())
 				{
 					if (!((L2PcInstance) effector).getAccessLevel().canGiveDamage())
-						return _emptyEffectSet;
+						return Collections.emptyList();
 				}
 			}
 		}
 		
-		ArrayList<L2Effect> effects = new ArrayList<>(_effectTemplates.length);
+		final List<L2Effect> effects = new ArrayList<>(_effectTemplates.size());
 		
 		if (env == null)
 			env = new Env();
 		
-		env.skillMastery = Formulas.calcSkillMastery(effector, this);
-		env.player = effector;
-		env.target = effected;
-		env.skill = this;
+		env.setSkillMastery(Formulas.calcSkillMastery(effector, this));
+		env.setCharacter(effector);
+		env.setTarget(effected);
+		env.setSkill(this);
 		
 		for (EffectTemplate et : _effectTemplates)
 		{
 			boolean success = true;
 			
 			if (et.effectPower > -1)
-				success = Formulas.calcEffectSuccess(effector, effected, et, this, env.shld, env.ss, env.sps, env.bss);
+				success = Formulas.calcEffectSuccess(effector, effected, et, this, env.getShield(), env.isBlessedSpiritShot());
 			
 			if (success)
 			{
-				L2Effect e = et.getEffect(env);
+				final L2Effect e = et.getEffect(env);
 				if (e != null)
 				{
 					e.scheduleEffect();
@@ -2232,18 +2230,9 @@ public abstract class L2Skill implements IChanceSkillTrigger
 			}
 			// display fail message only for effects with icons
 			else if (et.icon && effector instanceof L2PcInstance)
-			{
-				SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.S1_RESISTED_YOUR_S2);
-				sm.addCharName(effected);
-				sm.addSkillName(this);
-				((L2PcInstance) effector).sendPacket(sm);
-			}
+				((L2PcInstance) effector).sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_RESISTED_YOUR_S2).addCharName(effected).addSkillName(this));
 		}
-		
-		if (effects.isEmpty())
-			return _emptyEffectSet;
-		
-		return effects.toArray(new L2Effect[effects.size()]);
+		return effects;
 	}
 	
 	/**
@@ -2252,7 +2241,7 @@ public abstract class L2Skill implements IChanceSkillTrigger
 	 * @param effected
 	 * @return An array of L2Effect.
 	 */
-	public final L2Effect[] getEffects(L2Character effector, L2Character effected)
+	public final List<L2Effect> getEffects(L2Character effector, L2Character effected)
 	{
 		return getEffects(effector, effected, null);
 	}
@@ -2267,42 +2256,42 @@ public abstract class L2Skill implements IChanceSkillTrigger
 	 * @param env parameters for secondary effects (shield and ss/bss/bsss)
 	 * @return An array of L2Effect.
 	 */
-	public final L2Effect[] getEffects(L2CubicInstance effector, L2Character effected, Env env)
+	public final List<L2Effect> getEffects(L2CubicInstance effector, L2Character effected, Env env)
 	{
 		if (!hasEffects() || isPassive())
-			return _emptyEffectSet;
+			return Collections.emptyList();
 		
 		if (effector.getOwner() != effected)
 		{
 			if (isDebuff() || isOffensive())
 			{
 				if (effected.isInvul())
-					return _emptyEffectSet;
+					return Collections.emptyList();
 				
 				if (effector.getOwner().isGM() && !effector.getOwner().getAccessLevel().canGiveDamage())
-					return _emptyEffectSet;
+					return Collections.emptyList();
 			}
 		}
 		
-		ArrayList<L2Effect> effects = new ArrayList<>(_effectTemplates.length);
+		final List<L2Effect> effects = new ArrayList<>(_effectTemplates.size());
 		
 		if (env == null)
 			env = new Env();
 		
-		env.player = effector.getOwner();
-		env.cubic = effector;
-		env.target = effected;
-		env.skill = this;
+		env.setCharacter(effector.getOwner());
+		env.setCubic(effector);
+		env.setTarget(effected);
+		env.setSkill(this);
 		
 		for (EffectTemplate et : _effectTemplates)
 		{
 			boolean success = true;
 			if (et.effectPower > -1)
-				success = Formulas.calcEffectSuccess(effector.getOwner(), effected, et, this, env.shld, env.ss, env.sps, env.bss);
+				success = Formulas.calcEffectSuccess(effector.getOwner(), effected, et, this, env.getShield(), env.isBlessedSpiritShot());
 			
 			if (success)
 			{
-				L2Effect e = et.getEffect(env);
+				final L2Effect e = et.getEffect(env);
 				if (e != null)
 				{
 					e.scheduleEffect();
@@ -2310,28 +2299,24 @@ public abstract class L2Skill implements IChanceSkillTrigger
 				}
 			}
 		}
-		
-		if (effects.isEmpty())
-			return _emptyEffectSet;
-		
-		return effects.toArray(new L2Effect[effects.size()]);
+		return effects;
 	}
 	
-	public final L2Effect[] getEffectsSelf(L2Character effector)
+	public final List<L2Effect> getEffectsSelf(L2Character effector)
 	{
 		if (!hasSelfEffects() || isPassive())
-			return _emptyEffectSet;
+			return Collections.emptyList();
 		
-		List<L2Effect> effects = new ArrayList<>(_effectTemplatesSelf.length);
+		final List<L2Effect> effects = new ArrayList<>(_effectTemplatesSelf.size());
 		
-		Env env = new Env();
-		env.player = effector;
-		env.target = effector;
-		env.skill = this;
+		final Env env = new Env();
+		env.setCharacter(effector);
+		env.setTarget(effector);
+		env.setSkill(this);
 		
 		for (EffectTemplate et : _effectTemplatesSelf)
 		{
-			L2Effect e = et.getEffect(env);
+			final L2Effect e = et.getEffect(env);
 			if (e != null)
 			{
 				e.setSelfEffect();
@@ -2339,63 +2324,31 @@ public abstract class L2Skill implements IChanceSkillTrigger
 				effects.add(e);
 			}
 		}
-		if (effects.isEmpty())
-			return _emptyEffectSet;
-		
-		return effects.toArray(new L2Effect[effects.size()]);
+		return effects;
 	}
 	
 	public final void attach(FuncTemplate f)
 	{
 		if (_funcTemplates == null)
-			_funcTemplates = new FuncTemplate[]
-			{
-				f
-			};
-		else
-		{
-			int len = _funcTemplates.length;
-			FuncTemplate[] tmp = new FuncTemplate[len + 1];
-			System.arraycopy(_funcTemplates, 0, tmp, 0, len);
-			tmp[len] = f;
-			_funcTemplates = tmp;
-		}
+			_funcTemplates = new ArrayList<>(1);
+		
+		_funcTemplates.add(f);
 	}
 	
 	public final void attach(EffectTemplate effect)
 	{
 		if (_effectTemplates == null)
-			_effectTemplates = new EffectTemplate[]
-			{
-				effect
-			};
-		else
-		{
-			int len = _effectTemplates.length;
-			EffectTemplate[] tmp = new EffectTemplate[len + 1];
-			System.arraycopy(_effectTemplates, 0, tmp, 0, len);
-			tmp[len] = effect;
-			_effectTemplates = tmp;
-		}
+			_effectTemplates = new ArrayList<>(1);
+		
+		_effectTemplates.add(effect);
 	}
 	
 	public final void attachSelf(EffectTemplate effect)
 	{
 		if (_effectTemplatesSelf == null)
-		{
-			_effectTemplatesSelf = new EffectTemplate[]
-			{
-				effect
-			};
-		}
-		else
-		{
-			int len = _effectTemplatesSelf.length;
-			EffectTemplate[] tmp = new EffectTemplate[len + 1];
-			System.arraycopy(_effectTemplatesSelf, 0, tmp, 0, len);
-			tmp[len] = effect;
-			_effectTemplatesSelf = tmp;
-		}
+			_effectTemplatesSelf = new ArrayList<>(1);
+		
+		_effectTemplatesSelf.add(effect);
 	}
 	
 	public final void attach(Condition c, boolean itemOrWeapon)

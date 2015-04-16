@@ -2979,7 +2979,7 @@ public abstract class L2Character extends L2Object
 	 * Add a list of Funcs to the Calculator set of the L2Character.
 	 * @param funcs The list of Func objects to add to the Calculator corresponding to the state affected
 	 */
-	public final void addStatFuncs(Func[] funcs)
+	public final void addStatFuncs(List<Func> funcs)
 	{
 		List<Stats> modifiedStats = new ArrayList<>();
 		for (Func f : funcs)
@@ -5147,27 +5147,23 @@ public abstract class L2Character extends L2Object
 							((L2Attackable) target).overhitEnabled(true);
 					}
 					
-					// crafting does not trigger any chance skills
 					switch (skill.getSkillType())
 					{
-						case COMMON_CRAFT:
+						case COMMON_CRAFT: // Crafting does not trigger any chance skills.
 						case DWARVEN_CRAFT:
 							break;
-						default:
-							// Launch weapon Special ability skill effect if available
+						
+						default: // Launch weapon Special ability skill effect if available
 							if (activeWeapon != null && !target.isDead())
 							{
-								if (activeWeapon.getSkillEffects(this, target, skill).length > 0 && this instanceof L2PcInstance)
-								{
-									SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.S1_HAS_BEEN_ACTIVATED);
-									sm.addSkillName(skill);
-									sendPacket(sm);
-								}
+								if (this instanceof L2PcInstance && !activeWeapon.getSkillEffects(this, target, skill).isEmpty())
+									sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_HAS_BEEN_ACTIVATED).addSkillName(skill));
 							}
 							
 							// Maybe launch chance skills on us
 							if (_chanceSkills != null)
 								_chanceSkills.onSkillHit(target, false, skill.isMagic(), skill.isOffensive(), skill.getElement());
+							
 							// Maybe launch chance skills on target
 							if (target.getChanceSkills() != null)
 								target.getChanceSkills().onSkillHit(this, true, skill.isMagic(), skill.isOffensive(), skill.getElement());

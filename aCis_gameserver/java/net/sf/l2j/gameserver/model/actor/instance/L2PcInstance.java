@@ -5445,13 +5445,13 @@ public final class L2PcInstance extends L2Playable
 	 */
 	public void setAccessLevel(int level)
 	{
-		if (level == AccessLevels._masterAccessLevelNum)
+		if (level == AccessLevels.MASTER_ACCESS_LEVEL_NUMBER)
 		{
 			_log.warning(getName() + " has logged in with Master access level.");
-			_accessLevel = AccessLevels._masterAccessLevel;
+			_accessLevel = AccessLevels.MASTER_ACCESS_LEVEL;
 		}
-		else if (level == AccessLevels._userAccessLevelNum)
-			_accessLevel = AccessLevels._userAccessLevel;
+		else if (level == AccessLevels.USER_ACCESS_LEVEL_NUMBER)
+			_accessLevel = AccessLevels.USER_ACCESS_LEVEL;
 		else
 		{
 			L2AccessLevel accessLevel = AccessLevels.getInstance().getAccessLevel(level);
@@ -5466,7 +5466,7 @@ public final class L2PcInstance extends L2Playable
 				else
 				{
 					_log.warning("Server tried to set unregistered access level " + level + " to " + getName() + ". His access level have been reseted to user level.");
-					_accessLevel = AccessLevels._userAccessLevel;
+					_accessLevel = AccessLevels.USER_ACCESS_LEVEL;
 				}
 			}
 			else
@@ -5494,9 +5494,10 @@ public final class L2PcInstance extends L2Playable
 	public L2AccessLevel getAccessLevel()
 	{
 		if (Config.EVERYBODY_HAS_ADMIN_RIGHTS)
-			return AccessLevels._masterAccessLevel;
-		else if (_accessLevel == null) /* This is here because inventory etc. is loaded before access level on login, so it is not null */
-			setAccessLevel(AccessLevels._userAccessLevelNum);
+			return AccessLevels.MASTER_ACCESS_LEVEL;
+		
+		if (_accessLevel == null) /* This is here because inventory etc. is loaded before access level on login, so it is not null */
+			setAccessLevel(AccessLevels.USER_ACCESS_LEVEL_NUMBER);
 		
 		return _accessLevel;
 	}
@@ -6505,14 +6506,14 @@ public final class L2PcInstance extends L2Playable
 				 */
 				if (skill.hasEffects())
 				{
-					Env env = new Env();
-					env.player = this;
-					env.target = this;
-					env.skill = skill;
-					L2Effect ef;
+					final Env env = new Env();
+					env.setCharacter(this);
+					env.setTarget(this);
+					env.setSkill(skill);
+					
 					for (EffectTemplate et : skill.getEffectTemplates())
 					{
-						ef = et.getEffect(env);
+						final L2Effect ef = et.getEffect(env);
 						if (ef != null)
 						{
 							ef.setCount(effectCount);

@@ -57,26 +57,24 @@ public class CharStat
 		if (_activeChar == null || stat == null)
 			return init;
 		
-		int id = stat.ordinal();
+		final int id = stat.ordinal();
 		
-		Calculator c = _activeChar.getCalculators()[id];
-		
-		// If no Func object found, no modifier is applied
+		final Calculator c = _activeChar.getCalculators()[id];
 		if (c == null || c.size() == 0)
 			return init;
 		
 		// Create and init an Env object to pass parameters to the Calculator
-		Env env = new Env();
-		env.player = _activeChar;
-		env.target = target;
-		env.skill = skill;
-		env.value = init;
+		final Env env = new Env();
+		env.setCharacter(_activeChar);
+		env.setTarget(target);
+		env.setSkill(skill);
+		env.setValue(init);
 		
 		// Launch the calculation
 		c.calc(env);
 		
 		// avoid some troubles with negative stats (some stats should never be negative)
-		if (env.value <= 0)
+		if (env.getValue() <= 0)
 		{
 			switch (stat)
 			{
@@ -96,10 +94,10 @@ public class CharStat
 				case STAT_MEN:
 				case STAT_STR:
 				case STAT_WIT:
-					env.value = 1;
+					env.setValue(1);
 			}
 		}
-		return env.value;
+		return env.getValue();
 	}
 	
 	/**

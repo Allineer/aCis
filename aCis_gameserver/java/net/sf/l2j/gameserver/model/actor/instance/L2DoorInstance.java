@@ -71,7 +71,6 @@ public class L2DoorInstance extends L2Character
 	private int _D = 0;
 	
 	protected final int _doorId;
-	protected final String _name;
 	private boolean _open;
 	private final boolean _unlockable;
 	private boolean _isWall = false; // False by default
@@ -177,11 +176,11 @@ public class L2DoorInstance extends L2Character
 				}
 				
 				if (Config.DEBUG)
-					log.info("Auto " + doorAction + " door ID " + _doorId + " (" + _name + ") for " + (_autoActionDelay / 60000) + " minute(s).");
+					log.info("Auto " + doorAction + " door ID " + _doorId + " (" + getName() + ") for " + (_autoActionDelay / 60000) + " minute(s).");
 			}
 			catch (Exception e)
 			{
-				log.warning("Could not auto open/close door ID " + _doorId + " (" + _name + ")");
+				log.warning("Could not auto open/close door ID " + _doorId + " (" + getName() + ")");
 			}
 		}
 	}
@@ -189,9 +188,11 @@ public class L2DoorInstance extends L2Character
 	public L2DoorInstance(int objectId, L2CharTemplate template, int doorId, String name, boolean unlockable)
 	{
 		super(objectId, template);
+		
 		_doorId = doorId;
-		_name = name;
 		_unlockable = unlockable;
+		
+		setName(name);
 	}
 	
 	@Override
@@ -480,11 +481,6 @@ public class L2DoorInstance extends L2Character
 	public String toString()
 	{
 		return "door " + _doorId;
-	}
-	
-	public String getDoorName()
-	{
-		return _name;
 	}
 	
 	public int getXMin()

@@ -14,8 +14,6 @@
  */
 package net.sf.l2j.gameserver.util;
 
-import java.util.Collection;
-
 import net.sf.l2j.gameserver.model.L2World;
 import net.sf.l2j.gameserver.model.actor.L2Character;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
@@ -151,11 +149,10 @@ public final class Broadcast
 	 */
 	public static void toAllOnlinePlayers(L2GameServerPacket mov)
 	{
-		final Collection<L2PcInstance> pls = L2World.getInstance().getAllPlayers().values();
-		for (L2PcInstance onlinePlayer : pls)
+		for (L2PcInstance player : L2World.getInstance().getAllPlayers().values())
 		{
-			if (onlinePlayer.isOnline())
-				onlinePlayer.sendPacket(mov);
+			if (player.isOnline())
+				player.sendPacket(mov);
 		}
 	}
 	

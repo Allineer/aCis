@@ -365,10 +365,10 @@ public class DoorTable
 			for (L2DoorInstance doorInst : getDoors())
 			{
 				// Garden of Eva (every 7 minutes)
-				if (doorInst.getDoorName().startsWith("Eva"))
+				if (doorInst.getName().startsWith("Eva"))
 					doorInst.setAutoActionDelay(420000);
 				// Tower of Insolence (every 5 minutes)
-				else if (doorInst.getDoorName().startsWith("hubris"))
+				else if (doorInst.getName().startsWith("hubris"))
 					doorInst.setAutoActionDelay(300000);
 			}
 			
