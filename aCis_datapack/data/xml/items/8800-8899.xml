@@ -162,9 +162,9 @@
 		<set name="soulshots" val="2" />
 		<set name="spiritshots" val="1" />
 		<set name="mp_consume" val="10" />
+		<set name="mp_consume_reduce" val="30,1" />
 		<set name="reuse_delay" val="820" />
 		<set name="item_skill" val="3552-1" />
-		<set name="reduced_mp_consume" val="30,1" />
 		<for>
 			<set order="0x08" stat="pAtk" val="570" />
 			<set order="0x08" stat="mAtk" val="133" />
@@ -173,11 +173,6 @@
 			<set order="0x08" stat="pAtkSpd" val="227" />
 			<enchant val="0" order="0x0C" stat="pAtk" />
 			<enchant val="0" order="0x0C" stat="mAtk" />
-			<set order="0x08" stat="MpConsume" val="1">
-				<and>
-					<game skill="false" chance="30" />
-				</and>
-			</set>
 		</for>
 	</item>
 	<item id="8807" type="Weapon" name="Shyeed's Bow - Focus">

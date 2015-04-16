@@ -60,7 +60,7 @@ public final class L2GameClient extends MMOClient<MMOConnection<L2GameClient>> i
 		CONNECTED, // client has just connected
 		AUTHED, // client has authed but doesnt has character attached to it yet
 		IN_GAME // client has selected a char and is in game
-	};
+	}
 	
 	public GameClientState _state;
 	

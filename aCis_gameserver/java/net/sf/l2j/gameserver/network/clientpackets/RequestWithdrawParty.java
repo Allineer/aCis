@@ -52,8 +52,8 @@ public final class RequestWithdrawParty extends L2GameClientPacket
 				PartyMatchRoom _room = PartyMatchRoomList.getInstance().getPlayerRoom(player);
 				if (_room != null)
 				{
-					player.sendPacket(new PartyMatchDetail(player, _room));
-					player.sendPacket(new ExPartyRoomMember(player, _room, 0));
+					player.sendPacket(new PartyMatchDetail(_room));
+					player.sendPacket(new ExPartyRoomMember(_room, 0));
 					player.sendPacket(ExClosePartyRoom.STATIC_PACKET);
 					
 					_room.deleteMember(player);

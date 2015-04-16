@@ -93,9 +93,6 @@ public class AutoSpawnManager
 		int numLoaded = 0;
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
 		{
-			PreparedStatement statement2 = null;
-			ResultSet rs2 = null;
-			
 			// Restore spawn group data, then the location data.
 			PreparedStatement statement = con.prepareStatement("SELECT * FROM random_spawn ORDER BY groupId ASC");
 			ResultSet rs = statement.executeQuery();
@@ -112,19 +109,19 @@ public class AutoSpawnManager
 				numLoaded++;
 				
 				// Restore the spawn locations for this spawn group/instance.
-				statement2 = con.prepareStatement("SELECT * FROM random_spawn_loc WHERE groupId=?");
+				PreparedStatement statement2 = con.prepareStatement("SELECT * FROM random_spawn_loc WHERE groupId=?");
 				statement2.setInt(1, rs.getInt("groupId"));
-				rs2 = statement2.executeQuery();
+				ResultSet rs2 = statement2.executeQuery();
 				
 				while (rs2.next())
 				{
 					// Add each location to the spawn group/instance.
 					spawnInst.addSpawnLocation(rs2.getInt("x"), rs2.getInt("y"), rs2.getInt("z"), rs2.getInt("heading"));
 				}
-				
+				rs2.close();
 				statement2.close();
 			}
-			
+			rs.close();
 			statement.close();
 			
 			if (Config.DEBUG)

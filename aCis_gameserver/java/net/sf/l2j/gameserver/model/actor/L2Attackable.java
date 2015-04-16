@@ -1141,7 +1141,7 @@ public class L2Attackable extends L2Npc
 		return 0;
 	}
 	
-	private static ItemHolder calculateCategorizedHerbItem(L2PcInstance lastAttacker, DropCategory categoryDrops, int levelModifier)
+	private static ItemHolder calculateCategorizedHerbItem(DropCategory categoryDrops, int levelModifier)
 	{
 		if (categoryDrops == null)
 			return null;
@@ -1341,7 +1341,7 @@ public class L2Attackable extends L2Npc
 		{
 			for (DropCategory cat : HerbDropTable.getInstance().getHerbDroplist(getTemplate().getDropHerbGroup()))
 			{
-				final ItemHolder item = calculateCategorizedHerbItem(player, cat, levelModifier);
+				final ItemHolder item = calculateCategorizedHerbItem(cat, levelModifier);
 				if (item != null)
 				{
 					if (Config.AUTO_LOOT_HERBS)

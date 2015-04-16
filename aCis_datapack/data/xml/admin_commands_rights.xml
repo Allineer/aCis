@@ -362,9 +362,6 @@
 	<aCar name="admin_move_to" accessLevel="1" />
 	<aCar name="admin_sendhome" accessLevel="1" />
 
-	<!-- UNBLOCK IP -->
-	<aCar name="admin_unblockip" accessLevel="1" />
-
 	<!-- ZONE -->
 	<aCar name="admin_zone_check" accessLevel="1" />
 	<aCar name="admin_zone_visual" accessLevel="1" />

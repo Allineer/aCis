@@ -144,7 +144,7 @@ public abstract class AbstractOlympiadGame
 		
 		try
 		{
-			player.setLastCords(player.getX(), player.getY(), player.getZ());
+			player.saveCurrentCoords();
 			
 			player.forceStandUp();
 			player.setTarget(null);
@@ -357,7 +357,7 @@ public abstract class AbstractOlympiadGame
 			return;
 		
 		player.teleToLocation(player.getLastX(), player.getLastY(), player.getLastZ(), 0);
-		player.setLastCords(0, 0, 0);
+		player.saveCurrentCoords();
 	}
 	
 	public static final void rewardParticipant(L2PcInstance player, int[][] reward)

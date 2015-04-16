@@ -224,7 +224,7 @@ public abstract class L2Character extends L2Object
 			if (!_skills.isEmpty())
 			{
 				for (L2Skill skill : getAllSkills())
-					addStatFuncs(skill.getStatFuncs(null, this));
+					addStatFuncs(skill.getStatFuncs(this));
 			}
 		}
 	}
@@ -641,10 +641,7 @@ public abstract class L2Character extends L2Object
 				if (_disableBowAttackEndTime <= GameTimeController.getInstance().getGameTicks())
 				{
 					// Verify if L2PcInstance owns enough MP
-					int saMpConsume = (int) getStat().calcStat(Stats.MP_CONSUME, 0, null, null);
-					int mpConsume = saMpConsume == 0 ? weaponItem.getMpConsume() : saMpConsume;
-					mpConsume = (int) calcStat(Stats.BOW_MP_CONSUME_RATE, mpConsume, null, null);
-					
+					final int mpConsume = weaponItem.getMpConsume();
 					if (getCurrentMp() < mpConsume)
 					{
 						// If L2PcInstance doesn't have enough MP, stop the attack
@@ -701,7 +698,7 @@ public abstract class L2Character extends L2Object
 		setHeading(Util.calculateHeadingFrom(this, target));
 		
 		// Get the Attack Reuse Delay of the Weapon
-		final int reuse = calculateReuseTime(target, weaponItem);
+		final int reuse = calculateReuseTime(weaponItem);
 		
 		boolean hitted;
 		
@@ -3570,16 +3567,6 @@ public abstract class L2Character extends L2Object
 		if (Config.DEBUG)
 			_log.fine("distance to target:" + distance);
 		
-		// Define movement angles needed
-		// ^
-		// |    X (x,y)
-		// |   /
-		// |  /distance
-		// | /
-		// |/ angle
-		// X ---------->
-		// (curx,cury)
-		
 		double cos;
 		double sin;
 		
@@ -3851,7 +3838,7 @@ public abstract class L2Character extends L2Object
 		
 		// FIXME: Is it necessary to send ValidateLocation here? Client asks for coords validation by itself, when moving...should be solved there.
 		// send ValidateLocation packet to known objects
-//		broadcastPacket(new ValidateLocation(this));
+		// broadcastPacket(new ValidateLocation(this));
 		
 		// send MoveToLocation packet to known objects
 		broadcastPacket(new MoveToLocation(this));
@@ -4142,16 +4129,16 @@ public abstract class L2Character extends L2Object
 			// Maybe launch chance skills on us
 			if (_chanceSkills != null)
 			{
-				_chanceSkills.onHit(target, damage, false, crit);
+				_chanceSkills.onHit(target, false, crit);
 				
 				// Reflect triggers onHit
 				if (reflectedDamage > 0)
-					_chanceSkills.onHit(target, damage, true, false);
+					_chanceSkills.onHit(target, true, false);
 			}
 			
 			// Maybe launch chance skills on target
 			if (target.getChanceSkills() != null)
-				target.getChanceSkills().onHit(this, damage, true, crit);
+				target.getChanceSkills().onHit(this, true, crit);
 		}
 		
 		// Launch weapon Special ability effect if available
@@ -4375,26 +4362,17 @@ public abstract class L2Character extends L2Object
 		}
 	}
 	
-	public int calculateReuseTime(L2Character target, Weapon weapon)
+	public int calculateReuseTime(Weapon weapon)
 	{
 		if (weapon == null)
 			return 0;
 		
-		// only bows should continue for now
-		int reuse = weapon.getReuseDelay();
+		// Only bows should continue for now.
+		final int reuse = weapon.getReuseDelay();
 		if (reuse == 0)
 			return 0;
 		
-		reuse *= getStat().getWeaponReuseModifier(target);
-		double atkSpd = getStat().getPAtkSpd();
-		switch (weapon.getItemType())
-		{
-			case BOW:
-				return (int) (reuse * 345 / atkSpd);
-				
-			default:
-				return (int) (reuse * 312 / atkSpd);
-		}
+		return reuse * 345 / getStat().getPAtkSpd();
 	}
 	
 	/**
@@ -4448,7 +4426,7 @@ public abstract class L2Character extends L2Object
 				removeStatsByOwner(oldSkill);
 			}
 			// Add Func objects of newSkill to the calculator set of the L2Character
-			addStatFuncs(newSkill.getStatFuncs(null, this));
+			addStatFuncs(newSkill.getStatFuncs(this));
 			
 			if (oldSkill != null && _chanceSkills != null)
 				removeChanceSkill(oldSkill.getId());
@@ -4821,7 +4799,7 @@ public abstract class L2Character extends L2Object
 		boolean isSendStatus = false;
 		
 		// Consume MP of the L2Character and Send the Server->Client packet StatusUpdate with current HP and MP to all other L2PcInstance to inform
-		double mpConsume = getStat().getMpConsume(skill);
+		final double mpConsume = getStat().getMpConsume(skill);
 		if (mpConsume > 0)
 		{
 			if (mpConsume > getCurrentMp())
@@ -4837,9 +4815,9 @@ public abstract class L2Character extends L2Object
 		}
 		
 		// Consume HP if necessary and Send the Server->Client packet StatusUpdate with current HP and MP to all other L2PcInstance to inform
-		if (skill.getHpConsume() > 0)
+		final double hpConsume = skill.getHpConsume();
+		if (hpConsume > 0)
 		{
-			final double hpConsume = calcStat(Stats.HP_CONSUME_RATE, skill.getHpConsume(), null, null);
 			if (hpConsume > getCurrentHp())
 			{
 				sendPacket(SystemMessage.getSystemMessage(SystemMessageId.NOT_ENOUGH_HP));
@@ -5128,11 +5106,11 @@ public abstract class L2Character extends L2Object
 						
 						// Maybe launch chance skills on us
 						if (_chanceSkills != null)
-							_chanceSkills.onSkillHit(target, false, skill.isMagic(), skill.isOffensive(), skill.getElement());
+							_chanceSkills.onSkillHit(target, false, skill.isMagic(), skill.isOffensive());
 						
 						// Maybe launch chance skills on target
 						if (target.getChanceSkills() != null)
-							target.getChanceSkills().onSkillHit(this, true, skill.isMagic(), skill.isOffensive(), skill.getElement());
+							target.getChanceSkills().onSkillHit(this, true, skill.isMagic(), skill.isOffensive());
 				}
 			}
 			

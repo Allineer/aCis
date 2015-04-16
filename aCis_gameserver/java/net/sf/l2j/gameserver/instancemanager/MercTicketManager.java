@@ -719,6 +719,7 @@ public class MercTicketManager
 					}
 				}
 			}
+			rs.close();
 			statement.close();
 		}
 		catch (Exception e)

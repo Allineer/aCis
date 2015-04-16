@@ -3672,6 +3672,9 @@ public final class L2PcInstance extends L2Playable
 	
 	public boolean canOpenPrivateStore()
 	{
+		if (getActiveTradeList() != null)
+			cancelActiveTrade();
+		
 		return !isAlikeDead() && !isInOlympiadMode() && !isMounted() && !isInsideZone(ZoneId.NO_STORE) && !isCastingNow();
 	}
 	
@@ -5735,7 +5738,7 @@ public final class L2PcInstance extends L2Playable
 				// Enforce the correct indexing of _subClasses against their class indexes.
 				player.getSubClasses().put(subClass.getClassIndex(), subClass);
 			}
-			
+			rset.close();
 			statement.close();
 		}
 		catch (Exception e)
@@ -7828,7 +7831,7 @@ public final class L2PcInstance extends L2Playable
 		broadcastUserInfo();
 	}
 	
-	public void setLastCords(int x, int y, int z)
+	public void saveCurrentCoords()
 	{
 		_lastX = getX();
 		_lastY = getY();
@@ -7883,7 +7886,7 @@ public final class L2PcInstance extends L2Playable
 		setFalling();
 		
 		_observerMode = false;
-		setLastCords(0, 0, 0);
+		saveCurrentCoords();
 		sendPacket(new ObservationReturn(this));
 		broadcastUserInfo();
 	}
@@ -7905,7 +7908,7 @@ public final class L2PcInstance extends L2Playable
 		if (hasAI())
 			getAI().setIntention(CtrlIntention.IDLE);
 		
-		setLastCords(0, 0, 0);
+		saveCurrentCoords();
 		broadcastUserInfo();
 	}
 	

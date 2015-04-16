@@ -2134,7 +2134,7 @@ public abstract class L2Skill implements IChanceSkillTrigger
 		return true;
 	}
 	
-	public final List<Func> getStatFuncs(L2Effect effect, L2Character player)
+	public final List<Func> getStatFuncs(L2Character player)
 	{
 		if (_funcTemplates == null)
 			return Collections.emptyList();

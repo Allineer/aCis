@@ -1,4 +1,28 @@
 ================================================================================
+Changeset 336 @ 2014.12.29
+
+Stats cleanup, Misc
+
+Stats cleanup
+    - Cleanup few useless calcStat. It will save objects and calculation times.
+    - Drop following Stats: ATK_REUSE, MP_CONSUME, BOW_MP_CONSUME_RATE, HP_CONSUME_RATE.
+    - Rework the way SA Cheap Shot is handled. Deletion of ConditionWithSkill.
+
+Misc
+    - Fix an HTM issue with Q023, ty RooT.
+    - Fix an issue with trade/private shops, ty RooT/UYFrank.
+    - Numerous cleanups based on Eclipse warnings I switched on then off. Notably:
+        - Delete another "Item" nested class, use ItemHolder instead.
+        - ConditionPlayerBaseStats is dropped.
+        - Fix 20+ so-called 'possible ressource leaks' (missing rset/statement .close()).
+        - AdminHandler AdminUnblockIp (not even working...) is dropped.
+        - Few unused methods parameters are dropped.
+        - Method setLastCords(x,y,z) renamed for saveCurrentCoords(), as parameters were unused.
+    - Typos fixed. Notably:
+        - Pa'agrio and not Paagrio.
+        - Galion and not Gallion.
+
+================================================================================
 Changeset 335 @ 2014.12.27
 
 AdminCommands, UserCommands, GrandBosses && BossZone, Trainers, Misc
