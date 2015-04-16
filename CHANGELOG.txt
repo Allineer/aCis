@@ -1,4 +1,31 @@
 ====================================================================================================
+Changeset 320 @ 2014.03.17
+
+Sieges, MDT (Part I), Misc
+
+Sieges
+    - Fix registration date end calculation (cf: Siege participation registration is closed twenty-four hours before the start of the siege.).
+    - Registration date is now calculated on server startup, and based on siege date (it was missing).
+    - Move siege logs when a new date is setted, not on server startup (well if your server had old dates and need refresh it will show, but otherwise it won't).
+    - Rework startAutoTask() in order to avoid to cancel/set twice ScheduleStartSiegeTask (if date is too old and need to be edited).
+
+Monster Derby Track - part I
+    - Announcements aren't broadcasted twice anymore and are based on zone types, not on L2RaceManager knownlists.
+    - Race informations are now refreshed on player teleport (can see properly monsters).
+    - Set the default race number to 1 instead of 4.
+    - Setup race announcements like L2OFF, using a 20min game cycle rather than 10min.
+    - Move the entire race system logic from L2RaceManagerInstance to MonsterRace. Reduce the number of running tasks from 40 (20 per NPC) to 1.
+    - NewSpeeds() isn't processed twice anymore (dropped from newRace() end).
+    - NewRace() logic is rewritten (avoid to get NPC clones, better performance).
+    - Implements "View Past Results" button (holding past races informations up to 7 races).
+
+Misc
+    - Fix few warnings spotted by new Eclipse version, ty SweeTs.
+    - Fix previous commit regarding //enchant admincommand (was testing with only me online, so didn't see this coming), ty SweeTs.
+    - Fix FuncMAtkCritical, ty sahar to point it.
+    - Add 2 methods to broadcast crap, toAllPlayersInZoneType() and toAllPlayersInRegion(). Each allow numerous packets as parameter.
+
+====================================================================================================
 Changeset 319 @ 2014.03.06
 
 GM commands, Skills / Formulas, Misc - Part I

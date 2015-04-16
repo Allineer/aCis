@@ -146,8 +146,8 @@ public class AdminEnchant implements IAdminCommandHandler
 						final L2Skill enchant4Skill = ((L2Weapon) it).getEnchant4Skill();
 						if (enchant4Skill != null)
 						{
-							activeChar.removeSkill(enchant4Skill, false);
-							activeChar.sendSkillList();
+							player.removeSkill(enchant4Skill, false);
+							player.sendSkillList();
 						}
 					}
 					// Old enchant was < 4 and new is 4 or more : we add the skill.
@@ -156,8 +156,8 @@ public class AdminEnchant implements IAdminCommandHandler
 						final L2Skill enchant4Skill = ((L2Weapon) it).getEnchant4Skill();
 						if (enchant4Skill != null)
 						{
-							activeChar.addSkill(enchant4Skill, false);
-							activeChar.sendSkillList();
+							player.addSkill(enchant4Skill, false);
+							player.sendSkillList();
 						}
 					}
 				}
@@ -168,7 +168,7 @@ public class AdminEnchant implements IAdminCommandHandler
 					if (oldEnchant >= 6 && currentEnchant < 6)
 					{
 						// Checks if player is wearing a chest item
-						final L2ItemInstance chestItem = activeChar.getInventory().getPaperdollItem(Inventory.PAPERDOLL_CHEST);
+						final L2ItemInstance chestItem = player.getInventory().getPaperdollItem(Inventory.PAPERDOLL_CHEST);
 						if (chestItem != null)
 						{
 							final L2ArmorSet armorSet = ArmorSetsTable.getInstance().getSet(chestItem.getItemId());
@@ -180,8 +180,8 @@ public class AdminEnchant implements IAdminCommandHandler
 									final L2Skill skill = SkillTable.getInstance().getInfo(skillId, 1);
 									if (skill != null)
 									{
-										activeChar.removeSkill(skill, false);
-										activeChar.sendSkillList();
+										player.removeSkill(skill, false);
+										player.sendSkillList();
 									}
 								}
 							}
@@ -191,11 +191,11 @@ public class AdminEnchant implements IAdminCommandHandler
 					else if (oldEnchant < 6 && currentEnchant >= 6)
 					{
 						// Checks if player is wearing a chest item
-						final L2ItemInstance chestItem = activeChar.getInventory().getPaperdollItem(Inventory.PAPERDOLL_CHEST);
+						final L2ItemInstance chestItem = player.getInventory().getPaperdollItem(Inventory.PAPERDOLL_CHEST);
 						if (chestItem != null)
 						{
 							final L2ArmorSet armorSet = ArmorSetsTable.getInstance().getSet(chestItem.getItemId());
-							if (armorSet != null && armorSet.isEnchanted6(activeChar)) // has all parts of set enchanted to 6 or more
+							if (armorSet != null && armorSet.isEnchanted6(player)) // has all parts of set enchanted to 6 or more
 							{
 								final int skillId = armorSet.getEnchant6skillId();
 								if (skillId > 0)
@@ -203,8 +203,8 @@ public class AdminEnchant implements IAdminCommandHandler
 									final L2Skill skill = SkillTable.getInstance().getInfo(skillId, 1);
 									if (skill != null)
 									{
-										activeChar.addSkill(skill, false);
-										activeChar.sendSkillList();
+										player.addSkill(skill, false);
+										player.sendSkillList();
 									}
 								}
 							}

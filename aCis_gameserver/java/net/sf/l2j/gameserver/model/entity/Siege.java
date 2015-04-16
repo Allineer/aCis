@@ -53,6 +53,7 @@ import net.sf.l2j.gameserver.network.serverpackets.SiegeInfo;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 import net.sf.l2j.gameserver.network.serverpackets.UserInfo;
 import net.sf.l2j.gameserver.util.Broadcast;
+import net.sf.l2j.util.Util;
 
 public class Siege implements Siegable
 {
@@ -161,7 +162,7 @@ public class Siege implements Siegable
 			
 			_isInProgress = false; // Flag so that siege instance can be started
 			updatePlayerSiegeStateFlags(true);
-			saveCastleSiege(); // Save castle specific data
+			saveCastleSiege(true); // Save castle specific data
 			clearSiegeClan(); // Clear siege clan from db
 			removeTowers(); // Remove all towers from this castle
 			_siegeGuardManager.unspawnSiegeGuard(); // Remove all spawned siege guard from this castle
@@ -290,7 +291,7 @@ public class Siege implements Siegable
 					sm = SystemMessage.getSystemMessage(SystemMessageId.S1_SIEGE_WAS_CANCELED_BECAUSE_NO_CLANS_PARTICIPATED);
 				sm.addString(getCastle().getName());
 				Broadcast.toAllOnlinePlayers(sm);
-				saveCastleSiege();
+				saveCastleSiege(true);
 				return;
 			}
 			
@@ -775,25 +776,26 @@ public class Siege implements Siegable
 	}
 	
 	/**
-	 * Start the auto task. Correct the siege date, load clans, and schedule a new task.
+	 * This method allows to :
+	 * <ul>
+	 * <li>Load sides infos.</li>
+	 * <li>Check if the siege time is deprecated, and recalculate otherwise.</li>
+	 * <li>Schedule start siege (it's in an else because saveCastleSiege() already affect it).</li>
+	 * </ul>
 	 */
 	private void startAutoTask()
 	{
-		if (getCastle().getSiegeDate().getTimeInMillis() < Calendar.getInstance().getTimeInMillis())
-		{
-			setNextSiegeDate();
-			saveSiegeDate();
-		}
-		
-		_log.info("SiegeManager: " + getCastle().getName() + "'s siege next date: " + getCastle().getSiegeDate().getTime());
-		
 		loadSiegeClan();
 		
-		// Schedule siege auto start
-		if (_scheduledStartSiegeTask != null)
-			_scheduledStartSiegeTask.cancel(false);
-		
-		_scheduledStartSiegeTask = ThreadPoolManager.getInstance().scheduleGeneral(new ScheduleStartSiegeTask(getCastle()), 1000);
+		if (getCastle().getSiegeDate().getTimeInMillis() < Calendar.getInstance().getTimeInMillis())
+			saveCastleSiege(false);
+		else
+		{
+			if (_scheduledStartSiegeTask != null)
+				_scheduledStartSiegeTask.cancel(false);
+			
+			_scheduledStartSiegeTask = ThreadPoolManager.getInstance().scheduleGeneral(new ScheduleStartSiegeTask(getCastle()), 1000);
+		}
 	}
 	
 	/**
@@ -999,19 +1001,28 @@ public class Siege implements Siegable
 		}
 	}
 	
-	/** Save castle siege related to database. */
-	private void saveCastleSiege()
+	/**
+	 * Save castle siege related to database.
+	 * @param launchTask : if true, launch the start siege task.
+	 */
+	private void saveCastleSiege(boolean launchTask)
 	{
 		// Set the next siege date in 2 weeks from now.
 		setNextSiegeDate();
 		
-		// Schedule registration end date.
-		getSiegeRegistrationEndDate().setTimeInMillis(Calendar.getInstance().getTimeInMillis());
-		getSiegeRegistrationEndDate().add(Calendar.DAY_OF_MONTH, 1);
+		// Schedule registration end date : one day before the siege date.
+		getSiegeRegistrationEndDate().setTimeInMillis(getSiegeDate().getTimeInMillis());
+		getSiegeRegistrationEndDate().add(Calendar.DAY_OF_MONTH, -1);
 		getCastle().setTimeRegistrationOver(false);
 		
-		saveSiegeDate(); // Save the new date
-		startAutoTask(); // Prepare auto start siege and end registration
+		saveSiegeDate(); // Save the new date.
+		
+		if (launchTask)
+			startAutoTask(); // Prepare start siege task.
+			
+		Util.printSection(getCastle().getName());
+		_log.info("SiegeManager: New date: " + getCastle().getSiegeDate().getTime());
+		_log.info("SiegeManager: New registration end date: " + getCastle().getSiegeRegistrationEndDate().getTime());
 	}
 	
 	/**

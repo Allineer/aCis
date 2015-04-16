@@ -39,8 +39,11 @@ public class FuncMAtkCritical extends Func
 	public void calc(Env env)
 	{
 		final L2Character player = env.getCharacter();
-		if (player instanceof L2PcInstance && player.getActiveWeaponInstance() != null)
-			env.mulValue(Formulas.WITbonus[player.getWIT()]);
+		if (player instanceof L2PcInstance)
+		{
+			if (player.getActiveWeaponInstance() != null)
+				env.mulValue(Formulas.WITbonus[player.getWIT()]);
+		}
 		else
 			env.mulValue(Formulas.WITbonus[player.getWIT()]);
 	}

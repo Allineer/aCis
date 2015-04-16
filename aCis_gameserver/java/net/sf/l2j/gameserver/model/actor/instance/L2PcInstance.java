@@ -733,9 +733,6 @@ public final class L2PcInstance extends L2Playable
 		@Override
 		public void run()
 		{
-			if (this == null)
-				return;
-			
 			sendPacket(new ShortBuffStatusUpdate(0, 0, 0));
 			setShortBuffTaskSkillId(0);
 		}
