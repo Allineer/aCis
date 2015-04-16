@@ -293,6 +293,7 @@
 		<ai type="default" ssCount="0" ssRate="0" spsCount="0" spsRate="0" aggro="0" canMove="true" seedable="false"/>
 		<skills>
 			<skill id="4121" level="1"/>
+			<skill id="4139" level="12"/>
 			<skill id="4416" level="13"/>
 		</skills>
 	</npc>

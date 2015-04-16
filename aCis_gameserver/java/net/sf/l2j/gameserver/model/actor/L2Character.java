@@ -1147,6 +1147,7 @@ public abstract class L2Character extends L2Object
 				target = this;
 				break;
 			case TARGET_SELF:
+			case TARGET_CORPSE_ALLY:
 			case TARGET_PET:
 			case TARGET_SUMMON:
 			case TARGET_OWNER_PET:

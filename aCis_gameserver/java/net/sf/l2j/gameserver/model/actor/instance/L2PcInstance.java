@@ -6990,11 +6990,12 @@ public final class L2PcInstance extends L2Playable
 		
 		switch (skill.getTargetType())
 		{
-			case TARGET_AURA: // AURA, SELF should be cast even if no target has been found
+			case TARGET_AURA:
 			case TARGET_FRONT_AURA:
 			case TARGET_BEHIND_AURA:
 			case TARGET_GROUND:
 			case TARGET_SELF:
+			case TARGET_CORPSE_ALLY:
 			case TARGET_AURA_UNDEAD:
 				target = this;
 				break;
@@ -7123,6 +7124,7 @@ public final class L2PcInstance extends L2Playable
 			case TARGET_CLAN:
 			case TARGET_GROUND:
 			case TARGET_SELF:
+			case TARGET_CORPSE_ALLY:
 			case TARGET_AREA_SUMMON:
 				target = this;
 				break;
@@ -7234,6 +7236,7 @@ public final class L2PcInstance extends L2Playable
 					case TARGET_PARTY:
 					case TARGET_SELF:
 					case TARGET_GROUND:
+					case TARGET_CORPSE_ALLY:
 					case TARGET_AREA_SUMMON:
 						break;
 					default: // Send ActionFailed to the L2PcInstance
@@ -7284,6 +7287,7 @@ public final class L2PcInstance extends L2Playable
 				case TARGET_AURA_UNDEAD:
 				case TARGET_CLAN:
 				case TARGET_SELF:
+				case TARGET_CORPSE_ALLY:
 				case TARGET_PARTY:
 				case TARGET_ALLY:
 				case TARGET_CORPSE_MOB:
@@ -7375,6 +7379,7 @@ public final class L2PcInstance extends L2Playable
 			case TARGET_AURA_UNDEAD:
 			case TARGET_GROUND:
 			case TARGET_SELF:
+			case TARGET_CORPSE_ALLY:
 				break;
 			default:
 				if (!checkPvpSkill(target, skill) && !getAccessLevel().allowPeaceAttack())

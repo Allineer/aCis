@@ -1,4 +1,29 @@
 ====================================================================================================
+Changeset 318 @ 2014.03.01
+
+Quests, Skills, Misc
+
+Quests
+    - Addition of Q225, ty to sharer.
+
+Skills
+    - Drop TARGET_ITEM && TARGET_CORPSE_CLAN target types.
+    - Cleanup few target types, in order to avoid to recalculate numerous times the caster<>victim distance (when handled by getKnownTypeInRadius).
+    - Rework TARGET_CORPSE_MOB in order to drop a ClassCastException (you can't "corpse life steal" summons anymore).
+    - Fix Mass Resurrection skill, ty sahar.
+
+Summons
+    - Add support for Sin Eater skill (suicide aura skill + few random chat).
+    - All "betray" checks got their appropriate user messages.
+    - Passive summons such as Sin Eater, Big Boom or Wyvern shouldn't be able to use Attack button.
+    - Fix a ClassCastException when you tried to attack L2StaticObject (thrones, etc) using the Attack button. It's an invalid target from now.
+
+Misc
+    - Enchant boni are now refreshed if +4/+6 from admin panel. Decreasing enchant value also works.
+    - Cleanup L2ArmorSet methods, allowing less inventory checks (up to 3 times with is6Enchanted method use).
+    - Fix cellpathfinding geodata option (massive NPEs from javolution drop), ty Hasha.
+
+====================================================================================================
 Changeset 317 @ 2014.01.11
 
 Quests, Misc

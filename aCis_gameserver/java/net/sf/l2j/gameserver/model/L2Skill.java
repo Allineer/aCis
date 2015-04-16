@@ -94,10 +94,8 @@ public abstract class L2Skill implements IChanceSkillTrigger
 		TARGET_UNDEAD,
 		TARGET_AURA_UNDEAD,
 		TARGET_CORPSE_ALLY,
-		TARGET_CORPSE_CLAN,
 		TARGET_CORPSE_PLAYER,
 		TARGET_CORPSE_PET,
-		TARGET_ITEM,
 		TARGET_AREA_CORPSE_MOB,
 		TARGET_CORPSE_MOB,
 		TARGET_UNLOCKABLE,
@@ -1267,10 +1265,10 @@ public abstract class L2Skill implements IChanceSkillTrigger
 	}
 	
 	/**
-	 * @param activeChar The L2Character who use the skill
-	 * @param onlyFirst
-	 * @param target
-	 * @return all targets of the skill in a table in function of the skill type.
+	 * @param activeChar : The skill caster.
+	 * @param onlyFirst : Returns the first target only, dropping others results.
+	 * @param target : The skill target, which can be used as a radius center or as main target.
+	 * @return an L2Object[] consisting of all targets, depending of the skill type.
 	 */
 	public final L2Object[] getTargetList(L2Character activeChar, boolean onlyFirst, L2Character target)
 	{
@@ -1297,14 +1295,12 @@ public abstract class L2Skill implements IChanceSkillTrigger
 						break;
 				}
 				
-				// Check for null target or any other invalid target
 				if (target == null || target.isDead() || (target == activeChar && !canTargetSelf))
 				{
 					activeChar.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.TARGET_IS_INCORRECT));
 					return _emptyTargetList;
 				}
 				
-				// If a target is found, return it in a table else send a system message TARGET_IS_INCORRECT
 				return new L2Character[]
 				{
 					target
@@ -1320,16 +1316,16 @@ public abstract class L2Skill implements IChanceSkillTrigger
 			}
 			case TARGET_HOLY:
 			{
-				if (activeChar instanceof L2PcInstance)
+				if (!(target instanceof L2ArtefactInstance))
 				{
-					if (target instanceof L2ArtefactInstance)
-						return new L2Character[]
-						{
-							target
-						};
+					activeChar.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.TARGET_IS_INCORRECT));
+					return _emptyTargetList;
 				}
-				activeChar.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.TARGET_IS_INCORRECT));
-				return _emptyTargetList;
+				
+				return new L2Character[]
+				{
+					target
+				};
 			}
 			case TARGET_PET:
 			{
@@ -1644,91 +1640,100 @@ public abstract class L2Skill implements IChanceSkillTrigger
 				activeChar.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.TARGET_IS_INCORRECT));
 				return _emptyTargetList;
 			}
-			case TARGET_CORPSE_ALLY:
 			case TARGET_ALLY:
 			{
-				List<L2Character> targetList = new ArrayList<>();
+				final L2PcInstance player = activeChar.getActingPlayer();
+				if (player == null)
+					return _emptyTargetList;
 				
-				if (activeChar instanceof L2Playable)
+				if (onlyFirst || player.isInOlympiadMode())
+					return new L2Character[]
+					{
+						activeChar
+					};
+				
+				List<L2Character> targetList = new ArrayList<>();
+				targetList.add(player);
+				
+				final int radius = _skillRadius;
+				
+				if (addSummon(activeChar, player, radius, false))
+					targetList.add(player.getPet());
+				
+				if (player.getClan() != null)
 				{
-					final L2PcInstance player = activeChar.getActingPlayer();
-					if (player == null)
-						return _emptyTargetList;
-					
-					if (player.isInOlympiadMode())
-						return new L2Character[]
-						{
-							player
-						};
-					
-					final boolean isCorpseType = _targetType == SkillTargetType.TARGET_CORPSE_ALLY;
-					
-					if (!isCorpseType)
+					for (L2PcInstance obj : activeChar.getKnownList().getKnownTypeInRadius(L2PcInstance.class, radius))
 					{
-						if (onlyFirst)
-							return new L2Character[]
-							{
-								player
-							};
+						if ((obj.getAllyId() == 0 || obj.getAllyId() != player.getAllyId()) && (obj.getClan() == null || obj.getClanId() != player.getClanId()))
+							continue;
 						
-						targetList.add(player);
-					}
-					
-					final int radius = _skillRadius;
-					
-					if (addSummon(activeChar, player, radius, isCorpseType))
-						targetList.add(player.getPet());
-					
-					if (player.getClan() != null)
-					{
-						for (L2PcInstance obj : activeChar.getKnownList().getKnownTypeInRadius(L2PcInstance.class, radius))
+						if (player.isInDuel())
 						{
-							if ((obj.getAllyId() == 0 || obj.getAllyId() != player.getAllyId()) && (obj.getClan() == null || obj.getClanId() != player.getClanId()))
+							if (player.getDuelId() != obj.getDuelId())
 								continue;
 							
-							if (player.isInDuel())
-							{
-								if (player.getDuelId() != obj.getDuelId())
-									continue;
-								
-								if (player.isInParty() && obj.isInParty() && player.getParty().getPartyLeaderOID() != obj.getParty().getPartyLeaderOID())
-									continue;
-							}
-							
-							// Don't add this target if this is a Pc->Pc pvp
-							// casting and pvp condition not met
-							if (!player.checkPvpSkill(obj, this))
+							if (player.isInParty() && obj.isInParty() && player.getParty().getPartyLeaderOID() != obj.getParty().getPartyLeaderOID())
 								continue;
-							
-							if (!onlyFirst && addSummon(activeChar, obj, radius, isCorpseType))
-								targetList.add(obj.getPet());
-							
-							if (!addCharacter(activeChar, obj, radius, isCorpseType))
-								continue;
-							
-							if (isCorpseType)
-							{
-								// Siege battlefield resurrect has been made possible for participants
-								if (_skillType == L2SkillType.RESURRECT)
-								{
-									if (obj.isInsideZone(ZoneId.SIEGE) && !obj.isInSiege())
-										continue;
-								}
-							}
-							
-							if (onlyFirst)
-								return new L2Character[]
-								{
-									obj
-								};
-							
-							targetList.add(obj);
 						}
+						
+						if (!player.checkPvpSkill(obj, this))
+							continue;
+						
+						final L2Summon summon = obj.getPet();
+						if (summon != null && !summon.isDead())
+							targetList.add(summon);
+						
+						if (!obj.isDead())
+							targetList.add(obj);
 					}
 				}
 				return targetList.toArray(new L2Character[targetList.size()]);
 			}
-			case TARGET_CORPSE_CLAN:
+			case TARGET_CORPSE_ALLY:
+			{
+				final L2PcInstance player = activeChar.getActingPlayer();
+				if (player == null)
+					return _emptyTargetList;
+				
+				if (onlyFirst || player.isInOlympiadMode())
+					return new L2Character[]
+					{
+						activeChar
+					};
+				
+				final int radius = _skillRadius;
+				List<L2Character> targetList = new ArrayList<>();
+				
+				targetList.add(activeChar);
+				
+				if (player.getClan() != null)
+				{
+					for (L2PcInstance obj : activeChar.getKnownList().getKnownTypeInRadius(L2PcInstance.class, radius))
+					{
+						if (!obj.isDead())
+							continue;
+						
+						if ((obj.getAllyId() == 0 || obj.getAllyId() != player.getAllyId()) && (obj.getClan() == null || obj.getClanId() != player.getClanId()))
+							continue;
+						
+						if (player.isInDuel())
+						{
+							if (player.getDuelId() != obj.getDuelId())
+								continue;
+							
+							if (player.isInParty() && obj.isInParty() && player.getParty().getPartyLeaderOID() != obj.getParty().getPartyLeaderOID())
+								continue;
+						}
+						
+						// Siege battlefield resurrect has been made possible for participants
+						if (obj.isInsideZone(ZoneId.SIEGE) && !obj.isInSiege())
+							continue;
+						
+						targetList.add(obj);
+					}
+				}
+				return targetList.toArray(new L2Character[targetList.size()]);
+			}
 			case TARGET_CLAN:
 			{
 				List<L2Character> targetList = new ArrayList<>();
@@ -1739,34 +1744,22 @@ public abstract class L2Skill implements IChanceSkillTrigger
 					if (player == null)
 						return _emptyTargetList;
 					
-					if (player.isInOlympiadMode())
+					if (onlyFirst || player.isInOlympiadMode())
 						return new L2Character[]
 						{
-							player
+							activeChar
 						};
 					
-					final boolean isCorpseType = _targetType == SkillTargetType.TARGET_CORPSE_CLAN;
-					
-					if (!isCorpseType)
-					{
-						if (onlyFirst)
-							return new L2Character[]
-							{
-								player
-							};
-						
-						targetList.add(player);
-					}
+					targetList.add(player);
 					
 					final int radius = _skillRadius;
-					final L2Clan clan = player.getClan();
 					
-					if (addSummon(activeChar, player, radius, isCorpseType))
+					if (addSummon(activeChar, player, radius, false))
 						targetList.add(player.getPet());
 					
+					final L2Clan clan = player.getClan();
 					if (clan != null)
 					{
-						// Get Clan Members
 						for (L2ClanMember member : clan.getMembers())
 						{
 							final L2PcInstance obj = member.getPlayerInstance();
@@ -1782,31 +1775,14 @@ public abstract class L2Skill implements IChanceSkillTrigger
 									continue;
 							}
 							
-							// Don't add this target if this is a Pc->Pc pvp casting and pvp condition not met
 							if (!player.checkPvpSkill(obj, this))
 								continue;
 							
-							if (!onlyFirst && addSummon(activeChar, obj, radius, isCorpseType))
+							if (addSummon(activeChar, obj, radius, false))
 								targetList.add(obj.getPet());
 							
-							if (!addCharacter(activeChar, obj, radius, isCorpseType))
+							if (!addCharacter(activeChar, obj, radius, false))
 								continue;
-							
-							if (isCorpseType)
-							{
-								if (_skillType == L2SkillType.RESURRECT)
-								{
-									// check target is not in a active siege zone
-									if (obj.isInsideZone(ZoneId.SIEGE) && !obj.isInSiege())
-										continue;
-								}
-							}
-							
-							if (onlyFirst)
-								return new L2Character[]
-								{
-									obj
-								};
 							
 							targetList.add(obj);
 						}
@@ -1817,10 +1793,7 @@ public abstract class L2Skill implements IChanceSkillTrigger
 					targetList.add(activeChar);
 					for (L2Npc newTarget : activeChar.getKnownList().getKnownTypeInRadius(L2Npc.class, _castRange))
 					{
-						if (newTarget.isDead())
-							continue;
-						
-						if (!Util.contains(((L2Npc) activeChar).getClans(), newTarget.getClans()))
+						if (newTarget.isDead() || !Util.contains(((L2Npc) activeChar).getClans(), newTarget.getClans()))
 							continue;
 						
 						targetList.add(newTarget);
@@ -1907,33 +1880,17 @@ public abstract class L2Skill implements IChanceSkillTrigger
 			}
 			case TARGET_CORPSE_MOB:
 			{
-				final boolean isSummon = target instanceof L2SummonInstance;
-				if (!(isSummon || target instanceof L2Attackable) || !target.isDead())
+				if (!(target instanceof L2Attackable) || !target.isDead())
 				{
 					activeChar.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.TARGET_IS_INCORRECT));
 					return _emptyTargetList;
 				}
 				
 				// Corpse mob only available for half time
-				switch (_skillType)
+				if (_skillType == L2SkillType.DRAIN && DecayTaskManager.getInstance().getTasks().containsKey(target) && (System.currentTimeMillis() - DecayTaskManager.getInstance().getTasks().get(target)) > DecayTaskManager.DEFAULT_DECAY_TIME / 2)
 				{
-					case SUMMON:
-					{
-						if (isSummon)
-						{
-							final L2PcInstance player = target.getActingPlayer();
-							if (player != null && player.getObjectId() == activeChar.getObjectId())
-								return _emptyTargetList;
-						}
-					}
-					case DRAIN:
-					{
-						if (DecayTaskManager.getInstance().getTasks().containsKey(target) && (System.currentTimeMillis() - DecayTaskManager.getInstance().getTasks().get(target)) > DecayTaskManager.DEFAULT_DECAY_TIME / 2)
-						{
-							activeChar.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.CORPSE_TOO_OLD_SKILL_NOT_USED));
-							return _emptyTargetList;
-						}
-					}
+					activeChar.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.CORPSE_TOO_OLD_SKILL_NOT_USED));
+					return _emptyTargetList;
 				}
 				
 				return new L2Character[]

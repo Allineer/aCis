@@ -3553,6 +3553,9 @@
 		<skills>
 			<skill id="4416" level="6"/>
 		</skills>
+		<minions>
+			<minion id="27122" min="2" max="2"/>
+		</minions>
 	</npc>
 	<npc id="27124" name="Leto Lizardman Assassin" title="Quest Monster">
 		<set name="level" val="37"/>
