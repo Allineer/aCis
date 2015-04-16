@@ -824,8 +824,6 @@ public class L2PetInstance extends L2Summon
 		{
 			_feedTask.cancel(false);
 			_feedTask = null;
-			if (Config.DEBUG)
-				_logPet.fine("Pet [#" + getObjectId() + "] feed task stop");
 		}
 	}
 	

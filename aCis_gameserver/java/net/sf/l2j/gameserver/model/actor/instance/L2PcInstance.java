@@ -225,17 +225,13 @@ import net.sf.l2j.gameserver.skills.Env;
 import net.sf.l2j.gameserver.skills.Formulas;
 import net.sf.l2j.gameserver.skills.Stats;
 import net.sf.l2j.gameserver.skills.effects.EffectTemplate;
-import net.sf.l2j.gameserver.skills.funcs.FuncBowAtkRange;
 import net.sf.l2j.gameserver.skills.funcs.FuncHennaCON;
 import net.sf.l2j.gameserver.skills.funcs.FuncHennaDEX;
 import net.sf.l2j.gameserver.skills.funcs.FuncHennaINT;
 import net.sf.l2j.gameserver.skills.funcs.FuncHennaMEN;
 import net.sf.l2j.gameserver.skills.funcs.FuncHennaSTR;
 import net.sf.l2j.gameserver.skills.funcs.FuncHennaWIT;
-import net.sf.l2j.gameserver.skills.funcs.FuncMaxCpAdd;
 import net.sf.l2j.gameserver.skills.funcs.FuncMaxCpMul;
-import net.sf.l2j.gameserver.skills.funcs.FuncMaxHpAdd;
-import net.sf.l2j.gameserver.skills.funcs.FuncMaxMpAdd;
 import net.sf.l2j.gameserver.skills.l2skills.L2SkillSiegeFlag;
 import net.sf.l2j.gameserver.skills.l2skills.L2SkillSummon;
 import net.sf.l2j.gameserver.taskmanager.AttackStanceTaskManager;
@@ -862,12 +858,7 @@ public final class L2PcInstance extends L2Playable
 		// Add L2Character functionalities.
 		super.addFuncsToNewCharacter();
 		
-		addStatFunc(FuncMaxCpAdd.getInstance());
 		addStatFunc(FuncMaxCpMul.getInstance());
-		addStatFunc(FuncMaxHpAdd.getInstance());
-		addStatFunc(FuncMaxMpAdd.getInstance());
-		
-		addStatFunc(FuncBowAtkRange.getInstance());
 		
 		addStatFunc(FuncHennaSTR.getInstance());
 		addStatFunc(FuncHennaDEX.getInstance());
@@ -4054,7 +4045,7 @@ public final class L2PcInstance extends L2Playable
 					
 					// Reduce player's xp and karma.
 					if (Config.ALT_GAME_DELEVEL && (getSkillLevel(L2Skill.SKILL_LUCKY) < 0 || getStat().getLevel() > 9))
-						deathPenalty(pk != null && getClan() != null && (getClan().isAtWarWith(pk.getClanId()) || pk.getClan().isAtWarWith(getClanId())), pk != null, killer instanceof L2SiegeGuardInstance);
+						deathPenalty(pk != null && getClan() != null && pk.getClan() != null && (getClan().isAtWarWith(pk.getClanId()) || pk.getClan().isAtWarWith(getClanId())), pk != null, killer instanceof L2SiegeGuardInstance);
 				}
 			}
 		}
@@ -5513,7 +5504,7 @@ public final class L2PcInstance extends L2Playable
 				if (player.getClanCreateExpiryTime() < System.currentTimeMillis())
 					player.setClanCreateExpiryTime(0);
 				
-				player.setPowerGrade((int) rset.getLong("power_grade"));
+				player.setPowerGrade(rset.getInt("power_grade"));
 				player.setPledgeType(rset.getInt("subpledge"));
 				player.setLastRecomUpdate(rset.getLong("last_recom_date"));
 				

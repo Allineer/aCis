@@ -15,17 +15,17 @@
 package net.sf.l2j.gameserver.network.serverpackets;
 
 import net.sf.l2j.gameserver.datatables.ItemTable;
-import net.sf.l2j.gameserver.model.L2Multisell.MultiSellEntry;
-import net.sf.l2j.gameserver.model.L2Multisell.MultiSellIngredient;
-import net.sf.l2j.gameserver.model.L2Multisell.MultiSellListContainer;
 import net.sf.l2j.gameserver.model.item.kind.Item;
+import net.sf.l2j.gameserver.model.multisell.Entry;
+import net.sf.l2j.gameserver.model.multisell.Ingredient;
+import net.sf.l2j.gameserver.model.multisell.ListContainer;
 
 public class MultiSellList extends L2GameServerPacket
 {
 	protected int _listId, _page, _finished;
-	protected MultiSellListContainer _list;
+	protected ListContainer _list;
 	
-	public MultiSellList(MultiSellListContainer list, int page, int finished)
+	public MultiSellList(ListContainer list, int page, int finished)
 	{
 		_list = list;
 		_listId = list.getListId();
@@ -45,7 +45,7 @@ public class MultiSellList extends L2GameServerPacket
 		
 		if (_list != null)
 		{
-			for (MultiSellEntry ent : _list.getEntries())
+			for (Entry ent : _list.getEntries())
 			{
 				writeD(ent.getEntryId());
 				writeD(0x00); // C6
@@ -54,7 +54,7 @@ public class MultiSellList extends L2GameServerPacket
 				writeH(ent.getProducts().size());
 				writeH(ent.getIngredients().size());
 				
-				for (MultiSellIngredient i : ent.getProducts())
+				for (Ingredient i : ent.getProducts())
 				{
 					Item item = ItemTable.getInstance().getTemplate(i.getItemId());
 					
@@ -67,7 +67,7 @@ public class MultiSellList extends L2GameServerPacket
 					writeD(0x00); // TODO: i.getManaLeft()
 				}
 				
-				for (MultiSellIngredient i : ent.getIngredients())
+				for (Ingredient i : ent.getIngredients())
 				{
 					int itemId = i.getItemId();
 					Item item = ItemTable.getInstance().getTemplate(itemId);

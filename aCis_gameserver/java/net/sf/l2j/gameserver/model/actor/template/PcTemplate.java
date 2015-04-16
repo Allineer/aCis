@@ -169,17 +169,19 @@ public class PcTemplate extends CharTemplate
 		return _classBaseLevel;
 	}
 	
-	public double getBaseHp(int level)
+	@Override
+	public double getBaseHpMax(int level)
 	{
 		return _hpTable[level - 1];
 	}
 	
-	public double getBaseMp(int level)
+	@Override
+	public double getBaseMpMax(int level)
 	{
 		return _mpTable[level - 1];
 	}
 	
-	public double getBaseCp(int level)
+	public double getBaseCpMax(int level)
 	{
 		return _cpTable[level - 1];
 	}

@@ -12,29 +12,45 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.l2j.gameserver.skills.funcs;
+package net.sf.l2j.gameserver.model.multisell;
 
-import net.sf.l2j.gameserver.skills.Env;
-import net.sf.l2j.gameserver.skills.Stats;
-import net.sf.l2j.gameserver.skills.basefuncs.Func;
+import java.util.ArrayList;
+import java.util.List;
 
-public class FuncMaxHpAdd extends Func
+public class Entry
 {
-	static final FuncMaxHpAdd _fmha_instance = new FuncMaxHpAdd();
+	private int _entryId;
 	
-	public static Func getInstance()
+	private final List<Ingredient> _products = new ArrayList<>();
+	private final List<Ingredient> _ingredients = new ArrayList<>();
+	
+	public void setEntryId(int entryId)
 	{
-		return _fmha_instance;
+		_entryId = entryId;
 	}
 	
-	private FuncMaxHpAdd()
+	public int getEntryId()
 	{
-		super(Stats.MAX_HP, 0x10, null, null);
+		return _entryId;
 	}
 	
-	@Override
-	public void calc(Env env)
+	public void addProduct(Ingredient product)
 	{
-		env.addValue(env.getPlayer().getTemplate().getBaseHp(env.getPlayer().getLevel()));
+		_products.add(product);
+	}
+	
+	public List<Ingredient> getProducts()
+	{
+		return _products;
+	}
+	
+	public void addIngredient(Ingredient ingredient)
+	{
+		_ingredients.add(ingredient);
+	}
+	
+	public List<Ingredient> getIngredients()
+	{
+		return _ingredients;
 	}
 }

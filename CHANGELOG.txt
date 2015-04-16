@@ -1,4 +1,22 @@
 ====================================================================================================
+Changeset 328 @ 2014.06.19
+
+"Stat" classes, Misc
+
+"Stat" classes
+    - Reworked HP/MP/CP players calculation, dropping 3 Func and overriding existing methods.
+    - Random cleanup (drop null checks, use getActiveChar() directly, and other misc).
+    - getPhysicalAttackRange(): range isn't calculated anymore for NPCs (template value is final value), and default value for players follows WeaponType (drop bow range Func).
+
+Misc
+    - Cleanup L2MultiSell, splitting it in different classes: MultisellData, and a model package holding few models.
+    - Fix a ClassCastException, and rework Raid Boss Curse on skill cast.
+    - Fix a NPE on L2PcInstance.doDie(): it wasn't verifying pk clan status.
+    - Edit some values which got no use to be long (avoid some int > long casts).
+    - getClosestTown(): added a Race check for teleport (D.Elf / L.Elf).
+    - Fix FuncEnchant for S grade weapons, BigBlunt/BigSword types and drop NONE type - Ty Hasha.
+
+====================================================================================================
 Changeset 327 @ 2014.05.30
 
 GrandBossManager, Misc

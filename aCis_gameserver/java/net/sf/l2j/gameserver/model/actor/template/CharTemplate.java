@@ -111,12 +111,12 @@ public class CharTemplate
 		return _baseMEN;
 	}
 	
-	public double getBaseHpMax()
+	public double getBaseHpMax(int level)
 	{
 		return _baseHpMax;
 	}
 	
-	public double getBaseMpMax()
+	public double getBaseMpMax(int level)
 	{
 		return _baseMpMax;
 	}

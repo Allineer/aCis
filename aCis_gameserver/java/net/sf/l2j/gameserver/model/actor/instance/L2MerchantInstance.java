@@ -18,7 +18,7 @@ import java.util.StringTokenizer;
 
 import net.sf.l2j.Config;
 import net.sf.l2j.gameserver.datatables.BuyListTable;
-import net.sf.l2j.gameserver.model.L2Multisell;
+import net.sf.l2j.gameserver.datatables.MultisellData;
 import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 import net.sf.l2j.gameserver.model.buylist.NpcBuyList;
 import net.sf.l2j.gameserver.network.serverpackets.BuyList;
@@ -99,7 +99,7 @@ public class L2MerchantInstance extends L2NpcInstance
 			if (st.countTokens() < 1)
 				return;
 			
-			L2Multisell.getInstance().separateAndSend(Integer.parseInt(st.nextToken()), player, false, getCastle().getTaxRate());
+			MultisellData.getInstance().separateAndSend(Integer.parseInt(st.nextToken()), player, false, getCastle().getTaxRate());
 		}
 		else if (actualCommand.equalsIgnoreCase("Multisell_Shadow"))
 		{
@@ -122,7 +122,7 @@ public class L2MerchantInstance extends L2NpcInstance
 			if (st.countTokens() < 1)
 				return;
 			
-			L2Multisell.getInstance().separateAndSend(Integer.parseInt(st.nextToken()), player, true, getCastle().getTaxRate());
+			MultisellData.getInstance().separateAndSend(Integer.parseInt(st.nextToken()), player, true, getCastle().getTaxRate());
 		}
 		else
 			super.onBypassFeedback(player, command);

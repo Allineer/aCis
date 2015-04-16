@@ -16,8 +16,8 @@ package net.sf.l2j.gameserver.model.actor.instance;
 
 import java.util.StringTokenizer;
 
+import net.sf.l2j.gameserver.datatables.MultisellData;
 import net.sf.l2j.gameserver.datatables.SkillTable;
-import net.sf.l2j.gameserver.model.L2Multisell;
 import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 import net.sf.l2j.gameserver.model.quest.QuestState;
 import net.sf.l2j.gameserver.network.serverpackets.ActionFailed;
@@ -156,7 +156,7 @@ public class L2GoldenRamInstance extends L2NpcInstance
 		else if (command.startsWith("gmultisell"))
 		{
 			if (qs != null && qs.getInt("cond") == 3)
-				L2Multisell.getInstance().separateAndSend(Integer.parseInt(command.substring(10).trim()), player, false, getCastle().getTaxRate());
+				MultisellData.getInstance().separateAndSend(Integer.parseInt(command.substring(10).trim()), player, false, getCastle().getTaxRate());
 		}
 		else
 			super.onBypassFeedback(player, command);

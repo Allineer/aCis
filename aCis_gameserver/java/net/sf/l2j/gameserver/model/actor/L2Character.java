@@ -4088,20 +4088,17 @@ public abstract class L2Character extends L2Object
 		sendDamageMessage(target, damage, false, crit, miss);
 		
 		// Character will be petrified if attacking a raid that's more than 8 levels lower
-		if (target.isRaid() && !Config.RAID_DISABLE_CURSE)
+		if (!Config.RAID_DISABLE_CURSE && target.isRaid() && getLevel() > target.getLevel() + 8)
 		{
-			if (getLevel() > target.getLevel() + 8)
+			final L2Skill skill = FrequentSkill.RAID_CURSE2.getSkill();
+			if (skill != null)
 			{
-				L2Skill skill = FrequentSkill.RAID_CURSE2.getSkill();
-				if (skill != null)
-				{
-					// Send visual and skill effects. Caster is the victim.
-					broadcastPacket(new MagicSkillUse(this, this, skill.getId(), skill.getLevel(), 300, 0));
-					skill.getEffects(this, this);
-				}
-				
-				damage = 0; // prevents messing up drop calculation
+				// Send visual and skill effects. Caster is the victim.
+				broadcastPacket(new MagicSkillUse(this, this, skill.getId(), skill.getLevel(), 300, 0));
+				skill.getEffects(this, this);
 			}
+			
+			damage = 0; // prevents messing up drop calculation
 		}
 		
 		// If the target is a player, start AutoAttack
@@ -5087,8 +5084,6 @@ public abstract class L2Character extends L2Object
 	 */
 	public void disableAllSkills()
 	{
-		if (Config.DEBUG)
-			_log.fine("all skills disabled");
 		_allSkillsDisabled = true;
 	}
 	
@@ -5097,8 +5092,6 @@ public abstract class L2Character extends L2Object
 	 */
 	public void enableAllSkills()
 	{
-		if (Config.DEBUG)
-			_log.fine("all skills enabled");
 		_allSkillsDisabled = false;
 	}
 	
@@ -5111,10 +5104,6 @@ public abstract class L2Character extends L2Object
 	{
 		try
 		{
-			// Get the skill handler corresponding to the skill type (PDAM, MDAM, SWEEP...) started in gameserver
-			ISkillHandler handler = SkillHandler.getInstance().getSkillHandler(skill.getSkillType());
-			Weapon activeWeapon = getActiveWeaponItem();
-			
 			// Check if the toggle skill effects are already in progress on the L2Character
 			if (skill.isToggle() && getFirstEffect(skill.getId()) != null)
 				return;
@@ -5122,22 +5111,31 @@ public abstract class L2Character extends L2Object
 			// Initial checks
 			for (L2Object trg : targets)
 			{
-				if (trg instanceof L2Character)
+				if (!(trg instanceof L2Character))
+					continue;
+				
+				// Set some values inside target's instance for later use
+				final L2Character target = (L2Character) trg;
+				
+				if (this instanceof L2Playable)
 				{
-					// Set some values inside target's instance for later use
-					L2Character target = (L2Character) trg;
-					
+					// Raidboss curse.
 					if (!Config.RAID_DISABLE_CURSE)
 					{
-						// Raidboss curse.
-						L2Character targetsAttackTarget = null;
+						boolean isVictimTargetBoss = false;
 						
-						if (target.hasAI())
-							targetsAttackTarget = (L2Character) target.getAI().getTarget();
-						
-						if ((target.isRaid() && getLevel() > target.getLevel() + 8) || (!skill.isOffensive() && targetsAttackTarget != null && targetsAttackTarget.isRaid() && targetsAttackTarget.getAttackByList().contains(target) && getLevel() > targetsAttackTarget.getLevel() + 8))
+						// If the skill isn't offensive, we check extra things such as target's target.
+						if (!skill.isOffensive())
 						{
-							L2Skill curse = FrequentSkill.RAID_CURSE.getSkill();
+							final L2Object victimTarget = (target.hasAI()) ? target.getAI().getTarget() : null;
+							if (victimTarget != null)
+								isVictimTargetBoss = victimTarget instanceof L2Character && ((L2Character) victimTarget).isRaid() && getLevel() > ((L2Character) victimTarget).getLevel() + 8;
+						}
+						
+						// Target must be either a raid type, or if the skill is beneficial it checks the target's target.
+						if ((target.isRaid() && getLevel() > target.getLevel() + 8) || isVictimTargetBoss)
+						{
+							final L2Skill curse = FrequentSkill.RAID_CURSE.getSkill();
 							if (curse != null)
 							{
 								// Send visual and skill effects. Caster is the victim.
@@ -5149,37 +5147,35 @@ public abstract class L2Character extends L2Object
 					}
 					
 					// Check if over-hit is possible
-					if (skill.isOverhit())
-					{
-						if (target instanceof L2Attackable)
-							((L2Attackable) target).overhitEnabled(true);
-					}
+					if (skill.isOverhit() && target instanceof L2Attackable)
+						((L2Attackable) target).overhitEnabled(true);
+				}
+				
+				switch (skill.getSkillType())
+				{
+					case COMMON_CRAFT: // Crafting does not trigger any chance skills.
+					case DWARVEN_CRAFT:
+						break;
 					
-					switch (skill.getSkillType())
-					{
-						case COMMON_CRAFT: // Crafting does not trigger any chance skills.
-						case DWARVEN_CRAFT:
-							break;
+					default: // Launch weapon Special ability skill effect if available
+						if (getActiveWeaponItem() != null && !target.isDead())
+						{
+							if (this instanceof L2PcInstance && !getActiveWeaponItem().getSkillEffects(this, target, skill).isEmpty())
+								sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_HAS_BEEN_ACTIVATED).addSkillName(skill));
+						}
 						
-						default: // Launch weapon Special ability skill effect if available
-							if (activeWeapon != null && !target.isDead())
-							{
-								if (this instanceof L2PcInstance && !activeWeapon.getSkillEffects(this, target, skill).isEmpty())
-									sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_HAS_BEEN_ACTIVATED).addSkillName(skill));
-							}
-							
-							// Maybe launch chance skills on us
-							if (_chanceSkills != null)
-								_chanceSkills.onSkillHit(target, false, skill.isMagic(), skill.isOffensive(), skill.getElement());
-							
-							// Maybe launch chance skills on target
-							if (target.getChanceSkills() != null)
-								target.getChanceSkills().onSkillHit(this, true, skill.isMagic(), skill.isOffensive(), skill.getElement());
-					}
+						// Maybe launch chance skills on us
+						if (_chanceSkills != null)
+							_chanceSkills.onSkillHit(target, false, skill.isMagic(), skill.isOffensive(), skill.getElement());
+						
+						// Maybe launch chance skills on target
+						if (target.getChanceSkills() != null)
+							target.getChanceSkills().onSkillHit(this, true, skill.isMagic(), skill.isOffensive(), skill.getElement());
 				}
 			}
 			
 			// Launch the magic skill and calculate its effects
+			final ISkillHandler handler = SkillHandler.getInstance().getSkillHandler(skill.getSkillType());
 			if (handler != null)
 				handler.useSkill(this, skill, targets);
 			else

@@ -16,7 +16,7 @@ package net.sf.l2j.gameserver.model.actor.instance;
 
 import java.util.List;
 
-import net.sf.l2j.gameserver.model.L2Multisell;
+import net.sf.l2j.gameserver.datatables.MultisellData;
 import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 import net.sf.l2j.gameserver.model.entity.Hero;
 import net.sf.l2j.gameserver.model.olympiad.CompetitionType;
@@ -169,7 +169,7 @@ public class L2OlympiadManagerInstance extends L2NpcInstance
 					break;
 				
 				case 7: // Rewards
-					L2Multisell.getInstance().separateAndSend(102, player, false, getCastle().getTaxRate());
+					MultisellData.getInstance().separateAndSend(102, player, false, getCastle().getTaxRate());
 					break;
 				
 				case 10: // Give tokens to player

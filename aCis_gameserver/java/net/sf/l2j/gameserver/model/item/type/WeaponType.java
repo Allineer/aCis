@@ -19,26 +19,28 @@ package net.sf.l2j.gameserver.model.item.type;
  */
 public enum WeaponType implements ItemType
 {
-	NONE,
-	SWORD,
-	BLUNT,
-	DAGGER,
-	BOW,
-	POLE,
-	ETC,
-	FIST,
-	DUAL,
-	DUALFIST,
-	BIGSWORD,
-	FISHINGROD,
-	BIGBLUNT,
-	PET;
+	NONE(40),
+	SWORD(40),
+	BLUNT(40),
+	DAGGER(40),
+	BOW(500),
+	POLE(66),
+	ETC(40),
+	FIST(40),
+	DUAL(40),
+	DUALFIST(40),
+	BIGSWORD(40),
+	FISHINGROD(40),
+	BIGBLUNT(40),
+	PET(40);
 	
 	private final int _mask;
+	private final int _range;
 	
-	private WeaponType()
+	private WeaponType(int range)
 	{
 		_mask = 1 << ordinal();
+		_range = range;
 	}
 	
 	/**
@@ -49,5 +51,10 @@ public enum WeaponType implements ItemType
 	public int mask()
 	{
 		return _mask;
+	}
+	
+	public int getRange()
+	{
+		return _range;
 	}
 }
