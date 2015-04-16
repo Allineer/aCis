@@ -14,7 +14,8 @@
  */
 package net.sf.l2j.gameserver.handler;
 
-import gnu.trove.map.hash.TIntObjectHashMap;
+import java.util.HashMap;
+import java.util.Map;
 
 import net.sf.l2j.gameserver.handler.itemhandlers.BeastSoulShot;
 import net.sf.l2j.gameserver.handler.itemhandlers.BeastSpice;
@@ -46,28 +47,15 @@ import net.sf.l2j.gameserver.templates.item.L2EtcItem;
 
 public class ItemHandler
 {
-	private final TIntObjectHashMap<IItemHandler> _datatable;
+	private final Map<Integer, IItemHandler> _datatable = new HashMap<>();
 	
 	public static ItemHandler getInstance()
 	{
 		return SingletonHolder._instance;
 	}
 	
-	/**
-	 * Returns the number of elements contained in datatable
-	 * @return int : Size of the datatable
-	 */
-	public int size()
-	{
-		return _datatable.size();
-	}
-	
-	/**
-	 * Constructor of ItemHandler
-	 */
 	protected ItemHandler()
 	{
-		_datatable = new TIntObjectHashMap<>();
 		registerItemHandler(new BeastSoulShot());
 		registerItemHandler(new BeastSpice());
 		registerItemHandler(new BeastSpiritShot());
@@ -107,6 +95,11 @@ public class ItemHandler
 			return null;
 		
 		return _datatable.get(item.getHandlerName().hashCode());
+	}
+	
+	public int size()
+	{
+		return _datatable.size();
 	}
 	
 	private static class SingletonHolder

@@ -18,9 +18,9 @@
  */
 package net.sf.l2j.gameserver.datatables;
 
-import gnu.trove.map.hash.TIntObjectHashMap;
-
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import net.sf.l2j.gameserver.model.L2SummonItem;
@@ -32,8 +32,9 @@ import org.w3c.dom.Node;
 
 public class SummonItemsData
 {
-	protected static final Logger _log = Logger.getLogger(SummonItemsData.class.getName());
-	private final TIntObjectHashMap<L2SummonItem> _summonitems;
+	private static final Logger _log = Logger.getLogger(SummonItemsData.class.getName());
+	
+	private static final Map<Integer, L2SummonItem> _summonitems = new HashMap<>();
 	
 	public static SummonItemsData getInstance()
 	{
@@ -42,8 +43,6 @@ public class SummonItemsData
 	
 	protected SummonItemsData()
 	{
-		_summonitems = new TIntObjectHashMap<>();
-		
 		try
 		{
 			File f = new File("./data/xml/summon_items.xml");
@@ -74,18 +73,6 @@ public class SummonItemsData
 	public L2SummonItem getSummonItem(int itemId)
 	{
 		return _summonitems.get(itemId);
-	}
-	
-	public int[] itemIDs()
-	{
-		int size = _summonitems.size();
-		int[] result = new int[size];
-		int i = 0;
-		
-		for (Object si : _summonitems.values())
-			result[i++] = ((L2SummonItem) si).getItemId();
-		
-		return result;
 	}
 	
 	private static class SingletonHolder

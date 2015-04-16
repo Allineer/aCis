@@ -14,7 +14,8 @@
  */
 package net.sf.l2j.gameserver.network.clientpackets;
 
-import gnu.trove.map.hash.TIntObjectHashMap;
+import java.util.HashMap;
+import java.util.Map;
 
 import net.sf.l2j.Config;
 import net.sf.l2j.gameserver.model.L2ItemInstance;
@@ -24,7 +25,7 @@ import net.sf.l2j.gameserver.templates.item.L2WeaponType;
 
 public abstract class AbstractEnchantPacket extends L2GameClientPacket
 {
-	public static final TIntObjectHashMap<EnchantScroll> _scrolls = new TIntObjectHashMap<>();
+	public static final Map<Integer, EnchantScroll> _scrolls = new HashMap<>();
 	
 	public static final class EnchantScroll
 	{

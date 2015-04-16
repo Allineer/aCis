@@ -14,11 +14,11 @@
  */
 package net.sf.l2j.gameserver.datatables;
 
-import gnu.trove.map.hash.TIntObjectHashMap;
-
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import net.sf.l2j.gameserver.model.L2DropCategory;
@@ -36,7 +36,7 @@ public class HerbDropTable
 {
 	private static Logger _log = Logger.getLogger(HerbDropTable.class.getName());
 	
-	private final TIntObjectHashMap<List<L2DropCategory>> _herbGroups;
+	private final Map<Integer, List<L2DropCategory>> _herbGroups = new HashMap<>();
 	
 	public static HerbDropTable getInstance()
 	{
@@ -44,12 +44,6 @@ public class HerbDropTable
 	}
 	
 	protected HerbDropTable()
-	{
-		_herbGroups = new TIntObjectHashMap<>();
-		restoreData();
-	}
-	
-	private void restoreData()
 	{
 		try
 		{
@@ -65,7 +59,7 @@ public class HerbDropTable
 					int groupId = Integer.parseInt(attrs.getNamedItem("id").getNodeValue());
 					
 					List<L2DropCategory> category;
-					if (_herbGroups.contains(groupId))
+					if (_herbGroups.containsKey(groupId))
 						category = _herbGroups.get(groupId);
 					else
 					{

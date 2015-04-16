@@ -14,9 +14,6 @@
  */
 package net.sf.l2j.gameserver.instancemanager;
 
-import gnu.trove.map.hash.TIntIntHashMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -227,20 +224,20 @@ public class FourSepulchersManager
 	protected Map<Integer, Boolean> _archonSpawned = new HashMap<>();
 	protected Map<Integer, Boolean> _hallInUse = new HashMap<>();
 	protected Map<Integer, L2PcInstance> _challengers = new HashMap<>();
-	protected TIntObjectHashMap<int[]> _startHallSpawns = new TIntObjectHashMap<>();
-	protected TIntIntHashMap _hallGateKeepers = new TIntIntHashMap();
-	protected TIntIntHashMap _keyBoxNpc = new TIntIntHashMap();
-	protected TIntIntHashMap _victim = new TIntIntHashMap();
-	protected TIntObjectHashMap<L2Spawn> _executionerSpawns = new TIntObjectHashMap<>();
-	protected TIntObjectHashMap<L2Spawn> _keyBoxSpawns = new TIntObjectHashMap<>();
-	protected TIntObjectHashMap<L2Spawn> _mysteriousBoxSpawns = new TIntObjectHashMap<>();
-	protected TIntObjectHashMap<L2Spawn> _shadowSpawns = new TIntObjectHashMap<>();
-	protected TIntObjectHashMap<List<L2Spawn>> _dukeFinalMobs = new TIntObjectHashMap<>();
-	protected TIntObjectHashMap<List<L2SepulcherMonsterInstance>> _dukeMobs = new TIntObjectHashMap<>();
-	protected TIntObjectHashMap<List<L2Spawn>> _emperorsGraveNpcs = new TIntObjectHashMap<>();
-	protected TIntObjectHashMap<List<L2Spawn>> _magicalMonsters = new TIntObjectHashMap<>();
-	protected TIntObjectHashMap<List<L2Spawn>> _physicalMonsters = new TIntObjectHashMap<>();
-	protected TIntObjectHashMap<List<L2SepulcherMonsterInstance>> _viscountMobs = new TIntObjectHashMap<>();
+	protected Map<Integer, int[]> _startHallSpawns = new HashMap<>();
+	protected Map<Integer, Integer> _hallGateKeepers = new HashMap<>();
+	protected Map<Integer, Integer> _keyBoxNpc = new HashMap<>();
+	protected Map<Integer, Integer> _victim = new HashMap<>();
+	protected Map<Integer, L2Spawn> _executionerSpawns = new HashMap<>();
+	protected Map<Integer, L2Spawn> _keyBoxSpawns = new HashMap<>();
+	protected Map<Integer, L2Spawn> _mysteriousBoxSpawns = new HashMap<>();
+	protected Map<Integer, L2Spawn> _shadowSpawns = new HashMap<>();
+	protected Map<Integer, List<L2Spawn>> _dukeFinalMobs = new HashMap<>();
+	protected Map<Integer, List<L2SepulcherMonsterInstance>> _dukeMobs = new HashMap<>();
+	protected Map<Integer, List<L2Spawn>> _emperorsGraveNpcs = new HashMap<>();
+	protected Map<Integer, List<L2Spawn>> _magicalMonsters = new HashMap<>();
+	protected Map<Integer, List<L2Spawn>> _physicalMonsters = new HashMap<>();
+	protected Map<Integer, List<L2SepulcherMonsterInstance>> _viscountMobs = new HashMap<>();
 	
 	protected List<L2Spawn> _physicalSpawns;
 	protected List<L2Spawn> _magicalSpawns;
@@ -598,7 +595,7 @@ public class FourSepulchersManager
 		L2Spawn spawnDat;
 		L2NpcTemplate template;
 		
-		for (int keyNpcId : _keyBoxNpc.keys())
+		for (int keyNpcId : _keyBoxNpc.keySet())
 		{
 			try
 			{
@@ -922,7 +919,7 @@ public class FourSepulchersManager
 		L2Spawn spawnDat;
 		L2NpcTemplate template;
 		
-		for (int keyNpcId : _victim.keys())
+		for (int keyNpcId : _victim.keySet())
 		{
 			try
 			{
@@ -1803,7 +1800,7 @@ public class FourSepulchersManager
 		}
 	}
 	
-	public TIntIntHashMap getHallGateKeepers()
+	public Map<Integer, Integer> getHallGateKeepers()
 	{
 		return _hallGateKeepers;
 	}

@@ -1,4 +1,24 @@
 ====================================================================================================
+Changeset 322 @ 2014.03.28
+
+Trove drop, Misc
+
+Trove drop
+    - Drop entirely usage of that library, as there is almost no impact on performance.
+    - Basically:
+        - TIntObjectHashMap: Map<Integer, Object>
+        - TIntIntHashMap: Map<Integer, Integer>
+        - TShortObjectHashMap: Map<Short, Object>
+        - TIntArrayList: List<Integer>
+
+Misc
+    - Remove/add the SA if a weapon grade penalty occurs/doesn't occur. Ty KaL for the idea.
+    - Cleanup sortHeroesToBe() method.
+    - Fix map_regions.xml in order 20_25 and 21_25 teleport to Talking Island (fix Elven Ruins).
+    - Fix a sit visual bug. Ty Kingzor.
+    - Fix siege skills on subclass change, and drop a double use of restoreDeathPenaltyBuffLevel(). Ty Kingzor.
+
+====================================================================================================
 Changeset 321 @ 2014.03.20
 
 MDT (part II), Misc

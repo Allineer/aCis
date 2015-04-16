@@ -105,17 +105,12 @@ public class Baium extends AbstractNpcAI
 	{
 		super(name, descr);
 		
-		int[] mob =
-		{
-			LIVE_BAIUM
-		};
-		
 		// Quest NPC starter initialization
 		addStartNpc(STONE_BAIUM);
 		addTalkId(STONE_BAIUM);
 		
 		// Baium onAttack, onKill, onSpawn
-		registerMobs(mob, QuestEventType.ON_ATTACK, QuestEventType.ON_KILL, QuestEventType.ON_SPAWN);
+		registerMob(LIVE_BAIUM, QuestEventType.ON_ATTACK, QuestEventType.ON_KILL, QuestEventType.ON_SPAWN);
 		
 		final StatsSet info = GrandBossManager.getStatsSet(LIVE_BAIUM);
 		final int status = GrandBossManager.getBossStatus(LIVE_BAIUM);

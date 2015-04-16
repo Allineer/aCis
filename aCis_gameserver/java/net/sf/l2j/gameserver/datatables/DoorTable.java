@@ -14,11 +14,12 @@
  */
 package net.sf.l2j.gameserver.datatables;
 
-import gnu.trove.map.hash.TIntObjectHashMap;
-
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -42,8 +43,8 @@ public class DoorTable
 {
 	private static final Logger _log = Logger.getLogger(DoorTable.class.getName());
 	
-	private final TIntObjectHashMap<L2DoorInstance> _staticItems;
-	private final TIntObjectHashMap<ArrayList<L2DoorInstance>> _regions;
+	private final Map<Integer, L2DoorInstance> _staticItems = new HashMap<>();
+	private final Map<Integer, ArrayList<L2DoorInstance>> _regions = new HashMap<>();
 	
 	public static DoorTable getInstance()
 	{
@@ -52,9 +53,6 @@ public class DoorTable
 	
 	protected DoorTable()
 	{
-		_staticItems = new TIntObjectHashMap<>();
-		_regions = new TIntObjectHashMap<>();
-		
 		parseData();
 		onStart();
 	}
@@ -259,7 +257,7 @@ public class DoorTable
 	{
 		_staticItems.put(door.getDoorId(), door);
 		
-		if (_regions.contains(door.getMapRegion()))
+		if (_regions.containsKey(door.getMapRegion()))
 			_regions.get(door.getMapRegion()).add(door);
 		else
 		{
@@ -269,9 +267,9 @@ public class DoorTable
 		}
 	}
 	
-	public L2DoorInstance[] getDoors()
+	public Collection<L2DoorInstance> getDoors()
 	{
-		return _staticItems.values(new L2DoorInstance[0]);
+		return _staticItems.values();
 	}
 	
 	public boolean checkIfDoorsBetween(AbstractNodeLoc start, AbstractNodeLoc end)

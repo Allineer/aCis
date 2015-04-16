@@ -14,11 +14,11 @@
  */
 package net.sf.l2j.gameserver.model;
 
-import gnu.trove.map.hash.TIntObjectHashMap;
-
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,7 +39,8 @@ import org.w3c.dom.Node;
 public class L2Multisell
 {
 	private static Logger _log = Logger.getLogger(L2Multisell.class.getName());
-	private final TIntObjectHashMap<MultiSellListContainer> _entries = new TIntObjectHashMap<>();
+	
+	private final Map<Integer, MultiSellListContainer> _entries = new HashMap<>();
 	
 	public MultiSellListContainer getList(int id)
 	{
@@ -445,7 +446,7 @@ public class L2Multisell
 			{
 				MultiSellListContainer list = parseDocument(doc);
 				list.setListId(id);
-				_entries.putIfAbsent(id, list);
+				_entries.put(id, list);
 			}
 			catch (Exception e)
 			{

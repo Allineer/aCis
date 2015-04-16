@@ -137,6 +137,7 @@ import net.sf.l2j.gameserver.model.itemcontainer.PcFreight;
 import net.sf.l2j.gameserver.model.itemcontainer.PcInventory;
 import net.sf.l2j.gameserver.model.itemcontainer.PcWarehouse;
 import net.sf.l2j.gameserver.model.itemcontainer.PetInventory;
+import net.sf.l2j.gameserver.model.itemcontainer.listeners.ItemPassiveSkillsListener;
 import net.sf.l2j.gameserver.model.olympiad.OlympiadGameManager;
 import net.sf.l2j.gameserver.model.olympiad.OlympiadGameTask;
 import net.sf.l2j.gameserver.model.olympiad.OlympiadManager;
@@ -1838,6 +1839,15 @@ public final class L2PcInstance extends L2Playable
 			
 			sendSkillList();
 			sendPacket(new EtcStatusUpdate(this));
+			
+			final L2ItemInstance weapon = getInventory().getPaperdollItem(Inventory.PAPERDOLL_RHAND);
+			if (weapon != null)
+			{
+				if (_expertiseWeaponPenalty)
+					ItemPassiveSkillsListener.getInstance().onUnequip(0, weapon, this);
+				else
+					ItemPassiveSkillsListener.getInstance().onEquip(0, weapon, this);
+			}
 		}
 	}
 	
@@ -2164,13 +2174,12 @@ public final class L2PcInstance extends L2Playable
 			setHero(true);
 		
 		// Add clan skills.
-		if (getClan() != null && getClan().getReputationScore() >= 0)
+		if (getClan() != null)
 		{
-			for (L2Skill sk : getClan().getClanSkills())
-			{
-				if (sk.getMinPledgeClass() <= getPledgeClass())
-					addSkill(sk, false);
-			}
+			getClan().addSkillEffects(this);
+			
+			if (getClan().getLevel() >= SiegeManager.MINIMUM_CLAN_LEVEL && isClanLeader())
+				SiegeManager.addSiegeSkills(this);
 		}
 		
 		// Reload passive skills from armors / jewels / weapons
@@ -2378,6 +2387,7 @@ public final class L2PcInstance extends L2Playable
 		public void run()
 		{
 			setIsSitting(false);
+			setIsParalyzed(false);
 			getAI().setIntention(CtrlIntention.IDLE);
 		}
 	}
@@ -2387,7 +2397,7 @@ public final class L2PcInstance extends L2Playable
 	 */
 	public void standUp()
 	{
-		if (_waitTypeSitting && !isInStoreMode() && !isAlikeDead())
+		if (_waitTypeSitting && !isInStoreMode() && !isAlikeDead() && !isParalyzed())
 		{
 			if (_effects.isAffected(L2EffectFlag.RELAXING))
 				stopEffects(L2EffectType.RELAXING);
@@ -2395,6 +2405,7 @@ public final class L2PcInstance extends L2Playable
 			broadcastPacket(new ChangeWaitType(this, ChangeWaitType.WT_STANDING));
 			// Schedule a stand up task to wait for the animation to finish
 			ThreadPoolManager.getInstance().scheduleGeneral(new StandUpTask(), 2500);
+			setIsParalyzed(true);
 		}
 	}
 	
@@ -8765,12 +8776,7 @@ public final class L2PcInstance extends L2Playable
 				_commonRecipeBook.clear();
 			}
 			else
-			{
 				restoreRecipeBook();
-			}
-			
-			// Restore any Death Penalty Buff
-			restoreDeathPenaltyBuffLevel();
 			
 			restoreSkills();
 			rewardSkills();

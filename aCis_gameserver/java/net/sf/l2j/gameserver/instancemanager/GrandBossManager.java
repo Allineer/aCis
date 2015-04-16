@@ -14,9 +14,6 @@
  */
 package net.sf.l2j.gameserver.instancemanager;
 
-import gnu.trove.map.hash.TIntIntHashMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -51,8 +48,8 @@ public class GrandBossManager
 	private static final String UPDATE_GRAND_BOSS_DATA2 = "UPDATE grandboss_data set status = ? where boss_id = ?";
 	
 	private static final Map<Integer, L2GrandBossInstance> _bosses = new HashMap<>();
-	private static final TIntObjectHashMap<StatsSet> _storedInfo = new TIntObjectHashMap<>();
-	private static final TIntIntHashMap _bossStatus = new TIntIntHashMap();
+	private static final Map<Integer, StatsSet> _storedInfo = new HashMap<>();
+	private static final Map<Integer, Integer> _bossStatus = new HashMap<>();
 	private static final List<L2BossZone> _zones = new ArrayList<>();
 	
 	public static void init()
@@ -224,7 +221,7 @@ public class GrandBossManager
 			
 			PreparedStatement updateStatement1 = con.prepareStatement(UPDATE_GRAND_BOSS_DATA2);
 			PreparedStatement updateStatement2 = con.prepareStatement(UPDATE_GRAND_BOSS_DATA);
-			for (int bossId : _storedInfo.keys())
+			for (int bossId : _storedInfo.keySet())
 			{
 				L2GrandBossInstance boss = _bosses.get(bossId);
 				StatsSet info = _storedInfo.get(bossId);

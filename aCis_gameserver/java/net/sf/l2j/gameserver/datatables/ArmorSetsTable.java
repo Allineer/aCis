@@ -14,10 +14,10 @@
  */
 package net.sf.l2j.gameserver.datatables;
 
-import gnu.trove.map.hash.TIntObjectHashMap;
-
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,7 +32,7 @@ public class ArmorSetsTable
 {
 	private static Logger _log = Logger.getLogger(ArmorSetsTable.class.getName());
 	
-	private TIntObjectHashMap<L2ArmorSet> _armorSets;
+	private final Map<Integer, L2ArmorSet> _armorSets = new HashMap<>();
 	
 	public static ArmorSetsTable getInstance()
 	{
@@ -41,8 +41,6 @@ public class ArmorSetsTable
 	
 	protected ArmorSetsTable()
 	{
-		_armorSets = new TIntObjectHashMap<>();
-		
 		try
 		{
 			File f = new File("./data/xml/armorsets.xml");

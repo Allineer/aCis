@@ -14,13 +14,13 @@
  */
 package net.sf.l2j.gameserver.datatables;
 
-import gnu.trove.map.hash.TIntObjectHashMap;
-
 import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import net.sf.l2j.L2DatabaseFactory;
@@ -36,9 +36,9 @@ import org.w3c.dom.Node;
 
 public class PetDataTable
 {
-	private static Logger _log = Logger.getLogger(L2PetInstance.class.getName());
+	private static final Logger _log = Logger.getLogger(L2PetInstance.class.getName());
 	
-	private static TIntObjectHashMap<L2PetData> _petTable;
+	private static final Map<Integer, L2PetData> _petTable = new HashMap<>();
 	
 	public static PetDataTable getInstance()
 	{
@@ -47,7 +47,6 @@ public class PetDataTable
 	
 	protected PetDataTable()
 	{
-		_petTable = new TIntObjectHashMap<>();
 		load();
 	}
 	
@@ -124,9 +123,6 @@ public class PetDataTable
 	
 	public L2PetData getPetData(int petID)
 	{
-		if (!_petTable.contains(petID))
-			_log.info("Missing pet data for npcid: " + petID);
-		
 		return _petTable.get(petID);
 	}
 	

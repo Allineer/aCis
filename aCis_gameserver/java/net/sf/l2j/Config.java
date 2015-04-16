@@ -14,9 +14,6 @@
  */
 package net.sf.l2j;
 
-import gnu.trove.map.hash.TIntIntHashMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -24,7 +21,9 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
@@ -1335,22 +1334,23 @@ public final class Config
 	
 	public static class ClassMasterSettings
 	{
-		private final TIntObjectHashMap<TIntIntHashMap> _claimItems;
-		private final TIntObjectHashMap<TIntIntHashMap> _rewardItems;
-		private final TIntObjectHashMap<Boolean> _allowedClassChange;
+		private final Map<Integer, HashMap<Integer, Integer>> _claimItems;
+		private final Map<Integer, HashMap<Integer, Integer>> _rewardItems;
+		private final Map<Integer, Boolean> _allowedClassChange;
 		
-		public ClassMasterSettings(String _configLine)
+		public ClassMasterSettings(String configLine)
 		{
-			_claimItems = new TIntObjectHashMap<>(3);
-			_rewardItems = new TIntObjectHashMap<>(3);
-			_allowedClassChange = new TIntObjectHashMap<>(3);
-			if (_configLine != null)
-				parseConfigLine(_configLine.trim());
+			_claimItems = new HashMap<>(3);
+			_rewardItems = new HashMap<>(3);
+			_allowedClassChange = new HashMap<>(3);
+			
+			if (configLine != null)
+				parseConfigLine(configLine.trim());
 		}
 		
-		private void parseConfigLine(String _configLine)
+		private void parseConfigLine(String configLine)
 		{
-			StringTokenizer st = new StringTokenizer(_configLine, ";");
+			StringTokenizer st = new StringTokenizer(configLine, ";");
 			
 			while (st.hasMoreTokens())
 			{
@@ -1359,7 +1359,7 @@ public final class Config
 				
 				_allowedClassChange.put(job, true);
 				
-				TIntIntHashMap _items = new TIntIntHashMap();
+				HashMap<Integer, Integer> _items = new HashMap<>();
 				// parse items needed for class change
 				if (st.hasMoreTokens())
 				{
@@ -1376,7 +1376,7 @@ public final class Config
 				
 				_claimItems.put(job, _items);
 				
-				_items = new TIntIntHashMap();
+				_items.clear();
 				// parse gifts after class change
 				if (st.hasMoreTokens())
 				{
@@ -1406,20 +1406,14 @@ public final class Config
 			return false;
 		}
 		
-		public TIntIntHashMap getRewardItems(int job)
+		public Map<Integer, Integer> getRewardItems(int job)
 		{
-			if (_rewardItems.containsKey(job))
-				return _rewardItems.get(job);
-			
-			return null;
+			return _rewardItems.get(job);
 		}
 		
-		public TIntIntHashMap getRequireItems(int job)
+		public Map<Integer, Integer> getRequiredItems(int job)
 		{
-			if (_claimItems.containsKey(job))
-				return _claimItems.get(job);
-			
-			return null;
+			return _claimItems.get(job);
 		}
 	}
 	

@@ -14,11 +14,11 @@
  */
 package net.sf.l2j.gameserver.datatables;
 
-import gnu.trove.map.hash.TIntObjectHashMap;
-
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,18 +35,10 @@ public class HennaTable
 	
 	private static final L2Henna[] EMPTY_HENNAS = new L2Henna[0];
 	
-	private final TIntObjectHashMap<L2Henna> _henna;
-	private final TIntObjectHashMap<List<L2Henna>> _hennaTrees;
+	private final Map<Integer, L2Henna> _henna = new HashMap<>();
+	private final Map<Integer, List<L2Henna>> _hennaTrees = new HashMap<>();
 	
 	protected HennaTable()
-	{
-		_henna = new TIntObjectHashMap<>();
-		_hennaTrees = new TIntObjectHashMap<>();
-		
-		restoreHennaData();
-	}
-	
-	private void restoreHennaData()
 	{
 		try
 		{

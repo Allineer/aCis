@@ -18,8 +18,8 @@ import net.sf.l2j.gameserver.model.L2ItemInstance;
 import net.sf.l2j.gameserver.model.L2Skill;
 import net.sf.l2j.gameserver.model.actor.L2Playable;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
-import net.sf.l2j.gameserver.network.serverpackets.SkillCoolTime;
 import net.sf.l2j.gameserver.model.holder.SkillHolder;
+import net.sf.l2j.gameserver.network.serverpackets.SkillCoolTime;
 import net.sf.l2j.gameserver.templates.item.L2Item;
 import net.sf.l2j.gameserver.templates.item.L2Weapon;
 
@@ -47,7 +47,11 @@ public class ItemPassiveSkillsListener implements OnEquipListener
 			if (item.isAugmented())
 				item.getAugmentation().applyBonus(player);
 			
-			// Add skills bestowed from +4 Rapiers/Duals
+			// Verify if the grade penalty is occuring. If yes, then forget +4 dual skills and SA attached to weapon.
+			if (player.getExpertiseIndex() < it.getCrystalType())
+				return;
+			
+			// Add skills bestowed from +4 Duals
 			if (item.getEnchantLevel() >= 4)
 			{
 				final L2Skill enchant4Skill = ((L2Weapon) it).getEnchant4Skill();

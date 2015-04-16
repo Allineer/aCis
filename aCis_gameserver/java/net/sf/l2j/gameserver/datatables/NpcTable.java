@@ -14,11 +14,12 @@
  */
 package net.sf.l2j.gameserver.datatables;
 
-import gnu.trove.map.hash.TIntObjectHashMap;
-
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,7 +40,7 @@ public class NpcTable
 {
 	private static Logger _log = Logger.getLogger(NpcTable.class.getName());
 	
-	private final TIntObjectHashMap<L2NpcTemplate> _npcs = new TIntObjectHashMap<>();
+	private final Map<Integer, L2NpcTemplate> _npcs = new HashMap<>();
 	
 	public static NpcTable getInstance()
 	{
@@ -255,10 +256,11 @@ public class NpcTable
 	 */
 	public L2NpcTemplate getTemplateByName(String name)
 	{
-		for (L2NpcTemplate npcTemplate : _npcs.values(new L2NpcTemplate[0]))
+		for (L2NpcTemplate npcTemplate : _npcs.values())
+		{
 			if (npcTemplate.getName().equalsIgnoreCase(name))
 				return npcTemplate;
-		
+		}
 		return null;
 	}
 	
@@ -271,7 +273,7 @@ public class NpcTable
 		final List<L2NpcTemplate> list = new ArrayList<>();
 		for (int lvl : lvls)
 		{
-			for (L2NpcTemplate npcTemplate : _npcs.values(new L2NpcTemplate[0]))
+			for (L2NpcTemplate npcTemplate : _npcs.values())
 			{
 				if (npcTemplate.getLevel() == lvl)
 					list.add(npcTemplate);
@@ -289,7 +291,7 @@ public class NpcTable
 		final List<L2NpcTemplate> list = new ArrayList<>();
 		for (int lvl : lvls)
 		{
-			for (L2NpcTemplate npcTemplate : _npcs.values(new L2NpcTemplate[0]))
+			for (L2NpcTemplate npcTemplate : _npcs.values())
 			{
 				if ((npcTemplate.getLevel() == lvl) && npcTemplate.isType("L2Monster"))
 					list.add(npcTemplate);
@@ -307,7 +309,7 @@ public class NpcTable
 		final List<L2NpcTemplate> list = new ArrayList<>();
 		for (String letter : letters)
 		{
-			for (L2NpcTemplate npcTemplate : _npcs.values(new L2NpcTemplate[0]))
+			for (L2NpcTemplate npcTemplate : _npcs.values())
 			{
 				if (npcTemplate.getName().startsWith(letter) && npcTemplate.isType("L2Npc"))
 					list.add(npcTemplate);
@@ -325,7 +327,7 @@ public class NpcTable
 		final List<L2NpcTemplate> list = new ArrayList<>();
 		for (String classType : classTypes)
 		{
-			for (L2NpcTemplate npcTemplate : _npcs.values(new L2NpcTemplate[0]))
+			for (L2NpcTemplate npcTemplate : _npcs.values())
 			{
 				if (npcTemplate.isType(classType))
 					list.add(npcTemplate);
@@ -334,9 +336,9 @@ public class NpcTable
 		return list;
 	}
 	
-	public L2NpcTemplate[] getAllNpcs()
+	public Collection<L2NpcTemplate> getAllNpcs()
 	{
-		return _npcs.values(new L2NpcTemplate[0]);
+		return _npcs.values();
 	}
 	
 	private static class SingletonHolder

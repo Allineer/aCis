@@ -12,7 +12,8 @@
  */
 package quests.Q385_YokeOfThePast;
 
-import gnu.trove.map.hash.TIntIntHashMap;
+import java.util.HashMap;
+import java.util.Map;
 
 import net.sf.l2j.gameserver.model.actor.L2Npc;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
@@ -63,7 +64,7 @@ public class Q385_YokeOfThePast extends Quest
 	// Reward
 	private static final int BLANK_SCROLL = 5965;
 	
-	private static final TIntIntHashMap Chance = new TIntIntHashMap();
+	private static final Map<Integer, Integer> Chance = new HashMap<>();
 	{
 		Chance.put(21208, 70000);
 		Chance.put(21209, 80000);
