@@ -32,7 +32,6 @@ import net.sf.l2j.gameserver.model.L2Object;
 import net.sf.l2j.gameserver.model.L2World;
 import net.sf.l2j.gameserver.model.actor.L2Attackable;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
-import net.sf.l2j.gameserver.model.item.NewItem;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance.ItemLocation;
 import net.sf.l2j.gameserver.model.item.kind.Armor;
@@ -84,11 +83,6 @@ public class ItemTable
 	public static ItemTable getInstance()
 	{
 		return SingletonHolder._instance;
-	}
-	
-	public NewItem newItem()
-	{
-		return new NewItem();
 	}
 	
 	protected ItemTable()

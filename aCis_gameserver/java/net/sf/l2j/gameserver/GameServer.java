@@ -37,6 +37,7 @@ import net.sf.l2j.gameserver.datatables.ArmorSetsTable;
 import net.sf.l2j.gameserver.datatables.AugmentationData;
 import net.sf.l2j.gameserver.datatables.BookmarkTable;
 import net.sf.l2j.gameserver.datatables.BufferTable;
+import net.sf.l2j.gameserver.datatables.BuyListTable;
 import net.sf.l2j.gameserver.datatables.CharNameTable;
 import net.sf.l2j.gameserver.datatables.CharTemplateTable;
 import net.sf.l2j.gameserver.datatables.ClanTable;
@@ -103,6 +104,7 @@ import net.sf.l2j.gameserver.network.L2GameClient;
 import net.sf.l2j.gameserver.network.L2GamePacketHandler;
 import net.sf.l2j.gameserver.pathfinding.PathFinding;
 import net.sf.l2j.gameserver.scripting.L2ScriptEngineManager;
+import net.sf.l2j.gameserver.taskmanager.ItemsAutoDestroyTaskManager;
 import net.sf.l2j.gameserver.taskmanager.KnownListUpdateTaskManager;
 import net.sf.l2j.gameserver.taskmanager.TaskManager;
 import net.sf.l2j.gameserver.xmlfactory.XMLDocumentFactory;
@@ -157,7 +159,7 @@ public class GameServer
 		Util.printSection("Items");
 		ItemTable.getInstance();
 		SummonItemsData.getInstance();
-		TradeController.getInstance();
+		BuyListTable.getInstance();
 		L2Multisell.getInstance();
 		RecipeTable.getInstance();
 		ArmorSetsTable.getInstance();
@@ -270,7 +272,7 @@ public class GameServer
 			ItemsOnGroundManager.getInstance();
 		
 		if (Config.AUTODESTROY_ITEM_AFTER > 0 || Config.HERB_AUTO_DESTROY_TIME > 0)
-			ItemsAutoDestroy.getInstance();
+			ItemsAutoDestroyTaskManager.getInstance();
 		
 		Util.printSection("Monster Derby Track");
 		MonsterRace.getInstance();

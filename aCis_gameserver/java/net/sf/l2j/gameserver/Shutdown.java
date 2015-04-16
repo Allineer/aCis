@@ -174,11 +174,6 @@ public class Shutdown extends Thread
 			GrandBossManager.cleanUp();
 			_log.info("World Bosses data has been saved.");
 			
-			// Save TradeController
-			_log.info("TradeController is saving data. This action may take some minutes.");
-			TradeController.getInstance().dataCountStore();
-			_log.info("All items have been saved.");
-			
 			// Save olympiads
 			Olympiad.getInstance().saveOlympiadStatus();
 			_log.info("Olympiad data has been saved.");

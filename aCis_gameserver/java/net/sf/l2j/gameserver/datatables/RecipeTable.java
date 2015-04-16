@@ -25,10 +25,10 @@ import java.util.logging.Logger;
 
 import net.sf.l2j.Config;
 import net.sf.l2j.gameserver.model.L2ManufactureItem;
-import net.sf.l2j.gameserver.model.L2RecipeInstance;
-import net.sf.l2j.gameserver.model.L2RecipeList;
 import net.sf.l2j.gameserver.model.L2Skill;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
+import net.sf.l2j.gameserver.model.holder.ItemHolder;
+import net.sf.l2j.gameserver.model.item.RecipeList;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.model.itemcontainer.Inventory;
 import net.sf.l2j.gameserver.network.SystemMessageId;
@@ -52,7 +52,7 @@ public class RecipeTable
 {
 	protected static final Logger _log = Logger.getLogger(RecipeTable.class.getName());
 	
-	private final Map<Integer, L2RecipeList> _lists = new HashMap<>();
+	private final Map<Integer, RecipeList> _lists = new HashMap<>();
 	
 	public static RecipeTable getInstance()
 	{
@@ -66,7 +66,7 @@ public class RecipeTable
 			File file = new File("./data/xml/recipes.xml");
 			final Document doc = XMLDocumentFactory.getInstance().loadDocument(file);
 			
-			List<L2RecipeInstance> recipePartList = new ArrayList<>();
+			List<ItemHolder> recipePartList = new ArrayList<>();
 			
 			Node n = doc.getFirstChild();
 			for (Node d = n.getFirstChild(); d != null; d = d.getNextSibling())
@@ -120,7 +120,7 @@ public class RecipeTable
 						{
 							int ingId = Integer.parseInt(c.getAttributes().getNamedItem("id").getNodeValue());
 							int ingCount = Integer.parseInt(c.getAttributes().getNamedItem("count").getNodeValue());
-							recipePartList.add(new L2RecipeInstance(ingId, ingCount));
+							recipePartList.add(new ItemHolder(ingId, ingCount));
 						}
 						else if ("production".equalsIgnoreCase(c.getNodeName()))
 						{
@@ -129,30 +129,30 @@ public class RecipeTable
 						}
 					}
 					
-					L2RecipeList recipeList = new L2RecipeList(id, level, recipeId, recipeName, successRate, mpCost, prodId, count, isDwarvenRecipe);
-					for (L2RecipeInstance recipePart : recipePartList)
-						recipeList.addRecipe(recipePart);
+					RecipeList recipeList = new RecipeList(id, level, recipeId, recipeName, successRate, mpCost, prodId, count, isDwarvenRecipe);
+					for (ItemHolder recipePart : recipePartList)
+						recipeList.addNeededRecipePart(recipePart);
 					
 					_lists.put(id, recipeList);
 				}
 			}
 			
-			_log.info("RecipeController: Loaded " + _lists.size() + " recipes.");
+			_log.info("RecipeTable: Loaded " + _lists.size() + " recipes.");
 		}
 		catch (Exception e)
 		{
-			_log.log(Level.SEVERE, "RecipeController: Failed loading recipe list", e);
+			_log.log(Level.SEVERE, "RecipeTable: Failed loading recipe list", e);
 		}
 	}
 	
-	public L2RecipeList getRecipeList(int listId)
+	public RecipeList getRecipeList(int listId)
 	{
 		return _lists.get(listId);
 	}
 	
-	public L2RecipeList getRecipeByItemId(int itemId)
+	public RecipeList getRecipeByItemId(int itemId)
 	{
-		for (L2RecipeList find : _lists.values())
+		for (RecipeList find : _lists.values())
 		{
 			if (find.getRecipeId() == itemId)
 				return find;
@@ -169,12 +169,12 @@ public class RecipeTable
 	
 	public void requestManufactureItem(L2PcInstance manufacturer, int recipeListId, L2PcInstance player)
 	{
-		final L2RecipeList recipeList = getValidRecipeList(player, recipeListId);
+		final RecipeList recipeList = getValidRecipeList(player, recipeListId);
 		if (recipeList == null)
 			return;
 		
-		Collection<L2RecipeList> dwarfRecipes = manufacturer.getDwarvenRecipeBook();
-		Collection<L2RecipeList> commonRecipes = manufacturer.getCommonRecipeBook();
+		Collection<RecipeList> dwarfRecipes = manufacturer.getDwarvenRecipeBook();
+		Collection<RecipeList> commonRecipes = manufacturer.getCommonRecipeBook();
 		
 		if (!dwarfRecipes.contains(recipeList) && !commonRecipes.contains(recipeList))
 		{
@@ -195,12 +195,12 @@ public class RecipeTable
 			return;
 		}
 		
-		final L2RecipeList recipeList = getValidRecipeList(player, recipeListId);
+		final RecipeList recipeList = getValidRecipeList(player, recipeListId);
 		if (recipeList == null)
 			return;
 		
-		Collection<L2RecipeList> dwarfRecipes = player.getDwarvenRecipeBook();
-		Collection<L2RecipeList> commonRecipes = player.getCommonRecipeBook();
+		Collection<RecipeList> dwarfRecipes = player.getDwarvenRecipeBook();
+		Collection<RecipeList> commonRecipes = player.getCommonRecipeBook();
 		
 		if (!dwarfRecipes.contains(recipeList) && !commonRecipes.contains(recipeList))
 		{
@@ -216,7 +216,7 @@ public class RecipeTable
 	private class RecipeItemMaker implements Runnable
 	{
 		protected boolean _isValid;
-		protected final L2RecipeList _recipeList;
+		protected final RecipeList _recipeList;
 		protected final L2PcInstance _player; // "crafter"
 		protected final L2PcInstance _target; // "customer"
 		protected final int _skillId;
@@ -224,7 +224,7 @@ public class RecipeTable
 		protected double _manaRequired;
 		protected int _price;
 		
-		public RecipeItemMaker(L2PcInstance pPlayer, L2RecipeList pRecipeList, L2PcInstance pTarget)
+		public RecipeItemMaker(L2PcInstance pPlayer, RecipeList pRecipeList, L2PcInstance pTarget)
 		{
 			_player = pPlayer;
 			_target = pTarget;
@@ -253,7 +253,7 @@ public class RecipeTable
 			}
 			
 			// validate recipe list
-			if (_recipeList.getRecipes().length == 0)
+			if (_recipeList.getNeededRecipeParts().isEmpty())
 			{
 				_player.sendPacket(ActionFailed.STATIC_PACKET);
 				abort();
@@ -303,8 +303,7 @@ public class RecipeTable
 			}
 			
 			updateMakeInfo(true);
-			updateCurMp();
-			updateCurLoad();
+			updateStatus();
 			
 			_player.isInCraftMode(false);
 			_isValid = true;
@@ -365,26 +364,18 @@ public class RecipeTable
 			{
 				if (_target != _player)
 				{
-					SystemMessage msg = SystemMessage.getSystemMessage(SystemMessageId.CREATION_OF_S2_FOR_S1_AT_S3_ADENA_FAILED);
-					msg.addPcName(_target);
-					msg.addItemName(_recipeList.getItemId());
-					msg.addItemNumber(_price);
-					_player.sendPacket(msg);
-					
-					msg = SystemMessage.getSystemMessage(SystemMessageId.S1_FAILED_TO_CREATE_S2_FOR_S3_ADENA);
-					msg.addPcName(_player);
-					msg.addItemName(_recipeList.getItemId());
-					msg.addItemNumber(_price);
-					_target.sendPacket(msg);
+					_player.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.CREATION_OF_S2_FOR_S1_AT_S3_ADENA_FAILED).addPcName(_target).addItemName(_recipeList.getItemId()).addItemNumber(_price));
+					_target.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_FAILED_TO_CREATE_S2_FOR_S3_ADENA).addPcName(_player).addItemName(_recipeList.getItemId()).addItemNumber(_price));
 				}
 				else
 					_target.sendPacket(SystemMessageId.ITEM_MIXING_FAILED);
 				
 				updateMakeInfo(false);
 			}
+			
 			// update load and mana bar of craft window
-			updateCurMp();
-			updateCurLoad();
+			updateStatus();
+			
 			_player.isInCraftMode(false);
 			_target.sendPacket(new ItemList(_target, false));
 		}
@@ -392,67 +383,54 @@ public class RecipeTable
 		private void updateMakeInfo(boolean success)
 		{
 			if (_target == _player)
-				_target.sendPacket(new RecipeItemMakeInfo(_recipeList.getId(), _target, success));
+				_target.sendPacket(new RecipeItemMakeInfo(_recipeList.getId(), _target, (success) ? 1 : 0));
 			else
 				_target.sendPacket(new RecipeShopItemInfo(_player, _recipeList.getId()));
 		}
 		
-		private void updateCurLoad()
+		private void updateStatus()
 		{
-			StatusUpdate su = new StatusUpdate(_target);
+			final StatusUpdate su = new StatusUpdate(_target);
+			su.addAttribute(StatusUpdate.CUR_MP, (int) _target.getCurrentMp());
 			su.addAttribute(StatusUpdate.CUR_LOAD, _target.getCurrentLoad());
 			_target.sendPacket(su);
 		}
 		
-		private void updateCurMp()
-		{
-			StatusUpdate su = new StatusUpdate(_target);
-			su.addAttribute(StatusUpdate.CUR_MP, (int) _target.getCurrentMp());
-			_target.sendPacket(su);
-		}
-		
-		@SuppressWarnings("null")
 		private boolean listItems(boolean remove)
 		{
-			final L2RecipeInstance[] recipes = _recipeList.getRecipes();
 			final Inventory inv = _target.getInventory();
+			final List<ItemHolder> materials = new ArrayList<>();
 			
-			List<int[]> materials = new ArrayList<>();
-			
-			for (L2RecipeInstance recipe : recipes)
+			boolean gotAllMats = true;
+			for (ItemHolder neededPart : _recipeList.getNeededRecipeParts())
 			{
-				int quantity = _recipeList.isConsumable() ? (int) (recipe.getQuantity() * Config.RATE_CONSUMABLE_COST) : (int) recipe.getQuantity();
+				final int quantity = _recipeList.isConsumable() ? (int) (neededPart.getCount() * Config.RATE_CONSUMABLE_COST) : (int) neededPart.getCount();
 				if (quantity > 0)
 				{
-					ItemInstance item = inv.getItemByItemId(recipe.getItemId());
-					int itemQuantityAmount = item == null ? 0 : item.getCount();
-					
-					// check materials
-					if (itemQuantityAmount < quantity)
+					final ItemInstance item = inv.getItemByItemId(neededPart.getId());
+					if (item == null || item.getCount() < quantity)
 					{
-						_target.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.MISSING_S2_S1_TO_CREATE).addItemName(recipe.getItemId()).addItemNumber(quantity - itemQuantityAmount));
-						abort();
-						return false;
+						_target.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.MISSING_S2_S1_TO_CREATE).addItemName(neededPart.getId()).addItemNumber((item == null) ? quantity : quantity - item.getCount()));
+						gotAllMats = false;
 					}
-					
-					materials.add(new int[]
-					{
-						item.getItemId(),
-						quantity
-					});
+					else if (remove)
+						materials.add(new ItemHolder(item.getItemId(), quantity));
 				}
 			}
 			
+			if (!gotAllMats)
+				return false;
+			
 			if (remove)
 			{
-				for (int[] tmp : materials)
+				for (ItemHolder material : materials)
 				{
-					inv.destroyItemByItemId("Manufacture", tmp[0], tmp[1], _target, _player);
+					inv.destroyItemByItemId("Manufacture", material.getId(), material.getCount(), _target, _player);
 					
-					if (tmp[1] > 1)
-						_target.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S2_S1_DISAPPEARED).addItemName(tmp[0]).addItemNumber(tmp[1]));
+					if (material.getCount() > 1)
+						_target.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S2_S1_DISAPPEARED).addItemName(material.getId()).addItemNumber(material.getCount()));
 					else
-						_target.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_DISAPPEARED).addItemName(tmp[0]));
+						_target.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_DISAPPEARED).addItemName(material.getId()));
 				}
 			}
 			return true;
@@ -496,10 +474,10 @@ public class RecipeTable
 		}
 	}
 	
-	private L2RecipeList getValidRecipeList(L2PcInstance player, int id)
+	private RecipeList getValidRecipeList(L2PcInstance player, int id)
 	{
-		final L2RecipeList recipeList = _lists.get(id);
-		if (recipeList == null || recipeList.getRecipes().length == 0)
+		final RecipeList recipeList = _lists.get(id);
+		if (recipeList == null || recipeList.getNeededRecipeParts().isEmpty())
 		{
 			player.sendMessage("No recipe for: " + id);
 			player.isInCraftMode(false);

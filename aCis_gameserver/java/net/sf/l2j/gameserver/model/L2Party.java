@@ -30,6 +30,7 @@ import net.sf.l2j.gameserver.model.actor.L2Character;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2SummonInstance;
 import net.sf.l2j.gameserver.model.entity.DimensionalRift;
+import net.sf.l2j.gameserver.model.holder.ItemHolder;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.model.partymatching.PartyMatchRoom;
 import net.sf.l2j.gameserver.model.partymatching.PartyMatchRoomList;
@@ -514,19 +515,19 @@ public class L2Party
 	 * @param spoil
 	 * @param target
 	 */
-	public void distributeItem(L2PcInstance player, L2Attackable.RewardItem item, boolean spoil, L2Attackable target)
+	public void distributeItem(L2PcInstance player, ItemHolder item, boolean spoil, L2Attackable target)
 	{
 		if (item == null)
 			return;
 		
-		if (item.getItemId() == 57)
+		if (item.getId() == 57)
 		{
 			distributeAdena(player, item.getCount(), target);
 			return;
 		}
 		
-		L2PcInstance looter = getActualLooter(player, item.getItemId(), spoil, target);
-		looter.addItem(spoil ? "Sweep" : "Party", item.getItemId(), item.getCount(), player, true);
+		L2PcInstance looter = getActualLooter(player, item.getId(), spoil, target);
+		looter.addItem(spoil ? "Sweep" : "Party", item.getId(), item.getCount(), player, true);
 		
 		// Send messages to other party members about reward
 		SystemMessage msg;
@@ -534,17 +535,16 @@ public class L2Party
 		{
 			msg = spoil ? SystemMessage.getSystemMessage(SystemMessageId.S1_SWEEPED_UP_S3_S2) : SystemMessage.getSystemMessage(SystemMessageId.S1_OBTAINED_S3_S2);
 			msg.addPcName(looter);
-			msg.addItemName(item.getItemId());
+			msg.addItemName(item.getId());
 			msg.addItemNumber(item.getCount());
-			broadcastToPartyMembers(looter, msg);
 		}
 		else
 		{
 			msg = spoil ? SystemMessage.getSystemMessage(SystemMessageId.S1_SWEEPED_UP_S2) : SystemMessage.getSystemMessage(SystemMessageId.S1_OBTAINED_S2);
 			msg.addPcName(looter);
-			msg.addItemName(item.getItemId());
-			broadcastToPartyMembers(looter, msg);
+			msg.addItemName(item.getId());
 		}
+		broadcastToPartyMembers(looter, msg);
 	}
 	
 	/**

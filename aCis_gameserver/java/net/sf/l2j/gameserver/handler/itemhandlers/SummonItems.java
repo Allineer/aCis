@@ -28,13 +28,13 @@ import net.sf.l2j.gameserver.datatables.SummonItemsData;
 import net.sf.l2j.gameserver.handler.IItemHandler;
 import net.sf.l2j.gameserver.model.L2Object;
 import net.sf.l2j.gameserver.model.L2Spawn;
-import net.sf.l2j.gameserver.model.L2SummonItem;
 import net.sf.l2j.gameserver.model.actor.L2Npc;
 import net.sf.l2j.gameserver.model.actor.L2Playable;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2PetInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2XmassTreeInstance;
 import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
+import net.sf.l2j.gameserver.model.item.SummonItem;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.MagicSkillLaunched;
@@ -66,7 +66,7 @@ public class SummonItems implements IItemHandler
 		if (activeChar.isAllSkillsDisabled() || activeChar.isCastingNow())
 			return;
 		
-		final L2SummonItem sitem = SummonItemsData.getInstance().getSummonItem(item.getItemId());
+		final SummonItem sitem = SummonItemsData.getInstance().getSummonItem(item.getItemId());
 		
 		if ((activeChar.getPet() != null || activeChar.isMounted()) && sitem.isPetSummon())
 		{

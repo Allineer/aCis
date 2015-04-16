@@ -18,8 +18,8 @@ import java.util.Collection;
 
 import net.sf.l2j.gameserver.model.L2ManufactureItem;
 import net.sf.l2j.gameserver.model.L2ManufactureList;
-import net.sf.l2j.gameserver.model.L2RecipeList;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
+import net.sf.l2j.gameserver.model.item.RecipeList;
 
 /**
  * dd d(dd) d(ddd)
@@ -28,7 +28,7 @@ public class RecipeShopManageList extends L2GameServerPacket
 {
 	private final L2PcInstance _seller;
 	private final boolean _isDwarven;
-	private Collection<L2RecipeList> _recipes;
+	private Collection<RecipeList> _recipes;
 	
 	public RecipeShopManageList(L2PcInstance seller, boolean isDwarven)
 	{
@@ -67,7 +67,7 @@ public class RecipeShopManageList extends L2GameServerPacket
 			writeD(_recipes.size());// number of items in recipe book
 			
 			int i = 0;
-			for (L2RecipeList recipe : _recipes)
+			for (RecipeList recipe : _recipes)
 			{
 				writeD(recipe.getId());
 				writeD(i + 1);

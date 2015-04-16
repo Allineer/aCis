@@ -46,7 +46,7 @@ public class Die extends L2GameServerPacket
 			
 		}
 		else if (cha instanceof L2Attackable)
-			_sweepable = ((L2Attackable) cha).isSweepActive();
+			_sweepable = ((L2Attackable) cha).isSpoiled();
 	}
 	
 	@Override

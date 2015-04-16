@@ -16,11 +16,10 @@ package net.sf.l2j.gameserver.model.actor.instance;
 
 import java.util.StringTokenizer;
 
-import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.TradeController;
+import net.sf.l2j.gameserver.datatables.BuyListTable;
 import net.sf.l2j.gameserver.model.L2Clan;
-import net.sf.l2j.gameserver.model.L2TradeList;
 import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
+import net.sf.l2j.gameserver.model.buylist.NpcBuyList;
 import net.sf.l2j.gameserver.network.serverpackets.BuyList;
 import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
 
@@ -68,17 +67,12 @@ public final class L2MercManagerInstance extends L2NpcInstance
 	
 	private void showBuyWindow(L2PcInstance player, int val)
 	{
+		final NpcBuyList buyList = BuyListTable.getInstance().getBuyList(val);
+		if (buyList == null || !buyList.isNpcAllowed(getNpcId()))
+			return;
+		
 		player.tempInventoryDisable();
-		
-		if (Config.DEBUG)
-			_log.fine("Showing buylist");
-		
-		L2TradeList list = TradeController.getInstance().getBuyList(val);
-		if ((list != null) && (list.getNpcId().equals(String.valueOf(getNpcId()))))
-		{
-			BuyList bl = new BuyList(list, player.getAdena(), 0);
-			player.sendPacket(bl);
-		}
+		player.sendPacket(new BuyList(buyList, player.getAdena(), 0));
 	}
 	
 	@Override

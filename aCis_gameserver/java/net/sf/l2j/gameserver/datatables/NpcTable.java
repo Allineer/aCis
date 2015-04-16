@@ -23,12 +23,12 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.sf.l2j.gameserver.model.L2DropData;
 import net.sf.l2j.gameserver.model.L2MinionData;
 import net.sf.l2j.gameserver.model.L2NpcAIData;
 import net.sf.l2j.gameserver.model.L2Skill;
 import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 import net.sf.l2j.gameserver.model.base.ClassId;
+import net.sf.l2j.gameserver.model.item.DropData;
 import net.sf.l2j.gameserver.templates.StatsSet;
 import net.sf.l2j.gameserver.xmlfactory.XMLDocumentFactory;
 
@@ -190,7 +190,7 @@ public class NpcTable
 											{
 												attrs = item.getAttributes();
 												
-												L2DropData dropDat = new L2DropData();
+												DropData dropDat = new DropData();
 												dropDat.setItemId(Integer.parseInt(attrs.getNamedItem("itemid").getNodeValue()));
 												dropDat.setMinDrop(Integer.parseInt(attrs.getNamedItem("min").getNodeValue()));
 												dropDat.setMaxDrop(Integer.parseInt(attrs.getNamedItem("max").getNodeValue()));

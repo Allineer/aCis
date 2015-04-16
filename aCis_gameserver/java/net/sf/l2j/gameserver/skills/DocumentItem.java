@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-import net.sf.l2j.gameserver.model.item.NewItem;
 import net.sf.l2j.gameserver.model.item.kind.Item;
 import net.sf.l2j.gameserver.skills.conditions.Condition;
 import net.sf.l2j.gameserver.templates.StatsSet;
@@ -34,7 +33,17 @@ import org.w3c.dom.Node;
  */
 public final class DocumentItem extends DocumentBase
 {
-	private NewItem _currentItem = null;
+	public class NewItem
+	{
+		public int id;
+		public String type;
+		public String name;
+		public StatsSet set;
+		public int currentLevel;
+		public Item item;
+	}
+	
+	private NewItem _currentItem;
 	private final List<Item> _itemsInFile = new ArrayList<>();
 	
 	public DocumentItem(File file)

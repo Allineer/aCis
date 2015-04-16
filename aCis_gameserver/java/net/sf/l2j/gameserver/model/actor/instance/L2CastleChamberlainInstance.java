@@ -18,7 +18,6 @@ import java.util.Calendar;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
-import net.sf.l2j.Config;
 import net.sf.l2j.gameserver.datatables.ClanTable;
 import net.sf.l2j.gameserver.instancemanager.CastleManager;
 import net.sf.l2j.gameserver.instancemanager.CastleManorManager;
@@ -214,11 +213,6 @@ public class L2CastleChamberlainInstance extends L2MerchantInstance
 			
 			if (val.isEmpty())
 				return;
-			
-			player.tempInventoryDisable();
-			
-			if (Config.DEBUG)
-				_log.fine("Showing chamberlain buylist");
 			
 			showBuyWindow(player, Integer.parseInt(val + "1"));
 		}

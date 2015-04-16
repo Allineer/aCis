@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import net.sf.l2j.gameserver.model.L2SummonItem;
+import net.sf.l2j.gameserver.model.item.SummonItem;
 import net.sf.l2j.gameserver.xmlfactory.XMLDocumentFactory;
 
 import org.w3c.dom.Document;
@@ -34,7 +34,7 @@ public class SummonItemsData
 {
 	private static final Logger _log = Logger.getLogger(SummonItemsData.class.getName());
 	
-	private static final Map<Integer, L2SummonItem> _summonitems = new HashMap<>();
+	private static final Map<Integer, SummonItem> _summonitems = new HashMap<>();
 	
 	public static SummonItemsData getInstance()
 	{
@@ -59,7 +59,7 @@ public class SummonItemsData
 					int npcID = Integer.valueOf(node.getNamedItem("npcID").getNodeValue());
 					byte summonType = Byte.valueOf(node.getNamedItem("summonType").getNodeValue());
 					
-					_summonitems.put(itemID, new L2SummonItem(itemID, npcID, summonType));
+					_summonitems.put(itemID, new SummonItem(itemID, npcID, summonType));
 				}
 			}
 		}
@@ -70,7 +70,7 @@ public class SummonItemsData
 		_log.info("SummonItemsData: Loaded " + _summonitems.size() + " templates.");
 	}
 	
-	public L2SummonItem getSummonItem(int itemId)
+	public SummonItem getSummonItem(int itemId)
 	{
 		return _summonitems.get(itemId);
 	}

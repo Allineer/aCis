@@ -22,13 +22,13 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import net.sf.l2j.gameserver.datatables.HerbDropTable;
-import net.sf.l2j.gameserver.model.L2DropCategory;
-import net.sf.l2j.gameserver.model.L2DropData;
 import net.sf.l2j.gameserver.model.L2MinionData;
 import net.sf.l2j.gameserver.model.L2NpcAIData;
 import net.sf.l2j.gameserver.model.L2Skill;
 import net.sf.l2j.gameserver.model.actor.instance.L2XmassTreeInstance;
 import net.sf.l2j.gameserver.model.base.ClassId;
+import net.sf.l2j.gameserver.model.item.DropCategory;
+import net.sf.l2j.gameserver.model.item.DropData;
 import net.sf.l2j.gameserver.model.quest.Quest;
 import net.sf.l2j.gameserver.model.quest.QuestEventType;
 import net.sf.l2j.gameserver.templates.StatsSet;
@@ -105,7 +105,7 @@ public final class NpcTemplate extends CharTemplate
 		UNKNOWN
 	}
 	
-	private final List<L2DropCategory> _categories = new LinkedList<>();
+	private final List<DropCategory> _categories = new LinkedList<>();
 	private final List<L2MinionData> _minions = new ArrayList<>();
 	private final List<ClassId> _teachInfo = new ArrayList<>();
 	private final Map<Integer, L2Skill> _skills = new HashMap<>();
@@ -168,32 +168,29 @@ public final class NpcTemplate extends CharTemplate
 	}
 	
 	// Add a drop to a given category. If the category does not exist, create it.
-	public void addDropData(L2DropData drop, int categoryType)
+	public void addDropData(DropData drop, int categoryType)
 	{
-		if (!drop.isQuestDrop())
+		// If the category doesn't already exist, create it first
+		synchronized (_categories)
 		{
-			// If the category doesn't already exist, create it first
-			synchronized (_categories)
+			boolean catExists = false;
+			for (DropCategory cat : _categories)
 			{
-				boolean catExists = false;
-				for (L2DropCategory cat : _categories)
+				// If the category exists, add the drop to this category.
+				if (cat.getCategoryType() == categoryType)
 				{
-					// If the category exists, add the drop to this category.
-					if (cat.getCategoryType() == categoryType)
-					{
-						cat.addDropData(drop, isType("L2RaidBoss") || isType("L2GrandBoss"));
-						catExists = true;
-						break;
-					}
-				}
-				
-				// If the category doesn't exit, create it and add the drop
-				if (!catExists)
-				{
-					L2DropCategory cat = new L2DropCategory(categoryType);
 					cat.addDropData(drop, isType("L2RaidBoss") || isType("L2GrandBoss"));
-					_categories.add(cat);
+					catExists = true;
+					break;
 				}
+			}
+			
+			// If the category doesn't exit, create it and add the drop
+			if (!catExists)
+			{
+				DropCategory cat = new DropCategory(categoryType);
+				cat.addDropData(drop, isType("L2RaidBoss") || isType("L2GrandBoss"));
+				_categories.add(cat);
 			}
 		}
 	}
@@ -270,7 +267,7 @@ public final class NpcTemplate extends CharTemplate
 	/**
 	 * @return the list of all possible UNCATEGORIZED drops of this L2NpcTemplate.
 	 */
-	public List<L2DropCategory> getDropData()
+	public List<DropCategory> getDropData()
 	{
 		return _categories;
 	}
@@ -278,10 +275,10 @@ public final class NpcTemplate extends CharTemplate
 	/**
 	 * @return the list of all possible item drops of this L2NpcTemplate. (ie full drops and part drops, mats, miscellaneous & UNCATEGORIZED)
 	 */
-	public List<L2DropData> getAllDropData()
+	public List<DropData> getAllDropData()
 	{
-		final List<L2DropData> list = new ArrayList<>();
-		for (L2DropCategory tmp : _categories)
+		final List<DropData> list = new ArrayList<>();
+		for (DropCategory tmp : _categories)
 			list.addAll(tmp.getAllDrops());
 		
 		return list;

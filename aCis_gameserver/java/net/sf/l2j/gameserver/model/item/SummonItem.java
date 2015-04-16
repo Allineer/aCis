@@ -14,15 +14,39 @@
  */
 package net.sf.l2j.gameserver.model.item;
 
-import net.sf.l2j.gameserver.model.item.kind.Item;
-import net.sf.l2j.gameserver.templates.StatsSet;
-
-public class NewItem
+/**
+ * @author -Nemesiss-
+ */
+public class SummonItem
 {
-	public int id;
-	public String type;
-	public String name;
-	public StatsSet set;
-	public int currentLevel;
-	public Item item;
+	private final int _itemId;
+	private final int _npcId;
+	private final byte _type;
+	
+	public SummonItem(int itemId, int npcId, byte type)
+	{
+		_itemId = itemId;
+		_npcId = npcId;
+		_type = type;
+	}
+	
+	public int getItemId()
+	{
+		return _itemId;
+	}
+	
+	public int getNpcId()
+	{
+		return _npcId;
+	}
+	
+	public byte getType()
+	{
+		return _type;
+	}
+	
+	public boolean isPetSummon()
+	{
+		return _type == 1 || _type == 2;
+	}
 }

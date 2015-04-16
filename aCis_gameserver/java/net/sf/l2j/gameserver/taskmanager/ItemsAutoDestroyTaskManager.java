@@ -12,37 +12,30 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.l2j.gameserver;
+package net.sf.l2j.gameserver.taskmanager;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Logger;
 
 import net.sf.l2j.Config;
+import net.sf.l2j.gameserver.ThreadPoolManager;
 import net.sf.l2j.gameserver.instancemanager.ItemsOnGroundManager;
 import net.sf.l2j.gameserver.model.L2World;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.model.item.type.EtcItemType;
 
-public class ItemsAutoDestroy
+public class ItemsAutoDestroyTaskManager
 {
-	protected static final Logger _log = Logger.getLogger(ItemsAutoDestroy.class.getName());
-	protected List<ItemInstance> _items;
-	protected static long _sleep;
+	protected static int SLEEP_TIME = Config.AUTODESTROY_ITEM_AFTER * 1000;
 	
-	protected ItemsAutoDestroy()
+	protected final List<ItemInstance> _items = new CopyOnWriteArrayList<>();
+	
+	protected ItemsAutoDestroyTaskManager()
 	{
-		_log.info("Initializing ItemsAutoDestroy.");
-		_items = new CopyOnWriteArrayList<>();
-		_sleep = Config.AUTODESTROY_ITEM_AFTER * 1000;
-		
-		if (_sleep == 0) // it should not happend as it is not called when AUTODESTROY_ITEM_AFTER = 0 but we never know..
-			_sleep = 3600000;
-		
 		ThreadPoolManager.getInstance().scheduleGeneralAtFixedRate(new CheckItemsForDestroy(), 5000, 5000);
 	}
 	
-	public static ItemsAutoDestroy getInstance()
+	public static ItemsAutoDestroyTaskManager getInstance()
 	{
 		return SingletonHolder._instance;
 	}
@@ -61,14 +54,14 @@ public class ItemsAutoDestroy
 			if (_items.isEmpty())
 				return;
 			
-			long curtime = System.currentTimeMillis();
+			final long curtime = System.currentTimeMillis();
 			for (ItemInstance item : _items)
 			{
 				if (item == null || item.getDropTime() == 0 || item.getLocation() != ItemInstance.ItemLocation.VOID)
 					_items.remove(item);
 				else
 				{
-					if ((item.getItemType() == EtcItemType.HERB && (curtime - item.getDropTime()) > Config.HERB_AUTO_DESTROY_TIME) || ((curtime - item.getDropTime()) > _sleep))
+					if ((item.getItemType() == EtcItemType.HERB && (curtime - item.getDropTime()) > Config.HERB_AUTO_DESTROY_TIME) || ((curtime - item.getDropTime()) > SLEEP_TIME))
 					{
 						L2World.getInstance().removeVisibleObject(item, item.getWorldRegion());
 						L2World.getInstance().removeObject(item);
@@ -84,6 +77,6 @@ public class ItemsAutoDestroy
 	
 	private static class SingletonHolder
 	{
-		protected static final ItemsAutoDestroy _instance = new ItemsAutoDestroy();
+		protected static final ItemsAutoDestroyTaskManager _instance = new ItemsAutoDestroyTaskManager();
 	}
 }

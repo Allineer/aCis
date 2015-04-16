@@ -207,7 +207,7 @@ public class EnterWorld extends L2GameClientPacket
 			if (quest != null && quest.getOnEnterWorld())
 				quest.notifyEnterWorld(activeChar);
 		}
-		activeChar.sendPacket(new QuestList());
+		activeChar.sendPacket(new QuestList(activeChar));
 		
 		// Unread mails make a popup appears.
 		if (Config.ENABLE_COMMUNITY_BOARD && MailBBSManager.getInstance().checkUnreadMail(activeChar) > 0)

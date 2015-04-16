@@ -16,9 +16,9 @@ package net.sf.l2j.gameserver.handler.itemhandlers;
 
 import net.sf.l2j.gameserver.datatables.RecipeTable;
 import net.sf.l2j.gameserver.handler.IItemHandler;
-import net.sf.l2j.gameserver.model.L2RecipeList;
 import net.sf.l2j.gameserver.model.actor.L2Playable;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
+import net.sf.l2j.gameserver.model.item.RecipeList;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
@@ -39,7 +39,7 @@ public class Recipes implements IItemHandler
 			return;
 		}
 		
-		final L2RecipeList rp = RecipeTable.getInstance().getRecipeByItemId(item.getItemId());
+		final RecipeList rp = RecipeTable.getInstance().getRecipeByItemId(item.getItemId());
 		if (rp == null)
 			return;
 		

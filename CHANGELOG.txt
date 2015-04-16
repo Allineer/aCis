@@ -1,4 +1,41 @@
 ====================================================================================================
+Changeset 326 @ 2014.04.23
+
+Recipes / Craft, TradeController, Misc
+
+Recipes / Craft
+    - Drop L2RecipeInstance (use ItemHolder instead)
+    - Fix a NPE on RecipeTable listItems method and rework it to use ItemHolder. All missing items for a craft are now listed, with good quantities (not only sending the first missing mat).
+    - Merge RecipeTable updateCurMp() && updateCurLoad() methods into updateStatus() - from 2 StatusUpdate packets sent to 1.
+    - Fix the "ghost" success message on crafting window when you simply open a recipe.
+
+TradeController
+    - Move TradeController into datatables and renamed it BuyListTable.
+    - Drop merchants.sql table (unused).
+    - XMLize 2 SQL tables, merchant_buylists && merchant_shopids. The dynamic content (aka limited stock) is still loaded/save on SQL.
+    - Created a new package model.buylist, moved L2TradeList inside it and renamed it NpcBuyList and Product (that class was holding two classes, so it is splitted).
+    - General cleanup and improvements, from latest L2J Nos changeset. No more 3min shutdown trying to save buylists stuff...
+    - The data used is the latest aCis one, plus roko91 changes, minus few empty buylists linked to nothing, and the "Coin Collector Album" restock timer.
+
+Misc
+    - Rework AdminEditNpc adminhandler:
+        - Drop stuff regarding pages generation (for shoplists and skills, as such commands never send more than 10 entries).
+        - Secure user input (try/catch).
+    - Drop L2Attackable.RewardItem (use ItemHolder instead), TradeItem (clone class existing in another class), move NewItem inside DocumentItem (just to keep it similar to DocumentSkill, but both needs a rework...).
+    - Edit _sweepItems / _harvestItems arrays for Lists, make them final (heavier RAM costs, but avoid arrays based operations, Lists creations, null checks are replaced by !isEmpty() and .clear() is used instead of creating another object).
+    - Rename and move few "items based" classes on 'model.item' package.
+    - Rename ItemsAutoDestroy to ItemsAutoDestroyTaskManager and move it on 'gameserver.taskmanager' package.
+    - Edit ItemHolder (drop the unused objectId int, add setters).
+    - Drop unused stuff from DropData, isQuestDrop() being always false (quests items aren't handled by droplists, but scripts...).
+    - [L2J 5962] Fix a possible deadlock on player charges.
+    - [L2J 5374] Reset the delete task on charges add/remove (avoid to get your charges dropped like an idiot after 10min...).
+    - canInteract() is used as check for onBypassFeedback() call, impacting all NPC bypasses. Before it was used only on L2Npc, meaning children classes bypasses weren't covered by the check (such as dead, sit and etc states).
+    - Drop a double tempInventoryDisable() use, and move the method use after buylist checks (avoiding to freeze your inventory for nothing).
+    - Fix QuestList() serverpacket implementation (could lead to some null), setting the current player as parameter. Ty SweeTs for report.
+
+PS: RequestBypassToServer sends by default ActionFailed.STATIC_PACKET after a command call. It's not needed to call it.
+
+====================================================================================================
 Changeset 325 @ 2014.04.14
 
 Misc

@@ -680,150 +680,147 @@ public class L2Npc extends L2Character
 	 */
 	public void onBypassFeedback(L2PcInstance player, String command)
 	{
-		if (canInteract(player))
+		if (command.equalsIgnoreCase("TerritoryStatus"))
 		{
-			if (command.equalsIgnoreCase("TerritoryStatus"))
+			NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
+			
+			if (getCastle().getOwnerId() > 0)
 			{
-				NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
-				
-				if (getCastle().getOwnerId() > 0)
-				{
-					html.setFile("data/html/territorystatus.htm");
-					L2Clan clan = ClanTable.getInstance().getClan(getCastle().getOwnerId());
-					html.replace("%clanname%", clan.getName());
-					html.replace("%clanleadername%", clan.getLeaderName());
-				}
-				else
-					html.setFile("data/html/territorynoclan.htm");
-				
-				html.replace("%castlename%", getCastle().getName());
-				html.replace("%taxpercent%", getCastle().getTaxPercent());
-				html.replace("%objectId%", getObjectId());
-				
-				if (getCastle().getCastleId() > 6)
-					html.replace("%territory%", "The Kingdom of Elmore");
-				else
-					html.replace("%territory%", "The Kingdom of Aden");
-				
-				player.sendPacket(html);
+				html.setFile("data/html/territorystatus.htm");
+				L2Clan clan = ClanTable.getInstance().getClan(getCastle().getOwnerId());
+				html.replace("%clanname%", clan.getName());
+				html.replace("%clanleadername%", clan.getLeaderName());
 			}
-			else if (command.startsWith("Quest"))
+			else
+				html.setFile("data/html/territorynoclan.htm");
+			
+			html.replace("%castlename%", getCastle().getName());
+			html.replace("%taxpercent%", getCastle().getTaxPercent());
+			html.replace("%objectId%", getObjectId());
+			
+			if (getCastle().getCastleId() > 6)
+				html.replace("%territory%", "The Kingdom of Elmore");
+			else
+				html.replace("%territory%", "The Kingdom of Aden");
+			
+			player.sendPacket(html);
+		}
+		else if (command.startsWith("Quest"))
+		{
+			String quest = "";
+			try
 			{
-				String quest = "";
-				try
-				{
-					quest = command.substring(5).trim();
-				}
-				catch (IndexOutOfBoundsException ioobe)
-				{
-				}
-				
-				if (quest.isEmpty())
-					showQuestWindowGeneral(player, this);
-				else
-					showQuestWindowSingle(player, this, QuestManager.getInstance().getQuest(quest));
+				quest = command.substring(5).trim();
 			}
-			else if (command.startsWith("Chat"))
+			catch (IndexOutOfBoundsException ioobe)
 			{
-				int val = 0;
-				try
-				{
-					val = Integer.parseInt(command.substring(5));
-				}
-				catch (IndexOutOfBoundsException ioobe)
-				{
-				}
-				catch (NumberFormatException nfe)
-				{
-				}
-				
-				showChatWindow(player, val);
 			}
-			else if (command.startsWith("Link"))
+			
+			if (quest.isEmpty())
+				showQuestWindowGeneral(player, this);
+			else
+				showQuestWindowSingle(player, this, QuestManager.getInstance().getQuest(quest));
+		}
+		else if (command.startsWith("Chat"))
+		{
+			int val = 0;
+			try
 			{
-				String path = command.substring(5).trim();
-				if (path.indexOf("..") != -1)
-					return;
-				
-				NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
-				html.setFile("data/html/" + path);
-				html.replace("%objectId%", getObjectId());
-				player.sendPacket(html);
+				val = Integer.parseInt(command.substring(5));
 			}
-			else if (command.startsWith("Loto"))
+			catch (IndexOutOfBoundsException ioobe)
 			{
-				int val = 0;
-				try
-				{
-					val = Integer.parseInt(command.substring(5));
-				}
-				catch (IndexOutOfBoundsException ioobe)
-				{
-				}
-				catch (NumberFormatException nfe)
-				{
-				}
-				
-				if (val == 0)
-				{
-					// new loto ticket
-					for (int i = 0; i < 5; i++)
-						player.setLoto(i, 0);
-				}
-				showLotoWindow(player, val);
 			}
-			else if (command.startsWith("CPRecovery"))
+			catch (NumberFormatException nfe)
 			{
-				makeCPRecovery(player);
 			}
-			else if (command.startsWith("SupportMagic"))
+			
+			showChatWindow(player, val);
+		}
+		else if (command.startsWith("Link"))
+		{
+			String path = command.substring(5).trim();
+			if (path.indexOf("..") != -1)
+				return;
+			
+			NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
+			html.setFile("data/html/" + path);
+			html.replace("%objectId%", getObjectId());
+			player.sendPacket(html);
+		}
+		else if (command.startsWith("Loto"))
+		{
+			int val = 0;
+			try
 			{
-				makeSupportMagic(player);
+				val = Integer.parseInt(command.substring(5));
 			}
-			else if (command.startsWith("multisell"))
+			catch (IndexOutOfBoundsException ioobe)
 			{
-				L2Multisell.getInstance().separateAndSend(Integer.parseInt(command.substring(9).trim()), player, false, getCastle().getTaxRate());
 			}
-			else if (command.startsWith("exc_multisell"))
+			catch (NumberFormatException nfe)
 			{
-				L2Multisell.getInstance().separateAndSend(Integer.parseInt(command.substring(13).trim()), player, true, getCastle().getTaxRate());
 			}
-			else if (command.startsWith("Augment"))
+			
+			if (val == 0)
 			{
-				int cmdChoice = Integer.parseInt(command.substring(8, 9).trim());
-				switch (cmdChoice)
-				{
-					case 1:
-						player.sendPacket(SystemMessageId.SELECT_THE_ITEM_TO_BE_AUGMENTED);
-						player.sendPacket(ExShowVariationMakeWindow.STATIC_PACKET);
-						break;
-					case 2:
-						player.sendPacket(SystemMessageId.SELECT_THE_ITEM_FROM_WHICH_YOU_WISH_TO_REMOVE_AUGMENTATION);
-						player.sendPacket(ExShowVariationCancelWindow.STATIC_PACKET);
-						break;
-				}
+				// new loto ticket
+				for (int i = 0; i < 5; i++)
+					player.setLoto(i, 0);
 			}
-			else if (command.startsWith("EnterRift"))
+			showLotoWindow(player, val);
+		}
+		else if (command.startsWith("CPRecovery"))
+		{
+			makeCPRecovery(player);
+		}
+		else if (command.startsWith("SupportMagic"))
+		{
+			makeSupportMagic(player);
+		}
+		else if (command.startsWith("multisell"))
+		{
+			L2Multisell.getInstance().separateAndSend(Integer.parseInt(command.substring(9).trim()), player, false, getCastle().getTaxRate());
+		}
+		else if (command.startsWith("exc_multisell"))
+		{
+			L2Multisell.getInstance().separateAndSend(Integer.parseInt(command.substring(13).trim()), player, true, getCastle().getTaxRate());
+		}
+		else if (command.startsWith("Augment"))
+		{
+			int cmdChoice = Integer.parseInt(command.substring(8, 9).trim());
+			switch (cmdChoice)
 			{
-				try
-				{
-					Byte b1 = Byte.parseByte(command.substring(10)); // Selected Area: Recruit, Soldier etc
-					DimensionalRiftManager.getInstance().start(player, b1, this);
-				}
-				catch (Exception e)
-				{
-				}
+				case 1:
+					player.sendPacket(SystemMessageId.SELECT_THE_ITEM_TO_BE_AUGMENTED);
+					player.sendPacket(ExShowVariationMakeWindow.STATIC_PACKET);
+					break;
+				case 2:
+					player.sendPacket(SystemMessageId.SELECT_THE_ITEM_FROM_WHICH_YOU_WISH_TO_REMOVE_AUGMENTATION);
+					player.sendPacket(ExShowVariationCancelWindow.STATIC_PACKET);
+					break;
 			}
-			else if (command.startsWith("ChangeRiftRoom"))
+		}
+		else if (command.startsWith("EnterRift"))
+		{
+			try
 			{
-				if (player.isInParty() && player.getParty().isInDimensionalRift())
-					player.getParty().getDimensionalRift().manualTeleport(player, this);
+				Byte b1 = Byte.parseByte(command.substring(10)); // Selected Area: Recruit, Soldier etc
+				DimensionalRiftManager.getInstance().start(player, b1, this);
 			}
-			else if (command.startsWith("ExitRift"))
+			catch (Exception e)
 			{
-				if (player.isInParty() && player.getParty().isInDimensionalRift())
-					player.getParty().getDimensionalRift().manualExitRift(player, this);
 			}
+		}
+		else if (command.startsWith("ChangeRiftRoom"))
+		{
+			if (player.isInParty() && player.getParty().isInDimensionalRift())
+				player.getParty().getDimensionalRift().manualTeleport(player, this);
+		}
+		else if (command.startsWith("ExitRift"))
+		{
+			if (player.isInParty() && player.getParty().isInDimensionalRift())
+				player.getParty().getDimensionalRift().manualExitRift(player, this);
 		}
 	}
 	

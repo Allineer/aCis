@@ -26,11 +26,11 @@ import java.util.logging.Logger;
 
 import net.sf.l2j.Config;
 import net.sf.l2j.L2DatabaseFactory;
-import net.sf.l2j.gameserver.ItemsAutoDestroy;
 import net.sf.l2j.gameserver.ThreadPoolManager;
 import net.sf.l2j.gameserver.model.L2World;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.model.item.type.EtcItemType;
+import net.sf.l2j.gameserver.taskmanager.ItemsAutoDestroyTaskManager;
 
 /**
  * This class manage all items on ground
@@ -129,7 +129,7 @@ public class ItemsOnGroundManager
 					if (result.getLong(8) > -1)
 					{
 						if ((Config.AUTODESTROY_ITEM_AFTER > 0 && item.getItemType() != EtcItemType.HERB) || (Config.HERB_AUTO_DESTROY_TIME > 0 && item.getItemType() == EtcItemType.HERB))
-							ItemsAutoDestroy.getInstance().addItem(item);
+							ItemsAutoDestroyTaskManager.getInstance().addItem(item);
 					}
 				}
 			}

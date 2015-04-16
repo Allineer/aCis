@@ -39,7 +39,6 @@ import net.sf.l2j.Config;
 import net.sf.l2j.L2DatabaseFactory;
 import net.sf.l2j.gameserver.GameTimeController;
 import net.sf.l2j.gameserver.GeoData;
-import net.sf.l2j.gameserver.ItemsAutoDestroy;
 import net.sf.l2j.gameserver.LoginServerThread;
 import net.sf.l2j.gameserver.ThreadPoolManager;
 import net.sf.l2j.gameserver.ai.CtrlEvent;
@@ -93,7 +92,6 @@ import net.sf.l2j.gameserver.model.L2Party;
 import net.sf.l2j.gameserver.model.L2PetData;
 import net.sf.l2j.gameserver.model.L2PetData.L2PetLevelData;
 import net.sf.l2j.gameserver.model.L2Radar;
-import net.sf.l2j.gameserver.model.L2RecipeList;
 import net.sf.l2j.gameserver.model.L2Request;
 import net.sf.l2j.gameserver.model.L2ShortCut;
 import net.sf.l2j.gameserver.model.L2Skill;
@@ -128,8 +126,10 @@ import net.sf.l2j.gameserver.model.entity.Castle;
 import net.sf.l2j.gameserver.model.entity.Duel;
 import net.sf.l2j.gameserver.model.entity.Hero;
 import net.sf.l2j.gameserver.model.entity.Siege;
+import net.sf.l2j.gameserver.model.holder.ItemHolder;
 import net.sf.l2j.gameserver.model.holder.SkillUseHolder;
 import net.sf.l2j.gameserver.model.item.Henna;
+import net.sf.l2j.gameserver.model.item.RecipeList;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.model.item.kind.Armor;
 import net.sf.l2j.gameserver.model.item.kind.Item;
@@ -239,6 +239,7 @@ import net.sf.l2j.gameserver.skills.funcs.FuncMaxMpAdd;
 import net.sf.l2j.gameserver.skills.l2skills.L2SkillSiegeFlag;
 import net.sf.l2j.gameserver.skills.l2skills.L2SkillSummon;
 import net.sf.l2j.gameserver.taskmanager.AttackStanceTaskManager;
+import net.sf.l2j.gameserver.taskmanager.ItemsAutoDestroyTaskManager;
 import net.sf.l2j.gameserver.taskmanager.PvpFlagTaskManager;
 import net.sf.l2j.gameserver.taskmanager.TakeBreakTaskManager;
 import net.sf.l2j.gameserver.taskmanager.WaterTaskManager;
@@ -457,8 +458,8 @@ public final class L2PcInstance extends L2Playable
 	private boolean _inCrystallize;
 	private boolean _inCraftMode;
 	
-	private final Map<Integer, L2RecipeList> _dwarvenRecipeBook = new HashMap<>();
-	private final Map<Integer, L2RecipeList> _commonRecipeBook = new HashMap<>();
+	private final Map<Integer, RecipeList> _dwarvenRecipeBook = new HashMap<>();
+	private final Map<Integer, RecipeList> _commonRecipeBook = new HashMap<>();
 	
 	private boolean _waitTypeSitting;
 	
@@ -1034,41 +1035,41 @@ public final class L2PcInstance extends L2Playable
 	}
 	
 	/**
-	 * @return a table containing all Common L2RecipeList of the L2PcInstance.
+	 * @return a table containing all Common RecipeList of the L2PcInstance.
 	 */
-	public Collection<L2RecipeList> getCommonRecipeBook()
+	public Collection<RecipeList> getCommonRecipeBook()
 	{
 		return _commonRecipeBook.values();
 	}
 	
 	/**
-	 * @return a table containing all Dwarf L2RecipeList of the L2PcInstance.
+	 * @return a table containing all Dwarf RecipeList of the L2PcInstance.
 	 */
-	public Collection<L2RecipeList> getDwarvenRecipeBook()
+	public Collection<RecipeList> getDwarvenRecipeBook()
 	{
 		return _dwarvenRecipeBook.values();
 	}
 	
 	/**
-	 * Add a new L2RecipList to the table _commonrecipebook containing all L2RecipeList of the L2PcInstance.
-	 * @param recipe The L2RecipeList to add to the _recipebook
+	 * Add a new L2RecipList to the table _commonrecipebook containing all RecipeList of the L2PcInstance.
+	 * @param recipe The RecipeList to add to the _recipebook
 	 */
-	public void registerCommonRecipeList(L2RecipeList recipe)
+	public void registerCommonRecipeList(RecipeList recipe)
 	{
 		_commonRecipeBook.put(recipe.getId(), recipe);
 	}
 	
 	/**
-	 * Add a new L2RecipList to the table _recipebook containing all L2RecipeList of the L2PcInstance.
-	 * @param recipe The L2RecipeList to add to the _recipebook
+	 * Add a new L2RecipList to the table _recipebook containing all RecipeList of the L2PcInstance.
+	 * @param recipe The RecipeList to add to the _recipebook
 	 */
-	public void registerDwarvenRecipeList(L2RecipeList recipe)
+	public void registerDwarvenRecipeList(RecipeList recipe)
 	{
 		_dwarvenRecipeBook.put(recipe.getId(), recipe);
 	}
 	
 	/**
-	 * @param recipeId The Identifier of the L2RecipeList to check in the player's recipe books
+	 * @param recipeId The Identifier of the RecipeList to check in the player's recipe books
 	 * @return <b>TRUE</b> if player has the recipe on Common or Dwarven Recipe book else returns <b>FALSE</b>
 	 */
 	public boolean hasRecipeList(int recipeId)
@@ -1083,8 +1084,8 @@ public final class L2PcInstance extends L2Playable
 	}
 	
 	/**
-	 * Tries to remove a L2RecipList from the table _DwarvenRecipeBook or from table _CommonRecipeBook, those table contain all L2RecipeList of the L2PcInstance.
-	 * @param recipeId The Identifier of the L2RecipeList to remove from the _recipebook.
+	 * Tries to remove a L2RecipList from the table _DwarvenRecipeBook or from table _CommonRecipeBook, those table contain all RecipeList of the L2PcInstance.
+	 * @param recipeId The Identifier of the RecipeList to remove from the _recipebook.
 	 */
 	public void unregisterRecipeList(int recipeId)
 	{
@@ -2949,7 +2950,7 @@ public final class L2PcInstance extends L2Playable
 		if (Config.AUTODESTROY_ITEM_AFTER > 0 && Config.DESTROY_DROPPED_PLAYER_ITEM && !Config.LIST_PROTECTED_ITEMS.contains(item.getItemId()))
 		{
 			if ((item.isEquipable() && Config.DESTROY_EQUIPABLE_PLAYER_ITEM) || !item.isEquipable())
-				ItemsAutoDestroy.getInstance().addItem(item);
+				ItemsAutoDestroyTaskManager.getInstance().addItem(item);
 		}
 		
 		if (Config.DESTROY_DROPPED_PLAYER_ITEM)
@@ -3019,7 +3020,7 @@ public final class L2PcInstance extends L2Playable
 		if (Config.AUTODESTROY_ITEM_AFTER > 0 && Config.DESTROY_DROPPED_PLAYER_ITEM && !Config.LIST_PROTECTED_ITEMS.contains(item.getItemId()))
 		{
 			if ((item.isEquipable() && Config.DESTROY_EQUIPABLE_PLAYER_ITEM) || !item.isEquipable())
-				ItemsAutoDestroy.getInstance().addItem(item);
+				ItemsAutoDestroyTaskManager.getInstance().addItem(item);
 		}
 		
 		if (Config.DESTROY_DROPPED_PLAYER_ITEM)
@@ -3521,16 +3522,16 @@ public final class L2PcInstance extends L2Playable
 	 * </ul>
 	 * <FONT COLOR=#FF0000><B> <U>Caution</U> : If a Party is in progress, distribute Items between party members</B></FONT>
 	 * @param target The reference Object.
-	 * @param item The dropped RewardItem.
+	 * @param item The dropped ItemHolder.
 	 */
-	public void doAutoLoot(L2Attackable target, L2Attackable.RewardItem item)
+	public void doAutoLoot(L2Attackable target, ItemHolder item)
 	{
 		if (isInParty())
 			getParty().distributeItem(this, item, false, target);
-		else if (item.getItemId() == 57)
+		else if (item.getId() == 57)
 			addAdena("Loot", item.getCount(), target, true);
 		else
-			addItem("Loot", item.getItemId(), item.getCount(), target, true);
+			addItem("Loot", item.getId(), item.getCount(), target, true);
 	}
 	
 	/**
@@ -5784,7 +5785,7 @@ public final class L2PcInstance extends L2Playable
 			statement.execute();
 			statement.close();
 			
-			for (L2RecipeList recipe : getCommonRecipeBook())
+			for (RecipeList recipe : getCommonRecipeBook())
 			{
 				statement = con.prepareStatement("INSERT INTO character_recipebook (char_id, id, type) values(?,?,0)");
 				statement.setInt(1, getObjectId());
@@ -5793,7 +5794,7 @@ public final class L2PcInstance extends L2Playable
 				statement.close();
 			}
 			
-			for (L2RecipeList recipe : getDwarvenRecipeBook())
+			for (RecipeList recipe : getDwarvenRecipeBook())
 			{
 				statement = con.prepareStatement("INSERT INTO character_recipebook (char_id, id, type) values(?,?,1)");
 				statement.setInt(1, getObjectId());
@@ -5821,7 +5822,7 @@ public final class L2PcInstance extends L2Playable
 			
 			while (rset.next())
 			{
-				final L2RecipeList recipe = RecipeTable.getInstance().getRecipeList(rset.getInt("id"));
+				final RecipeList recipe = RecipeTable.getInstance().getRecipeList(rset.getInt("id"));
 				if (rset.getInt("type") == 1)
 					registerDwarvenRecipeList(recipe);
 				else
@@ -10263,7 +10264,7 @@ public final class L2PcInstance extends L2Playable
 		return _charges.get();
 	}
 	
-	public synchronized void increaseCharges(int count, int max)
+	public void increaseCharges(int count, int max)
 	{
 		if (_charges.get() >= max)
 		{
@@ -10271,9 +10272,7 @@ public final class L2PcInstance extends L2Playable
 			return;
 		}
 		
-		// if no charges - start clear task
-		if (_charges.get() == 0)
-			restartChargeTask();
+		restartChargeTask();
 		
 		if (_charges.addAndGet(count) >= max)
 		{
@@ -10286,13 +10285,15 @@ public final class L2PcInstance extends L2Playable
 		sendPacket(new EtcStatusUpdate(this));
 	}
 	
-	public synchronized boolean decreaseCharges(int count)
+	public boolean decreaseCharges(int count)
 	{
 		if (_charges.get() < count)
 			return false;
 		
 		if (_charges.addAndGet(-count) == 0)
 			stopChargeTask();
+		else
+			restartChargeTask();
 		
 		sendPacket(new EtcStatusUpdate(this));
 		return true;
