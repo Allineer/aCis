@@ -1013,12 +1013,12 @@ public class Quest extends ManagedScript
 		return null;
 	}
 	
-	public final boolean notifyDeath(L2Character killer, L2Character victim, L2PcInstance player)
+	public final boolean notifyDeath(L2Character killer, L2PcInstance player)
 	{
 		String res = null;
 		try
 		{
-			res = onDeath(killer, victim, player);
+			res = onDeath(killer, player);
 		}
 		catch (Exception e)
 		{
@@ -1030,7 +1030,7 @@ public class Quest extends ManagedScript
 		return showResult(null, player, res);
 	}
 	
-	public String onDeath(L2Character killer, L2Character victim, L2PcInstance player)
+	public String onDeath(L2Character killer, L2PcInstance player)
 	{
 		if (killer instanceof L2Npc)
 			return onAdvEvent("", (L2Npc) killer, player);

@@ -208,7 +208,6 @@ import net.sf.l2j.gameserver.network.serverpackets.ShortBuffStatusUpdate;
 import net.sf.l2j.gameserver.network.serverpackets.ShortCutInit;
 import net.sf.l2j.gameserver.network.serverpackets.SkillCoolTime;
 import net.sf.l2j.gameserver.network.serverpackets.SkillList;
-import net.sf.l2j.gameserver.network.serverpackets.Snoop;
 import net.sf.l2j.gameserver.network.serverpackets.SocialAction;
 import net.sf.l2j.gameserver.network.serverpackets.StaticObject;
 import net.sf.l2j.gameserver.network.serverpackets.StatusUpdate;
@@ -497,9 +496,6 @@ public final class L2PcInstance extends L2Playable
 	private final ShortCuts _shortCuts = new ShortCuts(this);
 	
 	private final MacroList _macroses = new MacroList(this);
-	
-	private final List<L2PcInstance> _snoopListener = new ArrayList<>();
-	private final List<L2PcInstance> _snoopedPlayer = new ArrayList<>();
 	
 	private ClassId _skillLearningClassId;
 	
@@ -8866,9 +8862,10 @@ public final class L2PcInstance extends L2Playable
 	public void onActionRequest()
 	{
 		if (isSpawnProtected())
+		{
 			sendMessage("As you acted, you are no longer under spawn protection.");
-		
-		setProtection(false);
+			setProtection(false);
+		}
 	}
 	
 	/**
@@ -8962,40 +8959,6 @@ public final class L2PcInstance extends L2Playable
 		// notify the tamed beast of attacks
 		if (getTrainedBeast() != null)
 			getTrainedBeast().onOwnerGotAttacked(attacker);
-	}
-	
-	public void broadcastSnoop(int type, String name, String _text)
-	{
-		if (_snoopListener.size() > 0)
-		{
-			Snoop sn = new Snoop(getObjectId(), getName(), type, name, _text);
-			
-			for (L2PcInstance pci : _snoopListener)
-				if (pci != null)
-					pci.sendPacket(sn);
-		}
-	}
-	
-	public void addSnooper(L2PcInstance pci)
-	{
-		if (!_snoopListener.contains(pci))
-			_snoopListener.add(pci);
-	}
-	
-	public void removeSnooper(L2PcInstance pci)
-	{
-		_snoopListener.remove(pci);
-	}
-	
-	public void addSnooped(L2PcInstance pci)
-	{
-		if (!_snoopedPlayer.contains(pci))
-			_snoopedPlayer.add(pci);
-	}
-	
-	public void removeSnooped(L2PcInstance pci)
-	{
-		_snoopedPlayer.remove(pci);
 	}
 	
 	public synchronized void addBypass(String bypass)
@@ -9254,12 +9217,6 @@ public final class L2PcInstance extends L2Playable
 			
 			if (getClanId() > 0)
 				getClan().broadcastToOtherOnlineMembers(new PledgeShowMemberListUpdate(this), this);
-			
-			for (L2PcInstance player : _snoopedPlayer)
-				player.removeSnooper(this);
-			
-			for (L2PcInstance player : _snoopListener)
-				player.removeSnooped(this);
 			
 			// Remove L2Object object from _allObjects of L2World
 			L2World.getInstance().removeObject(this);

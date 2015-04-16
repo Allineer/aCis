@@ -158,7 +158,7 @@ public abstract class L2Playable extends L2Character
 		// Notify Quest of L2Playable's death
 		final L2PcInstance actingPlayer = getActingPlayer();
 		for (QuestState qs : actingPlayer.getNotifyQuestOfDeath())
-			qs.getQuest().notifyDeath((killer == null ? this : killer), this, actingPlayer);
+			qs.getQuest().notifyDeath((killer == null ? this : killer), actingPlayer);
 		
 		if (killer != null)
 		{

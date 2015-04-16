@@ -1,4 +1,24 @@
 ====================================================================================================
+Changeset 330 @ 2014.08.12
+
+Quests, Misc
+
+Quests
+    - Addition of Q230, Q233, Q327 - ty to sharers.
+    - Addition of victory pose on quests completion in few quests. Ty roko91 for the list.
+
+Misc
+    - Fix spawn protection task NPE (shit happens). Ty sahar.
+    - Drop a useless parameter on notifyDeath() method.
+    - Drop methods && variables related to snoop system. Cleanup AdminGmChat.
+    - Drop the svnversion check, cleanup both build.xml.
+    - AdminEffects handler:
+        - Move //para_all && //unpara_all commands higher to don't be overwhelmed by //para && //unpara. Paralize visual effect is now stucked to old effect 2.
+        - Drop sendPacket when a broadcastPacket is also sent.
+        - Multiple random cleanup, going from merging checks to messages addition.
+        - //play_sounds is renamed //jukebox (to avoid to mess with //play_sound).
+
+====================================================================================================
 Changeset 329 @ 2014.08.09
 
 Quests, Herbs, Misc

@@ -16,6 +16,7 @@ import net.sf.l2j.gameserver.model.actor.L2Npc;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.quest.Quest;
 import net.sf.l2j.gameserver.model.quest.QuestState;
+import net.sf.l2j.gameserver.network.serverpackets.SocialAction;
 
 public class Q241_PossessorOfAPreciousSoul extends Quest
 {
@@ -181,6 +182,7 @@ public class Q241_PossessorOfAPreciousSoul extends Quest
 		{
 			st.giveItems(VIRGIL_LETTER, 1);
 			st.rewardExpAndSp(263043, 0);
+			player.broadcastPacket(new SocialAction(player, 3));
 			st.playSound(QuestState.SOUND_FINISH);
 			st.exitQuest(false);
 		}
