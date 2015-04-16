@@ -29,7 +29,7 @@ import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 import net.sf.l2j.gameserver.skills.Env;
-import net.sf.l2j.gameserver.skills.SkillHolder;
+import net.sf.l2j.gameserver.model.holder.SkillHolder;
 import net.sf.l2j.gameserver.skills.basefuncs.Func;
 import net.sf.l2j.gameserver.skills.basefuncs.FuncTemplate;
 import net.sf.l2j.gameserver.skills.conditions.Condition;

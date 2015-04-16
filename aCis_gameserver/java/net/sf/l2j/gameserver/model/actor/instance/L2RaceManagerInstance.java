@@ -25,7 +25,6 @@ import net.sf.l2j.gameserver.model.actor.knownlist.RaceManagerKnownList;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.ActionFailed;
 import net.sf.l2j.gameserver.network.serverpackets.DeleteObject;
-import net.sf.l2j.gameserver.network.serverpackets.InventoryUpdate;
 import net.sf.l2j.gameserver.network.serverpackets.L2GameServerPacket;
 import net.sf.l2j.gameserver.network.serverpackets.MonRaceInfo;
 import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
@@ -285,18 +284,18 @@ public class L2RaceManagerInstance extends L2NpcInstance
 			return;
 		
 		int npcId = getTemplate().getNpcId();
-		String filename, search;
+		String search;
+		
 		NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
-		filename = getHtmlPath(npcId, 5);
-		html.setFile(filename);
+		html.setFile(getHtmlPath(npcId, 5));
 		for (int i = 0; i < 8; i++)
 		{
 			int n = i + 1;
 			search = "Mob" + n;
 			html.replace(search, MonsterRace.getInstance().getMonsters()[i].getTemplate().getName());
 		}
-		html.replace("1race", String.valueOf(_raceNumber));
-		html.replace("%objectId%", String.valueOf(getObjectId()));
+		html.replace("1race", _raceNumber);
+		html.replace("%objectId%", getObjectId());
 		player.sendPacket(html);
 		player.sendPacket(ActionFailed.STATIC_PACKET);
 	}
@@ -304,17 +303,18 @@ public class L2RaceManagerInstance extends L2NpcInstance
 	public void showMonsterInfo(L2PcInstance player)
 	{
 		int npcId = getTemplate().getNpcId();
-		String filename, search;
+		String search;
+		
 		NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
-		filename = getHtmlPath(npcId, 6);
-		html.setFile(filename);
+		html.setFile(getHtmlPath(npcId, 6));
+		
 		for (int i = 0; i < 8; i++)
 		{
 			int n = i + 1;
 			search = "Mob" + n;
 			html.replace(search, MonsterRace.getInstance().getMonsters()[i].getTemplate().getName());
 		}
-		html.replace("%objectId%", String.valueOf(getObjectId()));
+		html.replace("%objectId%", getObjectId());
 		player.sendPacket(html);
 		player.sendPacket(ActionFailed.STATIC_PACKET);
 	}
@@ -325,13 +325,13 @@ public class L2RaceManagerInstance extends L2NpcInstance
 			return;
 		
 		int npcId = getTemplate().getNpcId();
-		String filename, search, replace;
+		String search, replace;
+		
 		NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
 		
 		if (val < 10)
 		{
-			filename = getHtmlPath(npcId, 2);
-			html.setFile(filename);
+			html.setFile(getHtmlPath(npcId, 2));
 			for (int i = 0; i < 8; i++)
 			{
 				int n = i + 1;
@@ -343,7 +343,7 @@ public class L2RaceManagerInstance extends L2NpcInstance
 				html.replace(search, "");
 			else
 			{
-				html.replace(search, "" + val);
+				html.replace(search, val);
 				player.setRace(0, val);
 			}
 		}
@@ -352,9 +352,8 @@ public class L2RaceManagerInstance extends L2NpcInstance
 			if (player.getRace(0) == 0)
 				return;
 			
-			filename = getHtmlPath(npcId, 3);
-			html.setFile(filename);
-			html.replace("0place", "" + player.getRace(0));
+			html.setFile(getHtmlPath(npcId, 3));
+			html.replace("0place", player.getRace(0));
 			search = "Mob1";
 			replace = MonsterRace.getInstance().getMonsters()[player.getRace(0) - 1].getTemplate().getName();
 			html.replace(search, replace);
@@ -364,7 +363,7 @@ public class L2RaceManagerInstance extends L2NpcInstance
 				html.replace(search, "");
 			else
 			{
-				html.replace(search, "" + _cost[val - 11]);
+				html.replace(search, _cost[val - 11]);
 				player.setRace(1, val - 10);
 			}
 		}
@@ -373,21 +372,20 @@ public class L2RaceManagerInstance extends L2NpcInstance
 			if (player.getRace(0) == 0 || player.getRace(1) == 0)
 				return;
 			
-			filename = getHtmlPath(npcId, 4);
-			html.setFile(filename);
-			html.replace("0place", "" + player.getRace(0));
+			html.setFile(getHtmlPath(npcId, 4));
+			html.replace("0place", player.getRace(0));
 			search = "Mob1";
 			replace = MonsterRace.getInstance().getMonsters()[player.getRace(0) - 1].getTemplate().getName();
 			html.replace(search, replace);
 			search = "0adena";
 			int price = _cost[player.getRace(1) - 1];
-			html.replace(search, "" + price);
+			html.replace(search, price);
 			search = "0tax";
 			int tax = 0;
-			html.replace(search, "" + tax);
+			html.replace(search, tax);
 			search = "0total";
 			int total = price + tax;
-			html.replace(search, "" + total);
+			html.replace(search, total);
 		}
 		else
 		{
@@ -410,17 +408,11 @@ public class L2RaceManagerInstance extends L2NpcInstance
 			item.setCustomType1(ticket);
 			item.setCustomType2(_cost[priceId - 1] / 100);
 			
-			player.getInventory().addItem("Race", item, player, this);
-			InventoryUpdate iu = new InventoryUpdate();
-			iu.addItem(item);
-			
-			L2ItemInstance adenaupdate = player.getInventory().getItemByItemId(57);
-			iu.addModifiedItem(adenaupdate);
-			player.sendPacket(iu);
+			player.addItem("Race", item, player, true);
 			return;
 		}
-		html.replace("1race", String.valueOf(_raceNumber));
-		html.replace("%objectId%", String.valueOf(getObjectId()));
+		html.replace("1race", _raceNumber);
+		html.replace("%objectId%", getObjectId());
 		player.sendPacket(html);
 		player.sendPacket(ActionFailed.STATIC_PACKET);
 	}

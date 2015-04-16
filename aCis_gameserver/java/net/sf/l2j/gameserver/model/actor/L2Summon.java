@@ -233,15 +233,15 @@ public abstract class L2Summon extends L2Playable
 			html.setFile("data/html/admin/petinfo.htm");
 			String name = getName();
 			html.replace("%name%", name == null ? "N/A" : name);
-			html.replace("%level%", Integer.toString(getLevel()));
-			html.replace("%exp%", Long.toString(getStat().getExp()));
+			html.replace("%level%", getLevel());
+			html.replace("%exp%", getStat().getExp());
 			String owner = getActingPlayer().getName();
 			html.replace("%owner%", " <a action=\"bypass -h admin_character_info " + owner + "\">" + owner + "</a>");
 			html.replace("%class%", getClass().getSimpleName());
-			html.replace("%ai%", hasAI() ? String.valueOf(getAI().getIntention().name()) : "NULL");
+			html.replace("%ai%", hasAI() ? getAI().getIntention().name() : "NULL");
 			html.replace("%hp%", (int) getStatus().getCurrentHp() + "/" + getStat().getMaxHp());
 			html.replace("%mp%", (int) getStatus().getCurrentMp() + "/" + getStat().getMaxMp());
-			html.replace("%karma%", Integer.toString(getKarma()));
+			html.replace("%karma%", getKarma());
 			html.replace("%undead%", isUndead() ? "yes" : "no");
 			
 			if (this instanceof L2PetInstance)

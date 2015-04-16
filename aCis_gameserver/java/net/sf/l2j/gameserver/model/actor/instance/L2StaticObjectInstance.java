@@ -124,11 +124,11 @@ public class L2StaticObjectInstance extends L2Object
 		{
 			NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
 			html.setFile("data/html/admin/staticinfo.htm");
-			html.replace("%x%", String.valueOf(getX()));
-			html.replace("%y%", String.valueOf(getY()));
-			html.replace("%z%", String.valueOf(getZ()));
-			html.replace("%objid%", String.valueOf(getObjectId()));
-			html.replace("%staticid%", String.valueOf(getStaticObjectId()));
+			html.replace("%x%", getX());
+			html.replace("%y%", getY());
+			html.replace("%z%", getZ());
+			html.replace("%objid%", getObjectId());
+			html.replace("%staticid%", getStaticObjectId());
 			html.replace("%class%", getClass().getSimpleName());
 			player.sendPacket(html);
 			player.sendPacket(ActionFailed.STATIC_PACKET);

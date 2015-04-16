@@ -234,10 +234,9 @@ public class L2SepulcherNpcInstance extends L2NpcInstance
 	@Override
 	public void showChatWindow(L2PcInstance player, int val)
 	{
-		String filename = getHtmlPath(getNpcId(), val);
 		NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
-		html.setFile(filename);
-		html.replace("%objectId%", String.valueOf(getObjectId()));
+		html.setFile(getHtmlPath(getNpcId(), val));
+		html.replace("%objectId%", getObjectId());
 		player.sendPacket(html);
 		player.sendPacket(ActionFailed.STATIC_PACKET);
 	}

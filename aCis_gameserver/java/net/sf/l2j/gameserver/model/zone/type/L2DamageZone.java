@@ -21,7 +21,9 @@ import net.sf.l2j.gameserver.model.actor.L2Character;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.zone.L2CastleZoneType;
 import net.sf.l2j.gameserver.model.zone.ZoneId;
+import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.EtcStatusUpdate;
+import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 import net.sf.l2j.gameserver.skills.Stats;
 
 /**
@@ -93,7 +95,13 @@ public class L2DamageZone extends L2CastleZoneType
 			synchronized (this)
 			{
 				if (_task == null)
+				{
 					_task = ThreadPoolManager.getInstance().scheduleGeneralAtFixedRate(new ApplyDamage(this), _startTask, _reuseTask);
+					
+					// Message for castle traps.
+					if (getCastle() != null)
+						getCastle().getSiege().announceToPlayer(SystemMessage.getSystemMessage(SystemMessageId.A_TRAP_DEVICE_HAS_BEEN_TRIPPED), false);
+				}
 			}
 		}
 		
@@ -107,9 +115,6 @@ public class L2DamageZone extends L2CastleZoneType
 	@Override
 	protected void onExit(L2Character character)
 	{
-		if (_characterList.isEmpty() && _task != null)
-			stopTask();
-		
 		if (character instanceof L2PcInstance)
 		{
 			character.setInsideZone(ZoneId.DANGER_AREA, false);
@@ -151,6 +156,14 @@ public class L2DamageZone extends L2CastleZoneType
 				return;
 			}
 			
+			// Cancels the task if characters list is empty.
+			if (_dmgZone.getCharactersInside().isEmpty())
+			{
+				_dmgZone.stopTask();
+				return;
+			}
+			
+			// Effect all people inside the zone.
 			for (L2Character temp : _dmgZone.getCharactersInside())
 			{
 				if (temp != null && !temp.isDead())

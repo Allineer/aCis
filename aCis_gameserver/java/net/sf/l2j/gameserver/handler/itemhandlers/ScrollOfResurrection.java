@@ -24,7 +24,7 @@ import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2PetInstance;
 import net.sf.l2j.gameserver.model.entity.Castle;
 import net.sf.l2j.gameserver.network.SystemMessageId;
-import net.sf.l2j.gameserver.skills.SkillHolder;
+import net.sf.l2j.gameserver.model.holder.SkillHolder;
 
 public class ScrollOfResurrection implements IItemHandler
 {

@@ -28,7 +28,7 @@ import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
 
 public class L2ControlTowerInstance extends L2Npc
 {
-	private List<L2Spawn> _guards;
+	private final List<L2Spawn> _guards = new ArrayList<>();
 	
 	public L2ControlTowerInstance(int objectId, L2NpcTemplate template)
 	{
@@ -39,14 +39,14 @@ public class L2ControlTowerInstance extends L2Npc
 	public boolean isAttackable()
 	{
 		// Attackable during siege by attacker only
-		return (getCastle() != null && getCastle().getCastleId() > 0 && getCastle().getSiege().isInProgress());
+		return (getCastle() != null && getCastle().getSiege().isInProgress());
 	}
 	
 	@Override
 	public boolean isAutoAttackable(L2Character attacker)
 	{
 		// Attackable during siege by attacker only
-		return (attacker != null && attacker instanceof L2PcInstance && getCastle() != null && getCastle().getCastleId() > 0 && getCastle().getSiege().isInProgress() && getCastle().getSiege().checkIsAttacker(((L2PcInstance) attacker).getClan()));
+		return (attacker != null && attacker instanceof L2PcInstance && getCastle() != null && getCastle().getSiege().isInProgress() && getCastle().getSiege().checkIsAttacker(((L2PcInstance) attacker).getClan()));
 	}
 	
 	@Override
@@ -86,37 +86,21 @@ public class L2ControlTowerInstance extends L2Npc
 		{
 			getCastle().getSiege().killedCT();
 			
-			if (_guards != null && !_guards.isEmpty())
-			{
-				for (L2Spawn spawn : _guards)
-				{
-					if (spawn == null)
-						continue;
-					
-					spawn.stopRespawn();
-				}
-				_guards.clear();
-			}
+			for (L2Spawn spawn : _guards)
+				spawn.stopRespawn();
+			
+			_guards.clear();
 		}
 		return super.doDie(killer);
 	}
 	
 	public void registerGuard(L2Spawn guard)
 	{
-		getGuards().add(guard);
+		_guards.add(guard);
 	}
 	
 	public final List<L2Spawn> getGuards()
 	{
-		if (_guards == null)
-		{
-			synchronized (this)
-			{
-				if (_guards == null)
-					_guards = new ArrayList<>();
-			}
-		}
-		
 		return _guards;
 	}
 }

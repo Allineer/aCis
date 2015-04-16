@@ -33,7 +33,6 @@ import net.sf.l2j.gameserver.network.serverpackets.ExShowManorDefaultInfo;
 import net.sf.l2j.gameserver.network.serverpackets.ExShowSeedInfo;
 import net.sf.l2j.gameserver.network.serverpackets.ExShowSeedSetting;
 import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
-import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
 import net.sf.l2j.gameserver.util.Util;
 
@@ -464,8 +463,7 @@ public class L2CastleChamberlainInstance extends L2MerchantInstance
 			{
 				if (player.getInventory().getItemByItemId(6841) == null)
 				{
-					player.getInventory().addItem("Castle Crown", 6841, 1, player, this);
-					player.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.EARNED_ITEM_S1).addItemName(6841));
+					player.addItem("Castle Crown", 6841, 1, player, true);
 					
 					html.setFile("data/html/chamberlain/gavecrown.htm");
 					html.replace("%CharName%", player.getName());
@@ -494,17 +492,14 @@ public class L2CastleChamberlainInstance extends L2MerchantInstance
 			
 			NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
 			if (val.isEmpty())
-			{
 				html.setFile("data/html/chamberlain/" + getNpcId() + "-gu.htm");
-				html.replace("%objectId%", getObjectId());
-			}
 			else
 			{
 				html.setFile("data/html/chamberlain/doors-update.htm");
-				html.replace("%objectId%", getObjectId());
 				html.replace("%id%", val);
 				html.replace("%type%", st.nextToken());
 			}
+			html.replace("%objectId%", getObjectId());
 			player.sendPacket(html);
 		}
 		else if (actualCommand.equalsIgnoreCase("doors_choose_upgrade"))
@@ -538,7 +533,11 @@ public class L2CastleChamberlainInstance extends L2MerchantInstance
 				return;
 			
 			final int id = Integer.parseInt(val);
-			final int currentHpRatio = castle.getDoorUpgrade(id);
+			final L2DoorInstance door = castle.getDoor(id);
+			if (door == null)
+				return;
+			
+			final int currentHpRatio = door.getUpgradeHpRatio();
 			
 			NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
 			
@@ -547,7 +546,7 @@ public class L2CastleChamberlainInstance extends L2MerchantInstance
 				html.setFile("data/html/chamberlain/doors-already-updated.htm");
 				html.replace("%level%", currentHpRatio * 100);
 			}
-			else if (!player.reduceAdena("doors_upgrade", price, player, false))
+			else if (!player.reduceAdena("doors_upgrade", price, player, true))
 				html.setFile("data/html/chamberlain/not-enough-adena.htm");
 			else
 			{
@@ -555,7 +554,6 @@ public class L2CastleChamberlainInstance extends L2MerchantInstance
 				
 				html.setFile("data/html/chamberlain/doors-success.htm");
 			}
-			
 			html.replace("%objectId%", getObjectId());
 			player.sendPacket(html);
 		}
@@ -572,7 +570,6 @@ public class L2CastleChamberlainInstance extends L2MerchantInstance
 				html.setFile("data/html/chamberlain/traps-update" + ((castle.getName().equalsIgnoreCase("aden")) ? "1" : "") + ".htm");
 				html.replace("%trapIndex%", val);
 			}
-			
 			html.replace("%objectId%", getObjectId());
 			player.sendPacket(html);
 		}
@@ -613,7 +610,7 @@ public class L2CastleChamberlainInstance extends L2MerchantInstance
 				html.setFile("data/html/chamberlain/traps-already-updated.htm");
 				html.replace("%level%", currentLevel);
 			}
-			else if (!player.reduceAdena("traps_upgrade", price, player, false))
+			else if (!player.reduceAdena("traps_upgrade", price, player, true))
 				html.setFile("data/html/chamberlain/not-enough-adena.htm");
 			else
 			{
@@ -621,7 +618,6 @@ public class L2CastleChamberlainInstance extends L2MerchantInstance
 				
 				html.setFile("data/html/chamberlain/traps-success.htm");
 			}
-			
 			html.replace("%objectId%", getObjectId());
 			player.sendPacket(html);
 		}
@@ -652,20 +648,17 @@ public class L2CastleChamberlainInstance extends L2MerchantInstance
 	
 	protected int validateCondition(L2PcInstance player)
 	{
-		if (getCastle() != null && getCastle().getCastleId() > 0)
+		if (getCastle() != null && player.getClan() != null)
 		{
-			if (player.getClan() != null)
+			if (getCastle().getSiege().isInProgress())
+				return COND_BUSY_BECAUSE_OF_SIEGE;
+			
+			if (getCastle().getOwnerId() == player.getClanId())
 			{
-				if (getCastle().getSiege().isInProgress())
-					return COND_BUSY_BECAUSE_OF_SIEGE;
+				if (player.isClanLeader())
+					return COND_OWNER;
 				
-				if (getCastle().getOwnerId() == player.getClanId())
-				{
-					if (player.isClanLeader())
-						return COND_OWNER;
-					
-					return COND_CLAN_MEMBER;
-				}
+				return COND_CLAN_MEMBER;
 			}
 		}
 		return COND_ALL_FALSE;
@@ -689,7 +682,7 @@ public class L2CastleChamberlainInstance extends L2MerchantInstance
 		html.setFile(htmlMessage);
 		html.replace("%objectId%", getObjectId());
 		html.replace("%npcId%", getNpcId());
-		html.replace("%time%", String.valueOf(getCastle().getSiegeDate().getTime()));
+		html.replace("%time%", getCastle().getSiegeDate().getTime().toString());
 		player.sendPacket(html);
 	}
 	

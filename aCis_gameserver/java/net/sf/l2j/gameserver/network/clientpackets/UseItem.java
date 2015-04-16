@@ -27,7 +27,7 @@ import net.sf.l2j.gameserver.model.itemcontainer.Inventory;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.ItemList;
 import net.sf.l2j.gameserver.network.serverpackets.PetItemList;
-import net.sf.l2j.gameserver.skills.SkillHolder;
+import net.sf.l2j.gameserver.model.holder.SkillHolder;
 import net.sf.l2j.gameserver.templates.item.L2ActionType;
 import net.sf.l2j.gameserver.templates.item.L2EtcItemType;
 import net.sf.l2j.gameserver.templates.item.L2Item;

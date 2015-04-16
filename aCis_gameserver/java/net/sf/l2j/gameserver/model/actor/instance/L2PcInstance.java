@@ -1954,8 +1954,8 @@ public final class L2PcInstance extends L2Playable
 				_clan.removeClanMember(getObjectId(), 0);
 				sendPacket(SystemMessageId.ACADEMY_MEMBERSHIP_TERMINATED);
 				
-				// receive graduation gift
-				getInventory().addItem("Gift", 8181, 1, this, null); // give academy circlet
+				// receive graduation gift : academy circlet
+				addItem("Gift", 8181, 1, this, true);
 			}
 			
 			if (isSubClassActive())
@@ -2680,9 +2680,8 @@ public final class L2PcInstance extends L2Playable
 			// Cursed Weapon
 			else if (CursedWeaponsManager.getInstance().isCursed(newitem.getItemId()))
 				CursedWeaponsManager.getInstance().activate(this, newitem);
-			
 			// If you pickup arrows and a bow is equipped, try to equip them if no arrows is currently equipped.
-			if (item.getItem().getItemType() == L2EtcItemType.ARROW && getAttackType() == L2WeaponType.BOW && getInventory().getPaperdollItem(Inventory.PAPERDOLL_LHAND) == null)
+			else if (item.getItem().getItemType() == L2EtcItemType.ARROW && getAttackType() == L2WeaponType.BOW && getInventory().getPaperdollItem(Inventory.PAPERDOLL_LHAND) == null)
 				checkAndEquipArrows();
 		}
 	}
@@ -2700,40 +2699,41 @@ public final class L2PcInstance extends L2Playable
 	{
 		if (count > 0)
 		{
-			L2ItemInstance item = null;
-			
-			if (ItemTable.getInstance().getTemplate(itemId) != null)
-				item = ItemTable.getInstance().createDummyItem(itemId);
-			else
+			// Retrieve the template of the item.
+			final L2Item item = ItemTable.getInstance().getTemplate(itemId);
+			if (item == null)
 			{
-				_log.log(Level.SEVERE, "Item doesn't exist so cannot be added. Item ID: " + itemId);
+				_log.log(Level.SEVERE, "Item id " + itemId + "doesn't exist, so it can't be added.");
 				return null;
 			}
-			// Sends message to client if requested
+			
+			// Sends message to client if requested.
 			if (sendMessage && ((!isCastingNow() && item.getItemType() == L2EtcItemType.HERB) || item.getItemType() != L2EtcItemType.HERB))
 			{
 				if (count > 1)
 				{
-					if (process.equalsIgnoreCase("sweep") || process.equalsIgnoreCase("Quest"))
+					if (process.equalsIgnoreCase("Sweep") || process.equalsIgnoreCase("Quest"))
 						sendPacket(SystemMessage.getSystemMessage(SystemMessageId.EARNED_S2_S1_S).addItemName(itemId).addItemNumber(count));
 					else
 						sendPacket(SystemMessage.getSystemMessage(SystemMessageId.YOU_PICKED_UP_S2_S1).addItemName(itemId).addItemNumber(count));
 				}
 				else
 				{
-					if (process.equalsIgnoreCase("sweep") || process.equalsIgnoreCase("Quest"))
+					if (process.equalsIgnoreCase("Sweep") || process.equalsIgnoreCase("Quest"))
 						sendPacket(SystemMessage.getSystemMessage(SystemMessageId.EARNED_ITEM_S1).addItemName(itemId));
 					else
 						sendPacket(SystemMessage.getSystemMessage(SystemMessageId.YOU_PICKED_UP_S1).addItemName(itemId));
 				}
 			}
-			// Auto use herbs - autoloot
-			if (item.getItemType() == L2EtcItemType.HERB) // If item is herb dont add it to iv :]
+			
+			// If the item is herb type, dont add it to inventory.
+			if (item.getItemType() == L2EtcItemType.HERB)
 			{
 				if (!isCastingNow())
 				{
-					L2ItemInstance herb = new L2ItemInstance(_charId, itemId);
-					IItemHandler handler = ItemHandler.getInstance().getItemHandler(herb.getEtcItem());
+					final L2ItemInstance herb = new L2ItemInstance(_charId, itemId);
+					
+					final IItemHandler handler = ItemHandler.getInstance().getItemHandler(herb.getEtcItem());
 					if (handler != null)
 					{
 						handler.useItem(this, herb, false);
@@ -2750,7 +2750,7 @@ public final class L2PcInstance extends L2Playable
 			else
 			{
 				// Add the item to inventory
-				L2ItemInstance createdItem = _inventory.addItem(process, itemId, count, this, reference);
+				final L2ItemInstance createdItem = _inventory.addItem(process, itemId, count, this, reference);
 				
 				// If over capacity, drop the item
 				if (!_inventory.validateCapacity(0, item.isQuestItem()) && createdItem.isDropable() && (!createdItem.isStackable() || createdItem.getLastChange() != L2ItemInstance.MODIFIED))
@@ -2758,6 +2758,9 @@ public final class L2PcInstance extends L2Playable
 				// Cursed Weapon
 				else if (CursedWeaponsManager.getInstance().isCursed(createdItem.getItemId()))
 					CursedWeaponsManager.getInstance().activate(this, createdItem);
+				// If you pickup arrows and a bow is equipped, try to equip them if no arrows is currently equipped.
+				else if (item.getItemType() == L2EtcItemType.ARROW && getAttackType() == L2WeaponType.BOW && getInventory().getPaperdollItem(Inventory.PAPERDOLL_LHAND) == null)
+					checkAndEquipArrows();
 				
 				return createdItem;
 			}
@@ -6573,11 +6576,10 @@ public final class L2PcInstance extends L2Playable
 		// Send Server->Client UserInfo packet to this L2PcInstance
 		sendPacket(new UserInfo(this));
 		
-		// Add the recovered dyes to the player's inventory and notify them.
-		getInventory().addItem("Henna", henna.getDyeId(), L2Henna.getAmountDyeRequire() / 2, this, null);
 		reduceAdena("Henna", henna.getPrice() / 5, this, false);
 		
-		sendPacket(SystemMessage.getSystemMessage(SystemMessageId.EARNED_S2_S1_S).addItemName(henna.getDyeId()).addNumber(L2Henna.getAmountDyeRequire() / 2));
+		// Add the recovered dyes to the player's inventory and notify them.
+		addItem("Henna", henna.getDyeId(), L2Henna.getAmountDyeRequire() / 2, this, true);
 		sendPacket(SystemMessageId.SYMBOL_DELETED);
 		return true;
 	}

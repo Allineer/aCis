@@ -626,10 +626,10 @@ public final class L2ItemInstance extends L2Object
 		{
 			NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
 			html.setFile("data/html/admin/iteminfo.htm");
-			html.replace("%objid%", String.valueOf(getObjectId()));
-			html.replace("%itemid%", String.valueOf(getItemId()));
-			html.replace("%ownerid%", String.valueOf(getOwnerId()));
-			html.replace("%loc%", String.valueOf(getLocation()));
+			html.replace("%objid%", getObjectId());
+			html.replace("%itemid%", getItemId());
+			html.replace("%ownerid%", getOwnerId());
+			html.replace("%loc%", getLocation().toString());
 			html.replace("%class%", getClass().getSimpleName());
 			player.sendPacket(html);
 		}

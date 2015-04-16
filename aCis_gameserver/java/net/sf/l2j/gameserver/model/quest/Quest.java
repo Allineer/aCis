@@ -716,7 +716,7 @@ public class Quest extends ManagedScript
 				npcReply.setFile("./data/scripts/" + getDescr() + "/" + getName() + "/" + result);
 			
 			if (npc != null)
-				npcReply.replace("%objectId%", String.valueOf(npc.getObjectId()));
+				npcReply.replace("%objectId%", npc.getObjectId());
 			
 			player.sendPacket(npcReply);
 			player.sendPacket(ActionFailed.STATIC_PACKET);
@@ -727,7 +727,7 @@ public class Quest extends ManagedScript
 			npcReply.setHtml(result);
 			
 			if (npc != null)
-				npcReply.replace("%objectId%", String.valueOf(npc.getObjectId()));
+				npcReply.replace("%objectId%", npc.getObjectId());
 			
 			player.sendPacket(npcReply);
 			player.sendPacket(ActionFailed.STATIC_PACKET);

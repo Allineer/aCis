@@ -90,7 +90,6 @@ import net.sf.l2j.gameserver.model.L2Multisell;
 import net.sf.l2j.gameserver.model.L2World;
 import net.sf.l2j.gameserver.model.PartyMatchRoomList;
 import net.sf.l2j.gameserver.model.PartyMatchWaitingList;
-import net.sf.l2j.gameserver.model.entity.Castle;
 import net.sf.l2j.gameserver.model.entity.Hero;
 import net.sf.l2j.gameserver.model.olympiad.Olympiad;
 import net.sf.l2j.gameserver.model.olympiad.OlympiadGameManager;
@@ -203,12 +202,12 @@ public class GameServer
 		Util.printSection("World Bosses");
 		GrandBossManager.init();
 		
-		Util.printSection("Castles");
-		CastleManager.getInstance().load();
-		
 		Util.printSection("Seven Signs");
 		SevenSigns.getInstance().spawnSevenSignsNPC();
 		SevenSignsFestival.getInstance();
+		
+		Util.printSection("Castles");
+		CastleManager.getInstance().load();
 		
 		Util.printSection("Sieges");
 		SiegeManager.getInstance();
@@ -225,8 +224,6 @@ public class GameServer
 		NpcTable.getInstance();
 		NpcWalkerRoutesTable.getInstance();
 		DoorTable.getInstance();
-		for (Castle castle : CastleManager.getInstance().getCastles())
-			castle.loadDoorUpgrade();
 		StaticObjects.load();
 		SpawnTable.getInstance();
 		RaidBossSpawnManager.getInstance();

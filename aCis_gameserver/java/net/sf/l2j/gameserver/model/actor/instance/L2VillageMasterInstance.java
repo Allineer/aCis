@@ -464,7 +464,7 @@ public class L2VillageMasterInstance extends L2NpcInstance
 					break;
 			}
 			
-			html.replace("%objectId%", String.valueOf(getObjectId()));
+			html.replace("%objectId%", getObjectId());
 			player.sendPacket(html);
 		}
 		else

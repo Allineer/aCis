@@ -29,7 +29,6 @@ import net.sf.l2j.L2DatabaseFactory;
 import net.sf.l2j.gameserver.ThreadPoolManager;
 import net.sf.l2j.gameserver.datatables.ItemTable;
 import net.sf.l2j.gameserver.datatables.ServerVariables;
-import net.sf.l2j.gameserver.model.actor.instance.L2NpcInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
@@ -322,9 +321,9 @@ public class FishingChampionshipManager
 		pl.sendPacket(html);
 	}
 	
-	public void showChampScreen(L2PcInstance pl, L2NpcInstance npc)
+	public void showChampScreen(L2PcInstance pl, int objectId)
 	{
-		NpcHtmlMessage html = new NpcHtmlMessage(0);
+		NpcHtmlMessage html = new NpcHtmlMessage(objectId);
 		html.setFile("data/html/fisherman/championship/fish_event001.htm");
 		
 		String str = null;
@@ -342,7 +341,7 @@ public class FishingChampionshipManager
 		html.replace("%prizeFour%", Config.ALT_FISH_CHAMPIONSHIP_REWARD_4);
 		html.replace("%prizeFive%", Config.ALT_FISH_CHAMPIONSHIP_REWARD_5);
 		html.replace("%refresh%", getTimeRemaining());
-		html.replace("%objectId%", npc.getObjectId());
+		html.replace("%objectId%", objectId);
 		pl.sendPacket(html);
 	}
 	

@@ -116,7 +116,7 @@ public final class L2TeleporterInstance extends L2NpcInstance
 			content = HtmCache.getInstance().getHtmForce("data/html/teleporter/" + getNpcId() + "-1.htm");
 		
 		html.setHtml(content);
-		html.replace("%objectId%", String.valueOf(getObjectId()));
+		html.replace("%objectId%", getObjectId());
 		html.replace("%npcname%", getName());
 		player.sendPacket(html);
 	}
@@ -142,7 +142,7 @@ public final class L2TeleporterInstance extends L2NpcInstance
 		
 		NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
 		html.setFile(filename);
-		html.replace("%objectId%", String.valueOf(getObjectId()));
+		html.replace("%objectId%", getObjectId());
 		html.replace("%npcname%", getName());
 		player.sendPacket(html);
 	}
@@ -172,7 +172,7 @@ public final class L2TeleporterInstance extends L2NpcInstance
 			{
 				NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
 				html.setFile("data/html/teleporter/nobleteleporter-no.htm");
-				html.replace("%objectId%", String.valueOf(getObjectId()));
+				html.replace("%objectId%", getObjectId());
 				html.replace("%npcname%", getName());
 				player.sendPacket(html);
 				return;

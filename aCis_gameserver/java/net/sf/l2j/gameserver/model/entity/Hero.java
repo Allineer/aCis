@@ -614,9 +614,9 @@ public class Hero
 				FightReply.replace("%buttnext%", "");
 			}
 			
-			FightReply.replace("%win%", String.valueOf(_win));
-			FightReply.replace("%draw%", String.valueOf(_draw));
-			FightReply.replace("%loos%", String.valueOf(_loss));
+			FightReply.replace("%win%", _win);
+			FightReply.replace("%draw%", _draw);
+			FightReply.replace("%loos%", _loss);
 			
 			activeChar.sendPacket(FightReply);
 		}

@@ -36,6 +36,7 @@ import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2PetInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2SiegeFlagInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2SummonInstance;
+import net.sf.l2j.gameserver.model.holder.ItemHolder;
 import net.sf.l2j.gameserver.model.zone.ZoneId;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
@@ -2467,51 +2468,49 @@ public abstract class L2Skill implements IChanceSkillTrigger
 	 */
 	private L2ExtractableSkill parseExtractableSkill(int skillId, int skillLvl, String values)
 	{
-		String[] lineSplit = values.split(";");
+		final String[] prodLists = values.split(";");
+		final List<L2ExtractableProductItem> products = new ArrayList<>();
 		
-		final List<L2ExtractableProductItem> product_temp = new ArrayList<>();
-		
-		for (int i = 0; i <= (lineSplit.length - 1); i++)
+		for (String prodList : prodLists)
 		{
-			final String[] lineSplit2 = lineSplit[i].split(",");
+			final String[] prodData = prodList.split(",");
 			
-			if (lineSplit2.length < 3)
+			if (prodData.length < 3)
 				_log.warning("Extractable skills data: Error in Skill Id: " + skillId + " Level: " + skillLvl + " -> wrong seperator!");
 			
-			int[] production = null;
-			int[] amount = null;
+			final int lenght = prodData.length - 1;
+			
+			List<ItemHolder> items = null;
 			double chance = 0;
 			int prodId = 0;
 			int quantity = 0;
+			
 			try
 			{
-				int k = 0;
-				production = new int[(lineSplit2.length - 1) / 2];
-				amount = new int[(lineSplit2.length - 1) / 2];
-				for (int j = 0; j < (lineSplit2.length - 1); j++)
+				items = new ArrayList<>(lenght / 2);
+				for (int j = 0; j < lenght; j++)
 				{
-					prodId = Integer.parseInt(lineSplit2[j]);
-					quantity = Integer.parseInt(lineSplit2[j += 1]);
-					if ((prodId <= 0) || (quantity <= 0))
+					prodId = Integer.parseInt(prodData[j]);
+					quantity = Integer.parseInt(prodData[j += 1]);
+					
+					if (prodId <= 0 || quantity <= 0)
 						_log.warning("Extractable skills data: Error in Skill Id: " + skillId + " Level: " + skillLvl + " wrong production Id: " + prodId + " or wrond quantity: " + quantity + "!");
-					production[k] = prodId;
-					amount[k] = quantity;
-					k++;
+					
+					items.add(new ItemHolder(prodId, quantity));
 				}
-				chance = Double.parseDouble(lineSplit2[lineSplit2.length - 1]);
+				chance = Double.parseDouble(prodData[lenght]);
 			}
 			catch (Exception e)
 			{
 				_log.warning("Extractable skills data: Error in Skill Id: " + skillId + " Level: " + skillLvl + " -> incomplete/invalid production data or wrong seperator!");
 			}
-			
-			product_temp.add(new L2ExtractableProductItem(production, amount, chance));
+			products.add(new L2ExtractableProductItem(items, chance));
 		}
 		
-		if (product_temp.isEmpty())
+		if (products.isEmpty())
 			_log.warning("Extractable skills data: Error in Skill Id: " + skillId + " Level: " + skillLvl + " -> There are no production items!");
 		
-		return new L2ExtractableSkill(SkillTable.getSkillHashCode(this), product_temp);
+		return new L2ExtractableSkill(SkillTable.getSkillHashCode(this), products);
 	}
 	
 	public L2ExtractableSkill getExtractableSkill()

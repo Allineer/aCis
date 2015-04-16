@@ -80,7 +80,7 @@ public final class RequestActionUse extends L2GameClientPacket
 		final L2Object target = activeChar.getTarget();
 		
 		if (Config.DEBUG)
-			_log.info("Requested Action ID: " + String.valueOf(_actionId));
+			_log.info("Requested Action ID: " + _actionId);
 		
 		switch (_actionId)
 		{

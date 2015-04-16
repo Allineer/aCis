@@ -29,7 +29,7 @@ import net.sf.l2j.gameserver.model.quest.Quest;
 import net.sf.l2j.gameserver.model.quest.QuestEventType;
 import net.sf.l2j.gameserver.skills.Env;
 import net.sf.l2j.gameserver.skills.Formulas;
-import net.sf.l2j.gameserver.skills.SkillHolder;
+import net.sf.l2j.gameserver.model.holder.SkillHolder;
 import net.sf.l2j.gameserver.skills.basefuncs.Func;
 import net.sf.l2j.gameserver.skills.basefuncs.FuncTemplate;
 import net.sf.l2j.gameserver.skills.conditions.Condition;

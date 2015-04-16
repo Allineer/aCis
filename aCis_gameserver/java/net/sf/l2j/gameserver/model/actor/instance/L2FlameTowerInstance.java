@@ -23,13 +23,15 @@ import net.sf.l2j.gameserver.model.actor.L2Character;
 import net.sf.l2j.gameserver.model.actor.L2Npc;
 import net.sf.l2j.gameserver.model.zone.L2CastleZoneType;
 import net.sf.l2j.gameserver.model.zone.L2ZoneType;
+import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.ActionFailed;
 import net.sf.l2j.gameserver.network.serverpackets.MoveToPawn;
+import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
 
 public class L2FlameTowerInstance extends L2Npc
 {
-	private int _upgradeLevel = 0;
+	private int _upgradeLevel;
 	private List<Integer> _zoneList;
 	
 	public L2FlameTowerInstance(int objectId, L2NpcTemplate template)
@@ -41,14 +43,14 @@ public class L2FlameTowerInstance extends L2Npc
 	public boolean isAttackable()
 	{
 		// Attackable during siege by attacker only
-		return (getCastle() != null && getCastle().getCastleId() > 0 && getCastle().getSiege().isInProgress());
+		return (getCastle() != null && getCastle().getSiege().isInProgress());
 	}
 	
 	@Override
 	public boolean isAutoAttackable(L2Character attacker)
 	{
 		// Attackable during siege by attacker only
-		return (attacker != null && attacker instanceof L2PcInstance && getCastle() != null && getCastle().getCastleId() > 0 && getCastle().getSiege().isInProgress() && getCastle().getSiege().checkIsAttacker(((L2PcInstance) attacker).getClan()));
+		return (attacker != null && attacker instanceof L2PcInstance && getCastle() != null && getCastle().getSiege().isInProgress() && getCastle().getSiege().checkIsAttacker(((L2PcInstance) attacker).getClan()));
 	}
 	
 	@Override
@@ -85,6 +87,14 @@ public class L2FlameTowerInstance extends L2Npc
 	public boolean doDie(L2Character killer)
 	{
 		enableZones(false);
+		
+		if (getCastle() != null)
+		{
+			// Message occurs only if the trap was triggered first.
+			if (_zoneList != null && _upgradeLevel != 0)
+				getCastle().getSiege().announceToPlayer(SystemMessage.getSystemMessage(SystemMessageId.A_TRAP_DEVICE_HAS_BEEN_STOPPED), false);
+		}
+		
 		return super.doDie(killer);
 	}
 	
