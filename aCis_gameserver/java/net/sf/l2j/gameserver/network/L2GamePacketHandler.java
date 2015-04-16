@@ -18,15 +18,14 @@ import java.nio.ByteBuffer;
 import java.util.logging.Logger;
 
 import net.sf.l2j.Config;
+import net.sf.l2j.commons.mmocore.IClientFactory;
+import net.sf.l2j.commons.mmocore.IMMOExecutor;
+import net.sf.l2j.commons.mmocore.IPacketHandler;
+import net.sf.l2j.commons.mmocore.MMOConnection;
+import net.sf.l2j.commons.mmocore.ReceivablePacket;
 import net.sf.l2j.gameserver.network.L2GameClient.GameClientState;
 import net.sf.l2j.gameserver.network.clientpackets.*;
 import net.sf.l2j.util.Util;
-
-import org.mmocore.network.IClientFactory;
-import org.mmocore.network.IMMOExecutor;
-import org.mmocore.network.IPacketHandler;
-import org.mmocore.network.MMOConnection;
-import org.mmocore.network.ReceivablePacket;
 
 /**
  * The Stateful approach prevents the server from handling inconsistent packets.<BR>

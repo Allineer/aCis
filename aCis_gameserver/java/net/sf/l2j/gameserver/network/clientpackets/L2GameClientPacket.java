@@ -19,11 +19,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.sf.l2j.Config;
+import net.sf.l2j.commons.mmocore.ReceivablePacket;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.network.L2GameClient;
 import net.sf.l2j.gameserver.network.serverpackets.L2GameServerPacket;
-
-import org.mmocore.network.ReceivablePacket;
 
 /**
  * Packets received by the game server from clients

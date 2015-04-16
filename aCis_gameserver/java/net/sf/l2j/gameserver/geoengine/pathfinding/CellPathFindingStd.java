@@ -48,8 +48,8 @@ public class CellPathFindingStd extends PathCheckerStd
 	{
 		String[] array = Config.PATHFIND_BUFFERS.split(";");
 		_buffers = new BufferHolder[array.length];
-
-		int count = 0; 
+		
+		int count = 0;
 		for (int i = 0; i < array.length; i++)
 		{
 			String buf = array[i];
@@ -209,7 +209,6 @@ public class CellPathFindingStd extends PathCheckerStd
 	
 	/**
 	 * Create list of node locations as result of calculated buffer node tree.
-	 * 
 	 * @param target : the entry point
 	 * @return List<NodeLoc> : list of node location
 	 */
@@ -254,7 +253,6 @@ public class CellPathFindingStd extends PathCheckerStd
 	
 	/**
 	 * Provides optimize selection of the buffer. When all pre-initialized buffer are locked, creates new buffer and log this situation.
-	 * 
 	 * @param size : pre-calculated minimal required size
 	 * @param playable : moving object is playable?
 	 * @return NodeBuffer : buffer

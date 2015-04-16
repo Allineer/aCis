@@ -801,14 +801,8 @@ public class L2Attackable extends L2Npc
 				return;
 			}
 			
-			for (L2Character aggroed : _aggroList.keySet())
-			{
-				AggroInfo ai = _aggroList.get(aggroed);
-				if (ai == null)
-					return;
-				
+			for (AggroInfo ai : _aggroList.values())
 				ai.addHate(-amount);
-			}
 			
 			amount = getHating(mostHated);
 			

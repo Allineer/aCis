@@ -29,7 +29,6 @@ public class FlatBlock extends Block
 	
 	/**
 	 * Creates FlatBlock.
-	 * 
 	 * @param bb : Input byte buffer.
 	 */
 	public FlatBlock(ByteBuffer bb)
@@ -58,7 +57,7 @@ public class FlatBlock extends Block
 	{
 		return _height;
 	}
-
+	
 	@Override
 	public short getHeightBelow(int geoX, int geoY, int worldZ)
 	{

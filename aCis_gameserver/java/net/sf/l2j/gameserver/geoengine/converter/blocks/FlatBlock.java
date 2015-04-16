@@ -28,10 +28,9 @@ import net.sf.l2j.gameserver.geoengine.geodata.GeoStructure;
 public final class FlatBlock extends Block
 {
 	private final short _height;
-
+	
 	/**
 	 * Creates FlatBlock.
-	 * 
 	 * @param bb : Input byte buffer.
 	 */
 	public FlatBlock(ByteBuffer bb)

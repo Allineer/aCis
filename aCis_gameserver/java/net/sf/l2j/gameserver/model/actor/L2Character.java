@@ -636,7 +636,7 @@ public abstract class L2Character extends L2Object
 				}
 				
 				// Verify if the bow can be use
-				final long timeToNextBowAttack = _disableBowAttackEndTime - System.currentTimeMillis();  
+				final long timeToNextBowAttack = _disableBowAttackEndTime - System.currentTimeMillis();
 				if (timeToNextBowAttack > 0)
 				{
 					// Cancel the action because the bow can't be re-use at this moment

@@ -591,14 +591,13 @@ public class Olympiad
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
 		{
 			PreparedStatement statement;
-			for (int nobleId : _nobles.keySet())
+			for (Map.Entry<Integer, StatsSet> nobleEntry : _nobles.entrySet())
 			{
-				StatsSet nobleInfo = _nobles.get(nobleId);
-				
+				final StatsSet nobleInfo = nobleEntry.getValue();
 				if (nobleInfo == null)
 					continue;
 				
-				int charId = nobleId;
+				int charId = nobleEntry.getKey();
 				int classId = nobleInfo.getInteger(CLASS_ID);
 				int points = nobleInfo.getInteger(POINTS);
 				int compDone = nobleInfo.getInteger(COMP_DONE);

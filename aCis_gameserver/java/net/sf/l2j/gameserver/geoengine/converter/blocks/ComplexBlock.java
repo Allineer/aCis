@@ -30,7 +30,6 @@ public final class ComplexBlock extends Block
 	
 	/**
 	 * Creates ComplexBlock.
-	 * 
 	 * @param bb : Input byte buffer.
 	 */
 	public ComplexBlock(ByteBuffer bb)

@@ -1,4 +1,30 @@
 ================================================================================
+Changeset 339 @ 2014.01.19
+
+Java 8, Libraries / Projects, Misc
+
+Java 8
+    - Update your JDK to JDK 8! aCis officialy uses Java 8 for now. Java 7 isn't supported anymore.
+    - Drop Base64, use native Java one.
+
+Libraries / Projects
+    - The MMOCore project is dropped, and directly integrated to "acis_gameserver" project under "net.sf.l2j.commons.mmocore". The JAR is NOT needed anymore.
+    - Java-engine library is updated to latest L2J version, 1.8.
+    - ECJ library is updated to latest L2J version, 4.4.
+
+Misc
+    - Formatting rules applied on Hasha commits.
+    - Fix previous commit regarding missing itemsonground stuff (db installer).
+    - Fix ShortCutInit packet, to handle reuse delays on player relog. As this packet is now correct, drop a packet update on ItemSkills. Ty RooT.
+    - Fix a potential exploit regarding ItemSkills consumed items (skill was launched before item consumption). Ty RooT.
+    - Fix a NPE on Q374. Ty RooT.
+    - Fix few typos on HTMs.
+    - Add the possibility for a GM to shift-click on a player to see directly the panel. Ty RooT.
+    - Replace numerous keySet() / get() for a best counter, Entry.Map (20% to 50% faster).
+    - Fix Village Map Bulletin positions. Ty RooT.
+    - Added prices for A grade top tier weapons. Ty raphael.fersan.
+
+================================================================================
 Changeset 338 @ 2015.01.09
 
 Tasks Managers - by Hasha

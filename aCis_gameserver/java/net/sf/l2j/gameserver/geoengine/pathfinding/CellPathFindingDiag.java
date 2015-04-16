@@ -209,7 +209,6 @@ public class CellPathFindingDiag extends PathCheckerDiag
 	
 	/**
 	 * Create list of node locations as result of calculated buffer node tree.
-	 * 
 	 * @param target : the entry point
 	 * @return List<NodeLoc> : list of node location
 	 */
@@ -254,7 +253,6 @@ public class CellPathFindingDiag extends PathCheckerDiag
 	
 	/**
 	 * Provides optimize selection of the buffer. When all pre-initialized buffer are locked, creates new buffer and log this situation.
-	 * 
 	 * @param size : pre-calculated minimal required size
 	 * @param playable : moving object is playable?
 	 * @return NodeBuffer : buffer

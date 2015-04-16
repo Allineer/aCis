@@ -31,7 +31,7 @@ public class NpcKnownList extends CharKnownList
 	@Override
 	public int getDistanceToWatchObject(L2Object object)
 	{
-		// object is not L2Character or object is L2NpcInstance, skip 
+		// object is not L2Character or object is L2NpcInstance, skip
 		if (object instanceof L2NpcInstance || !(object instanceof L2Character))
 			return 0;
 		

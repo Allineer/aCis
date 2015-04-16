@@ -31,7 +31,6 @@ public final class MultilayerBlock extends Block
 	
 	/**
 	 * Creates MultilayerBlock.
-	 * 
 	 * @param bb : Input byte buffer.
 	 */
 	public MultilayerBlock(ByteBuffer bb)
@@ -67,7 +66,7 @@ public final class MultilayerBlock extends Block
 	
 	@Override
 	public short getHeightNearest(int geoX, int geoY, int worldZ)
-	{ 
+	{
 		// get cell
 		final MultilayerCell cell = _cells[(geoX % GeoStructure.BLOCK_CELLS_X) * GeoStructure.BLOCK_CELLS_Y + (geoY % GeoStructure.BLOCK_CELLS_Y)];
 		

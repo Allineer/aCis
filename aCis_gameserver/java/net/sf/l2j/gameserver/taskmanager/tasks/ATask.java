@@ -42,7 +42,7 @@ public abstract class ATask
 	public abstract String getName();
 	
 	public void initializate()
-	{	
+	{
 	}
 	
 	public abstract void onTimeElapsed(ExecutedTask task);

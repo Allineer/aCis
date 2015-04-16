@@ -112,6 +112,7 @@ public class DayNightSpawnManager
 			{
 				if (spawnDat == null)
 					continue;
+				
 				spawnDat.startRespawn();
 				spawnDat.doSpawn();
 				i++;
@@ -136,10 +137,12 @@ public class DayNightSpawnManager
 				spawnDayCreatures();
 				specialNightBoss(0);
 				break;
+			
 			case 1:
 				spawnNightCreatures();
 				specialNightBoss(1);
 				break;
+			
 			default:
 				_log.warning("DayNightSpawnManager: Wrong mode sent");
 				break;
@@ -172,17 +175,18 @@ public class DayNightSpawnManager
 	{
 		try
 		{
-			for (L2Spawn spawn : _bosses.keySet())
+			for (Map.Entry<L2Spawn, L2RaidBossInstance> infoEntry : _bosses.entrySet())
 			{
-				L2RaidBossInstance boss = _bosses.get(spawn);
-				
+				L2RaidBossInstance boss = infoEntry.getValue();
 				if (boss == null)
 				{
 					if (mode == 1)
 					{
+						final L2Spawn spawn = infoEntry.getKey();
+						
 						boss = (L2RaidBossInstance) spawn.doSpawn();
 						RaidBossSpawnManager.getInstance().notifySpawnNightBoss(boss);
-						_bosses.remove(spawn);
+						
 						_bosses.put(spawn, boss);
 					}
 					continue;
@@ -190,6 +194,7 @@ public class DayNightSpawnManager
 				
 				if (boss.getNpcId() == 25328 && boss.getRaidStatus().equals(RaidBossSpawnManager.StatusEnum.ALIVE))
 					handleHellmans(boss, mode);
+				
 				return;
 			}
 		}
@@ -207,6 +212,7 @@ public class DayNightSpawnManager
 				boss.deleteMe();
 				_log.info("DayNightSpawnManager: Deleting Hellman raidboss");
 				break;
+
 			case 1:
 				boss.spawnMe();
 				_log.info("DayNightSpawnManager: Spawning Hellman raidboss");

@@ -45,7 +45,10 @@ public enum CtrlEvent
 	EVT_ARRIVED_BLOCKED,
 	/** Forgets an object (if it's used as attack target, follow target and so on. */
 	EVT_FORGET_OBJECT,
-	/** Attempt to cancel current step execution, but not change the intention. For example, the actor was put into a stun, so it's current attack or movement has to be canceled. But after the stun state expired, the actor may try to attack again. Another usage for CANCEL is a user's attempt to cancel a cast/bow attack and so on. */
+	/**
+	 * Attempt to cancel current step execution, but not change the intention. For example, the actor was put into a stun, so it's current attack or movement has to be canceled. But after the stun state expired, the actor may try to attack again. Another usage for CANCEL is a user's attempt to
+	 * cancel a cast/bow attack and so on.
+	 */
 	EVT_CANCEL,
 	/** The character is dead. */
 	EVT_DEAD,

@@ -64,6 +64,7 @@ import net.sf.l2j.gameserver.datatables.SkillTreeTable;
 import net.sf.l2j.gameserver.geoengine.PathFinding;
 import net.sf.l2j.gameserver.handler.IItemHandler;
 import net.sf.l2j.gameserver.handler.ItemHandler;
+import net.sf.l2j.gameserver.handler.admincommandhandlers.AdminEditChar;
 import net.sf.l2j.gameserver.instancemanager.CastleManager;
 import net.sf.l2j.gameserver.instancemanager.CoupleManager;
 import net.sf.l2j.gameserver.instancemanager.CursedWeaponsManager;
@@ -3241,10 +3242,19 @@ public final class L2PcInstance extends L2Playable
 				// avoids to stuck when clicking two or more times
 				player.sendPacket(ActionFailed.STATIC_PACKET);
 				
-				if (player != this && (PathFinding.getInstance().canSeeTarget(player, this)))
+				if (player != this && PathFinding.getInstance().canSeeTarget(player, this))
 					player.getAI().setIntention(CtrlIntention.FOLLOW, this);
 			}
 		}
+	}
+	
+	@Override
+	public void onActionShift(L2PcInstance player)
+	{
+		if (player.isGM())
+			AdminEditChar.showCharacterInfo(player, this);
+
+		super.onActionShift(player);
 	}
 	
 	/**
@@ -5989,12 +5999,13 @@ public final class L2PcInstance extends L2Playable
 			}
 			
 			// Store the reuse delays of remaining skills which lost effect but still under reuse delay. 'restore_type' 1.
-			for (int hash : _reuseTimeStamps.keySet())
+			for (Map.Entry<Integer, TimeStamp> timestampEntry : _reuseTimeStamps.entrySet())
 			{
+				final int hash = timestampEntry.getKey();
 				if (storedSkills.contains(hash))
 					continue;
 				
-				TimeStamp t = _reuseTimeStamps.get(hash);
+				TimeStamp t = timestampEntry.getValue();
 				if (t != null && t.hasNotPassed())
 				{
 					storedSkills.add(hash);

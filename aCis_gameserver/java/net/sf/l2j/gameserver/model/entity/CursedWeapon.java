@@ -314,7 +314,7 @@ public class CursedWeapon
 	{
 		_player.abortAttack();
 		
-		 // Prevent item from being removed by ItemsAutoDestroy
+		// Prevent item from being removed by ItemsAutoDestroy
 		_item.setDestroyProtected(true);
 		_player.dropItem("DieDrop", _item, killer, true);
 		

@@ -48,5 +48,5 @@ public class DoorKnownList extends CharKnownList
 			return 0;
 		
 		return 3000;
-	}	
+	}
 }
