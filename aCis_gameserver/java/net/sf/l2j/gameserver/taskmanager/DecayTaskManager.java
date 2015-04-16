@@ -93,7 +93,7 @@ public class DecayTaskManager
 					final L2Attackable npc = ((L2Attackable) actor);
 					
 					delay = npc.getCorpseDecayTime();
-					if (npc.getIsSpoiledBy() != 0 || npc.isSeeded())
+					if (npc.getSpoilerId() != 0 || npc.isSeeded())
 						delay *= 2;
 				}
 				

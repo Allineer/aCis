@@ -7119,7 +7119,7 @@ public final class L2PcInstance extends L2Playable
 		{
 			if (((L2Attackable) target).isDead())
 			{
-				final int spoilerId = ((L2Attackable) target).getIsSpoiledBy();
+				final int spoilerId = ((L2Attackable) target).getSpoilerId();
 				if (spoilerId == 0)
 				{
 					// Send a System Message to the L2PcInstance

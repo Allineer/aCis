@@ -30,6 +30,7 @@ import java.util.logging.Logger;
 
 import net.sf.l2j.commons.config.ExProperties;
 import net.sf.l2j.gameserver.model.holder.BuffSkillHolder;
+import net.sf.l2j.gameserver.model.holder.ItemHolder;
 import net.sf.l2j.gameserver.util.FloodProtectorConfig;
 import net.sf.l2j.util.StringUtil;
 
@@ -1356,15 +1357,15 @@ public final class Config
 	
 	public static class ClassMasterSettings
 	{
-		private final Map<Integer, HashMap<Integer, Integer>> _claimItems;
-		private final Map<Integer, HashMap<Integer, Integer>> _rewardItems;
 		private final Map<Integer, Boolean> _allowedClassChange;
+		private final Map<Integer, List<ItemHolder>> _claimItems;
+		private final Map<Integer, List<ItemHolder>> _rewardItems;
 		
 		public ClassMasterSettings(String configLine)
 		{
+			_allowedClassChange = new HashMap<>(3);
 			_claimItems = new HashMap<>(3);
 			_rewardItems = new HashMap<>(3);
-			_allowedClassChange = new HashMap<>(3);
 			
 			if (configLine != null)
 				parseConfigLine(configLine.trim());
@@ -1373,47 +1374,42 @@ public final class Config
 		private void parseConfigLine(String configLine)
 		{
 			StringTokenizer st = new StringTokenizer(configLine, ";");
-			
 			while (st.hasMoreTokens())
 			{
-				// get allowed class change
+				// Get allowed class change.
 				int job = Integer.parseInt(st.nextToken());
 				
 				_allowedClassChange.put(job, true);
 				
-				HashMap<Integer, Integer> _items = new HashMap<>();
-				// parse items needed for class change
+				List<ItemHolder> items = new ArrayList<>();
+				
+				// Parse items needed for class change.
 				if (st.hasMoreTokens())
 				{
 					StringTokenizer st2 = new StringTokenizer(st.nextToken(), "[],");
-					
 					while (st2.hasMoreTokens())
 					{
 						StringTokenizer st3 = new StringTokenizer(st2.nextToken(), "()");
-						int _itemId = Integer.parseInt(st3.nextToken());
-						int _quantity = Integer.parseInt(st3.nextToken());
-						_items.put(_itemId, _quantity);
+						items.add(new ItemHolder(Integer.parseInt(st3.nextToken()), Integer.parseInt(st3.nextToken())));
 					}
 				}
 				
-				_claimItems.put(job, _items);
+				// Feed the map, and clean the list.
+				_claimItems.put(job, items);
+				items = new ArrayList<>();
 				
-				_items.clear();
-				// parse gifts after class change
+				// Parse gifts after class change.
 				if (st.hasMoreTokens())
 				{
 					StringTokenizer st2 = new StringTokenizer(st.nextToken(), "[],");
-					
 					while (st2.hasMoreTokens())
 					{
 						StringTokenizer st3 = new StringTokenizer(st2.nextToken(), "()");
-						int _itemId = Integer.parseInt(st3.nextToken());
-						int _quantity = Integer.parseInt(st3.nextToken());
-						_items.put(_itemId, _quantity);
+						items.add(new ItemHolder(Integer.parseInt(st3.nextToken()), Integer.parseInt(st3.nextToken())));
 					}
 				}
 				
-				_rewardItems.put(job, _items);
+				_rewardItems.put(job, items);
 			}
 		}
 		
@@ -1428,12 +1424,12 @@ public final class Config
 			return false;
 		}
 		
-		public Map<Integer, Integer> getRewardItems(int job)
+		public List<ItemHolder> getRewardItems(int job)
 		{
 			return _rewardItems.get(job);
 		}
 		
-		public Map<Integer, Integer> getRequiredItems(int job)
+		public List<ItemHolder> getRequiredItems(int job)
 		{
 			return _claimItems.get(job);
 		}

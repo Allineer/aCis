@@ -1272,7 +1272,7 @@ public class L2Attackable extends L2Npc
 			ItemHolder item = null;
 			if (cat.isSweep())
 			{
-				if (getIsSpoiledBy() != 0)
+				if (getSpoilerId() != 0)
 				{
 					for (DropData drop : cat.getAllDrops())
 					{
@@ -1646,7 +1646,7 @@ public class L2Attackable extends L2Npc
 		super.onSpawn();
 		
 		// Clear mob spoil/seed state
-		setIsSpoiledBy(0);
+		setSpoilerId(0);
 		
 		// Clear all aggro char from list
 		clearAggroList();

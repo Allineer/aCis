@@ -107,7 +107,7 @@ public class L2Npc extends L2Character
 	private int _castleIndex = -2;
 	private boolean _isInTown = false;
 	
-	private int _isSpoiledBy = 0;
+	private int _spoilerId = 0;
 	
 	protected RandomAnimationTask _rAniTask = null;
 	private long _lastSocialBroadcast = 0;
@@ -410,14 +410,14 @@ public class L2Npc extends L2Character
 		return _currentEnchant;
 	}
 	
-	public final int getIsSpoiledBy()
+	public final int getSpoilerId()
 	{
-		return _isSpoiledBy;
+		return _spoilerId;
 	}
 	
-	public final void setIsSpoiledBy(int value)
+	public final void setSpoilerId(int value)
 	{
-		_isSpoiledBy = value;
+		_spoilerId = value;
 	}
 	
 	/**
