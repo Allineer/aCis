@@ -138,6 +138,5 @@ public class ValidatePosition extends L2GameClientPacket
 		activeChar.setClientY(_y);
 		activeChar.setClientZ(_z);
 		activeChar.setClientHeading(_heading); // No real need to validate heading.
-		activeChar.setLastServerPosition(realX, realY, realZ);
 	}
 }

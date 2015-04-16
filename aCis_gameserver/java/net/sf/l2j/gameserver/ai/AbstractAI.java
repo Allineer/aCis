@@ -48,14 +48,6 @@ abstract class AbstractAI implements Ctrl
 	private NextAction _nextAction;
 	
 	/**
-	 * @return the _nextAction
-	 */
-	public NextAction getNextAction()
-	{
-		return _nextAction;
-	}
-	
-	/**
 	 * @param nextAction the _nextAction to set
 	 */
 	public void setNextAction(NextAction nextAction)
@@ -267,9 +259,8 @@ abstract class AbstractAI implements Ctrl
 		}
 		
 		// If do move or follow intention drop next action.
-		if (_nextAction != null)
-			if (_nextAction.getIntentions().contains(intention))
-				_nextAction = null;
+		if (_nextAction != null && _nextAction.getIntention() == intention)
+			_nextAction = null;
 	}
 	
 	/**
@@ -382,9 +373,8 @@ abstract class AbstractAI implements Ctrl
 		}
 		
 		// Do next action.
-		if (_nextAction != null)
-			if (_nextAction.getEvents().contains(evt))
-				_nextAction.doAction();
+		if (_nextAction != null && _nextAction.getEvent() == evt)
+			_nextAction.run();
 	}
 	
 	protected abstract void onIntentionIdle();
@@ -474,8 +464,7 @@ abstract class AbstractAI implements Ctrl
 		
 		_moveToPawnTimeout = GameTimeController.getInstance().getGameTicks() + 20;
 		
-		moveTo(_target.getX(), _target.getY(), _target.getZ(), offset = offset < 10 ? 10 : offset);
-		
+		moveTo(_target.getX(), _target.getY(), _target.getZ(), (offset < 10) ? 10 : offset);
 	}
 	
 	/**

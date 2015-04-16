@@ -68,13 +68,6 @@ public final class Formulas
 	
 	public static final int MAX_STAT_VALUE = 100;
 	
-	public static final int BASENPCSTR = 40;
-	public static final int BASENPCCON = 43;
-	public static final int BASENPCDEX = 30;
-	public static final int BASENPCINT = 21;
-	public static final int BASENPCWIT = 20;
-	public static final int BASENPCMEN = 20;
-	
 	private static final double[] STRCompute = new double[]
 	{
 		1.036,

@@ -1,4 +1,35 @@
 ================================================================================
+Changeset 337 @ 2014.12.31
+
+Knownlists, Cursed Weapons, NextAction, Misc
+
+Knownlists - ty Hasha
+    - Drop getActiveChar() method which was creating a lot of calls/casts.
+    - Complete //knownlist command.
+
+Cursed Weapons - ty Hasha
+    - Loading method is moved on a most appropriated class, leading to a drop of numerous methods and few Map .get(.
+
+NextAction - ty Hasha
+    - Remove all Lists types, handling only singles CtrlEvent / CtrlIntention.
+
+Misc
+    - Dropped items (and notably Cursed Weapons) can't be picked up when a private store is activated, ty dandilo && RooT.
+    - Revert a code section introduced on rev 329, which was fucking range of attacks (adding 100 range no matter what), ty Hasha.
+    - Few missing stuff about Geodata regarding admincommands are fixed, leading to miscalculations, ty Hasha.
+    - Fix a missing internal check for reworked //gmliston, ty Hasha.
+    - Based on FindBugs and UCDetector plugins:
+        - Drop numerous unused methods.
+        - Drop of ConditionInventory, ConditionItemId.
+        - Drop some useless convert (like "long to long", "casted int to a Math.round() returning an int", etc).
+        - _lastX, _lastY, _lastZ converted into Location _savedLocation. Drop of saveCurrentCoords().
+        - Drop of Location _lastServerPosition (unused).
+        - ObservationReturn(L2PcInstance) became ObservationReturn(Location).
+        - Drop dozens of useless variables/configs in Config.java.
+        - Edit 2 stranges Map .remove( arguments to match with the good arguments.
+        - Drop _effectTemplates from Item (no uses).
+
+================================================================================
 Changeset 336 @ 2014.12.29
 
 Stats cleanup, Misc

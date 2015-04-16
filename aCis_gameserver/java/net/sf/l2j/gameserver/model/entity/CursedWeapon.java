@@ -16,6 +16,7 @@ package net.sf.l2j.gameserver.model.entity;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.logging.Level;
@@ -30,6 +31,7 @@ import net.sf.l2j.gameserver.model.Location;
 import net.sf.l2j.gameserver.model.actor.L2Attackable;
 import net.sf.l2j.gameserver.model.actor.L2Character;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
+import net.sf.l2j.gameserver.model.holder.ItemHolder;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.Earthquake;
@@ -351,7 +353,7 @@ public class CursedWeapon
 	{
 		_isActivated = false;
 		
-		_item = attackable.dropItem(player, _itemId, 1);
+		_item = attackable.dropItem(player, new ItemHolder(_itemId, 1));
 		_item.setDropTime(0); // Prevent item from being removed by ItemsAutoDestroy
 		
 		// RedSky and Earthquake
@@ -521,6 +523,37 @@ public class CursedWeapon
 		Broadcast.toAllOnlinePlayers(SystemMessage.getSystemMessage(SystemMessageId.THE_OWNER_OF_S2_HAS_APPEARED_IN_THE_S1_REGION).addZoneName(_player.getX(), _player.getY(), _player.getZ()).addItemName(_item.getItemId()));
 	}
 	
+	public void loadData()
+	{
+		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
+		{
+			PreparedStatement statement = con.prepareStatement("SELECT * FROM cursed_weapons WHERE itemId=?");
+			statement.setInt(1, _itemId);
+			ResultSet rset = statement.executeQuery();
+			
+			while (rset.next())
+			{
+				_playerId = rset.getInt("playerId");
+				_playerKarma = rset.getInt("playerKarma");
+				_playerPkKills = rset.getInt("playerPkKills");
+				_nbKills = rset.getInt("nbKills");
+				_currentStage = rset.getInt("currentStage");
+				_numberBeforeNextStage = rset.getInt("numberBeforeNextStage");
+				_hungryTime = rset.getInt("hungryTime");
+				_endTime = rset.getLong("endTime");
+				
+				reActivate(false);
+			}
+			
+			rset.close();
+			statement.close();
+		}
+		catch (Exception e)
+		{
+			_log.log(Level.WARNING, "Could not restore CursedWeapons data: " + e.getMessage(), e);
+		}
+	}
+	
 	/**
 	 * Insert a new line with fresh informations.<br>
 	 * Use : activate() method.
@@ -675,41 +708,6 @@ public class CursedWeapon
 		_stageKills = stageKills;
 	}
 	
-	public void setNbKills(int nbKills)
-	{
-		_nbKills = nbKills;
-	}
-	
-	public void setPlayerId(int playerId)
-	{
-		_playerId = playerId;
-	}
-	
-	public void setPlayerKarma(int playerKarma)
-	{
-		_playerKarma = playerKarma;
-	}
-	
-	public void setPlayerPkKills(int playerPkKills)
-	{
-		_playerPkKills = playerPkKills;
-	}
-	
-	public void setActivated(boolean isActivated)
-	{
-		_isActivated = isActivated;
-	}
-	
-	public void setDropped(boolean isDropped)
-	{
-		_isDropped = isDropped;
-	}
-	
-	public void setEndTime(long endTime)
-	{
-		_endTime = endTime;
-	}
-	
 	public void setPlayer(L2PcInstance player)
 	{
 		_player = player;
@@ -718,21 +716,6 @@ public class CursedWeapon
 	public void setItem(ItemInstance item)
 	{
 		_item = item;
-	}
-	
-	public void setCurrentStage(int currentStage)
-	{
-		_currentStage = currentStage;
-	}
-	
-	public void setNumberBeforeNextStage(int numberBeforeNextStage)
-	{
-		_numberBeforeNextStage = numberBeforeNextStage;
-	}
-	
-	public void setHungryTime(int hungryTime)
-	{
-		_hungryTime = hungryTime;
 	}
 	
 	public boolean isActivated()

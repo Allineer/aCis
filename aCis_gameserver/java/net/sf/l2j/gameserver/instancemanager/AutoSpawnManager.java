@@ -27,7 +27,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.sf.l2j.Config;
 import net.sf.l2j.L2DatabaseFactory;
 import net.sf.l2j.gameserver.Announcements;
 import net.sf.l2j.gameserver.ThreadPoolManager;
@@ -90,7 +89,6 @@ public class AutoSpawnManager
 	
 	private void restoreSpawnData()
 	{
-		int numLoaded = 0;
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
 		{
 			// Restore spawn group data, then the location data.
@@ -106,8 +104,6 @@ public class AutoSpawnManager
 				spawnInst.setSpawnCount(rs.getInt("count"));
 				spawnInst.setBroadcast(rs.getBoolean("broadcastSpawn"));
 				spawnInst.setRandomSpawn(rs.getBoolean("randomSpawn"));
-				numLoaded++;
-				
 				// Restore the spawn locations for this spawn group/instance.
 				PreparedStatement statement2 = con.prepareStatement("SELECT * FROM random_spawn_loc WHERE groupId=?");
 				statement2.setInt(1, rs.getInt("groupId"));
@@ -123,9 +119,6 @@ public class AutoSpawnManager
 			}
 			rs.close();
 			statement.close();
-			
-			if (Config.DEBUG)
-				_log.config("AutoSpawnManager: Loaded " + numLoaded + " spawn group(s) from the database.");
 		}
 		catch (Exception e)
 		{
@@ -166,9 +159,6 @@ public class AutoSpawnManager
 		
 		setSpawnActive(newSpawn, true);
 		
-		if (Config.DEBUG)
-			_log.config("AutoSpawnManager: Registered auto spawn for NPC ID " + npcId + " (Object ID = " + newId + ").");
-		
 		return newSpawn;
 	}
 	
@@ -201,14 +191,11 @@ public class AutoSpawnManager
 		try
 		{
 			// Try to remove from the list of registered spawns if it exists.
-			_registeredSpawns.remove(spawnInst);
+			_registeredSpawns.remove(spawnInst.getObjectId());
 			
 			// Cancel the currently associated running scheduled task.
 			ScheduledFuture<?> respawnTask = _runningSpawns.remove(spawnInst._objectId);
 			respawnTask.cancel(false);
-			
-			if (Config.DEBUG)
-				_log.config("AutoSpawnManager: Removed auto spawn for NPC ID " + spawnInst._npcId + " (Object ID = " + spawnInst._objectId + ").");
 		}
 		catch (Exception e)
 		{
@@ -217,15 +204,6 @@ public class AutoSpawnManager
 		}
 		
 		return true;
-	}
-	
-	/**
-	 * Remove a registered spawn from the list, specified by the given spawn object ID.
-	 * @param objectId
-	 */
-	public void removeSpawn(int objectId)
-	{
-		removeSpawn(_registeredSpawns.get(objectId));
 	}
 	
 	/**
@@ -503,9 +481,6 @@ public class AutoSpawnManager
 					
 					npcInst.deleteMe();
 					spawnInst.removeNpcInstance(npcInst);
-					
-					if (Config.DEBUG)
-						_log.info("AutoSpawnManager: Spawns removed for spawn instance (Object ID = " + _objectId + ").");
 				}
 			}
 			catch (Exception e)
@@ -524,8 +499,6 @@ public class AutoSpawnManager
 	public class AutoSpawnInstance
 	{
 		protected int _objectId;
-		
-		protected int _spawnIndex;
 		
 		protected int _npcId;
 		
@@ -670,18 +643,6 @@ public class AutoSpawnManager
 				return false;
 			
 			return addSpawnLocation(spawnLoc[0], spawnLoc[1], spawnLoc[2], -1);
-		}
-		
-		public SpawnLocation removeSpawnLocation(int locIndex)
-		{
-			try
-			{
-				return _locList.remove(locIndex);
-			}
-			catch (IndexOutOfBoundsException e)
-			{
-				return null;
-			}
 		}
 	}
 	

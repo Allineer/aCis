@@ -855,8 +855,10 @@ public class L2CharacterAI extends AbstractAI
 		{
 			if (getFollowTarget() != null)
 			{
+				int foffset = offset + (((L2Character) target).isMoving() ? 100 : 0);
+				
 				// allow larger hit range when the target is moving (check is run only once per second)
-				if (!_actor.isInsideRadius(target, offset + 100, false, false))
+				if (!_actor.isInsideRadius(target, foffset, false, false))
 				{
 					if (!_actor.isAttackingNow() || _actor instanceof L2Summon)
 						moveToPawn(target, offset);
@@ -992,7 +994,7 @@ public class L2CharacterAI extends AbstractAI
 				boolean cancast = true;
 				for (L2Character target : ((L2Character) getTarget()).getKnownList().getKnownTypeInRadius(L2Character.class, sk.getSkillRadius()))
 				{
-					if (!PathFinding.getInstance().canSeeTarget(_actor, target) || target == null)
+					if (!PathFinding.getInstance().canSeeTarget(_actor, target))
 						continue;
 					
 					if (target instanceof L2Attackable && !_actor.isConfused())

@@ -111,15 +111,8 @@ public abstract class L2Skill implements IChanceSkillTrigger
 	}
 	
 	// conditional values
-	public final static int COND_RUNNING = 0x0001;
-	public final static int COND_WALKING = 0x0002;
-	public final static int COND_SIT = 0x0004;
 	public final static int COND_BEHIND = 0x0008;
 	public final static int COND_CRIT = 0x0010;
-	public final static int COND_LOWHP = 0x0020;
-	public final static int COND_ROBES = 0x0040;
-	public final static int COND_CHARGES = 0x0080;
-	public final static int COND_SHIELD = 0x0100;
 	
 	private final int _id;
 	private final int _level;
@@ -970,11 +963,6 @@ public abstract class L2Skill implements IChanceSkillTrigger
 	public final boolean useSpiritShot()
 	{
 		return isMagic();
-	}
-	
-	public final boolean useFishShot()
-	{
-		return ((_skillType == L2SkillType.PUMPING) || (_skillType == L2SkillType.REELING));
 	}
 	
 	public final int getWeaponsAllowed()

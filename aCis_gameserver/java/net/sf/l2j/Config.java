@@ -44,7 +44,6 @@ public final class Config
 {
 	protected static final Logger _log = Logger.getLogger(Config.class.getName());
 	
-	public static final String BANNED_IP_XML = "./config/banned.xml";
 	public static final String CLANS_FILE = "./config/clans.properties";
 	public static final String EVENTS_FILE = "./config/events.properties";
 	public static final String FLOOD_PROTECTOR_FILE = "./config/floodprotector.properties";
@@ -156,7 +155,6 @@ public final class Config
 	public static int ALT_OLY_NONCLASSED;
 	public static int[][] ALT_OLY_CLASSED_REWARD;
 	public static int[][] ALT_OLY_NONCLASSED_REWARD;
-	public static int ALT_OLY_COMP_RITEM;
 	public static int ALT_OLY_GP_PER_POINT;
 	public static int ALT_OLY_HERO_POINTS;
 	public static int ALT_OLY_RANK1_POINTS;
@@ -170,7 +168,6 @@ public final class Config
 	public static boolean ALT_OLY_ANNOUNCE_GAMES;
 	
 	/** SevenSigns Festival */
-	public static boolean ALT_GAME_REQUIRE_CLAN_CASTLE;
 	public static boolean ALT_GAME_CASTLE_DAWN;
 	public static boolean ALT_GAME_CASTLE_DUSK;
 	public static int ALT_FESTIVAL_MIN_PLAYER;
@@ -187,7 +184,6 @@ public final class Config
 	
 	/** Four Sepulchers */
 	public static int FS_TIME_ATTACK;
-	public static int FS_TIME_COOLDOWN;
 	public static int FS_TIME_ENTRY;
 	public static int FS_TIME_WARMUP;
 	public static int FS_PARTY_MEMBER_COUNT;
@@ -237,7 +233,6 @@ public final class Config
 	public static int GEODATA;
 	public static String GEODATA_PATH;
 	public static GeoFormat GEODATA_FORMAT;
-	public static boolean GEODATA_DIAGONAL;
 	public static int COORD_SYNCHRONIZE;
 	
 	/** Path checking */
@@ -292,8 +287,6 @@ public final class Config
 	public static boolean LOG_LOGIN_CONTROLLER;
 	
 	public static boolean SHOW_LICENCE;
-	public static int IP_UPDATE_TIME;
-	public static boolean FORCE_GGAUTH;
 	
 	public static boolean AUTO_CREATE_ACCOUNTS;
 	
@@ -543,7 +536,6 @@ public final class Config
 	public static boolean SERVER_LIST_CLOCK;
 	public static boolean SERVER_LIST_TESTSERVER;
 	public static boolean SERVER_GMONLY;
-	public static boolean TEST_SERVER;
 	
 	/** clients related */
 	public static int DELETE_DAYS;
@@ -552,7 +544,6 @@ public final class Config
 	public static int MAX_PROTOCOL_REVISION;
 	
 	/** Jail & Punishements **/
-	public static boolean JAIL_IS_PVP;
 	public static int DEFAULT_PUNISH;
 	public static int DEFAULT_PUNISH_PARAM;
 	
@@ -626,7 +617,6 @@ public final class Config
 	public static int WEAR_DELAY;
 	public static int WEAR_PRICE;
 	public static boolean ALLOW_LOTTERY;
-	public static boolean ALLOW_RACE;
 	public static boolean ALLOW_WATER;
 	public static boolean ALLOWFISHING;
 	public static boolean ALLOW_BOAT;
@@ -658,7 +648,6 @@ public final class Config
 	/** Misc */
 	public static boolean L2WALKER_PROTECTION;
 	public static boolean AUTODELETE_INVALID_QUEST_DATA;
-	public static boolean GAMEGUARD_ENFORCE;
 	public static boolean SERVER_NEWS;
 	public static int ZONE_TOWN;
 	public static boolean DISABLE_TUTORIAL;
@@ -675,19 +664,6 @@ public final class Config
 	public static int IO_PACKET_THREAD_CORE_SIZE = 2; // default 2
 	public static int GENERAL_THREAD_CORE_SIZE = 4; // default 4
 	public static int AI_MAX_THREAD = 10; // default 10
-	
-	/** Packet information */
-	public static boolean COUNT_PACKETS = false; // default false
-	public static boolean DUMP_PACKET_COUNTS = false; // default false
-	public static int DUMP_INTERVAL_SECONDS = 60; // default 60
-	
-	/** IA settings */
-	public static int MINIMUM_UPDATE_DISTANCE = 50; // default 50
-	public static int MINIMUN_UPDATE_TIME = 500; // default 500
-	public static int KNOWNLIST_FORGET_DELAY = 10000; // default 10000
-	
-	/** Time after which a packet is considered as lost */
-	public static int PACKET_LIFETIME = 0; // default 0 (unlimited)
 	
 	/** Reserve Host on LoginServerThread */
 	public static boolean RESERVE_HOST_ON_LOGIN = false; // default false
@@ -825,7 +801,6 @@ public final class Config
 			ALT_OLY_NONCLASSED = events.getProperty("AltOlyNonClassedParticipants", 9);
 			ALT_OLY_CLASSED_REWARD = parseItemsList(events.getProperty("AltOlyClassedReward", "6651,50"));
 			ALT_OLY_NONCLASSED_REWARD = parseItemsList(events.getProperty("AltOlyNonClassedReward", "6651,30"));
-			ALT_OLY_COMP_RITEM = events.getProperty("AltOlyCompRewItem", 6651);
 			ALT_OLY_GP_PER_POINT = events.getProperty("AltOlyGPPerPoint", 1000);
 			ALT_OLY_HERO_POINTS = events.getProperty("AltOlyHeroPoints", 300);
 			ALT_OLY_RANK1_POINTS = events.getProperty("AltOlyRank1Points", 100);
@@ -838,7 +813,6 @@ public final class Config
 			ALT_OLY_DIVIDER_NON_CLASSED = events.getProperty("AltOlyDividerNonClassed", 3);
 			ALT_OLY_ANNOUNCE_GAMES = events.getProperty("AltOlyAnnounceGames", true);
 			
-			ALT_GAME_REQUIRE_CLAN_CASTLE = events.getProperty("AltRequireClanCastle", false);
 			ALT_GAME_CASTLE_DAWN = events.getProperty("AltCastleForDawn", true);
 			ALT_GAME_CASTLE_DUSK = events.getProperty("AltCastleForDusk", true);
 			ALT_FESTIVAL_MIN_PLAYER = events.getProperty("AltFestivalMinPlayer", 5);
@@ -854,7 +828,6 @@ public final class Config
 			ALT_SEVENSIGNS_LAZY_UPDATE = events.getProperty("AltSevenSignsLazyUpdate", true);
 			
 			FS_TIME_ATTACK = events.getProperty("TimeOfAttack", 50);
-			FS_TIME_COOLDOWN = events.getProperty("TimeOfCoolDown", 5);
 			FS_TIME_ENTRY = events.getProperty("TimeOfEntry", 3);
 			FS_TIME_WARMUP = events.getProperty("TimeOfWarmUp", 2);
 			FS_PARTY_MEMBER_COUNT = events.getProperty("NumberOfNecessaryPartyMembers", 4);
@@ -1167,7 +1140,6 @@ public final class Config
 			SERVER_LIST_BRACKET = server.getProperty("ServerListBrackets", false);
 			SERVER_LIST_CLOCK = server.getProperty("ServerListClock", false);
 			SERVER_GMONLY = server.getProperty("ServerGMOnly", false);
-			TEST_SERVER = server.getProperty("TestServer", false);
 			SERVER_LIST_TESTSERVER = server.getProperty("TestServer", false);
 			
 			DELETE_DAYS = server.getProperty("DeleteCharAfterDays", 7);
@@ -1177,7 +1149,6 @@ public final class Config
 			if (MIN_PROTOCOL_REVISION > MAX_PROTOCOL_REVISION)
 				throw new Error("MinProtocolRevision is bigger than MaxProtocolRevision in server.properties.");
 			
-			JAIL_IS_PVP = server.getProperty("JailIsPvp", true);
 			DEFAULT_PUNISH = server.getProperty("DefaultPunish", 2);
 			DEFAULT_PUNISH_PARAM = server.getProperty("DefaultPunishParam", 0);
 			
@@ -1243,7 +1214,6 @@ public final class Config
 			WEAR_DELAY = server.getProperty("WearDelay", 5);
 			WEAR_PRICE = server.getProperty("WearPrice", 10);
 			ALLOW_LOTTERY = server.getProperty("AllowLottery", true);
-			ALLOW_RACE = server.getProperty("AllowRace", true);
 			ALLOW_WATER = server.getProperty("AllowWater", true);
 			ALLOWFISHING = server.getProperty("AllowFishing", false);
 			ALLOW_MANOR = server.getProperty("AllowManor", true);
@@ -1272,7 +1242,6 @@ public final class Config
 			
 			L2WALKER_PROTECTION = server.getProperty("L2WalkerProtection", false);
 			AUTODELETE_INVALID_QUEST_DATA = server.getProperty("AutoDeleteInvalidQuestData", false);
-			GAMEGUARD_ENFORCE = server.getProperty("GameGuardEnforce", false);
 			ZONE_TOWN = server.getProperty("ZoneTown", 0);
 			SERVER_NEWS = server.getProperty("ShowServerNews", false);
 			DISABLE_TUTORIAL = server.getProperty("DisableTutorial", false);
@@ -1310,8 +1279,6 @@ public final class Config
 			DATABASE_MAX_IDLE_TIME = server.getProperty("MaximumDbIdleTime", 0);
 			
 			SHOW_LICENCE = server.getProperty("ShowLicence", true);
-			IP_UPDATE_TIME = server.getProperty("IpUpdateTime", 15);
-			FORCE_GGAUTH = server.getProperty("ForceGGAuth", false);
 			
 			AUTO_CREATE_ACCOUNTS = server.getProperty("AutoCreateAccounts", true);
 			

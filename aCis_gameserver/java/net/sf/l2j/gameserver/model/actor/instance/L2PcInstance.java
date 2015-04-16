@@ -46,7 +46,6 @@ import net.sf.l2j.gameserver.ai.L2CharacterAI;
 import net.sf.l2j.gameserver.ai.L2PlayerAI;
 import net.sf.l2j.gameserver.ai.L2SummonAI;
 import net.sf.l2j.gameserver.ai.NextAction;
-import net.sf.l2j.gameserver.ai.NextAction.NextActionCallback;
 import net.sf.l2j.gameserver.communitybbs.BB.Forum;
 import net.sf.l2j.gameserver.communitybbs.Manager.ForumsBBSManager;
 import net.sf.l2j.gameserver.datatables.AccessLevels;
@@ -458,12 +457,8 @@ public final class L2PcInstance extends L2Playable
 	
 	private boolean _waitTypeSitting;
 	
-	private int _lastX;
-	private int _lastY;
-	private int _lastZ;
+	private final Location _savedLocation = new Location(0, 0, 0);
 	private boolean _observerMode = false;
-	
-	private final Location _lastServerPosition = new Location(0, 0, 0);
 	
 	private int _recomHave;
 	private int _recomLeft;
@@ -739,15 +734,6 @@ public final class L2PcInstance extends L2Playable
 		
 		if (!ok)
 			return null;
-		
-		return player;
-	}
-	
-	public static L2PcInstance createDummyPlayer(int objectId, String name)
-	{
-		// Create a new L2PcInstance with an account name
-		L2PcInstance player = new L2PcInstance(objectId);
-		player.setName(name);
 		
 		return player;
 	}
@@ -2307,10 +2293,10 @@ public final class L2PcInstance extends L2Playable
 		{
 			getAI().setIntention(CtrlIntention.MOVE_TO, new L2CharPosition(target.getX(), target.getY(), target.getZ(), 0));
 			
-			NextAction nextAction = new NextAction(CtrlEvent.EVT_ARRIVED, CtrlIntention.MOVE_TO, new NextActionCallback()
+			NextAction nextAction = new NextAction(CtrlEvent.EVT_ARRIVED, CtrlIntention.MOVE_TO, new Runnable()
 			{
 				@Override
-				public void doWork()
+				public void run()
 				{
 					if (getMountType() != 0)
 						return;
@@ -2344,10 +2330,10 @@ public final class L2PcInstance extends L2Playable
 		// Player is moving, wait the current action is done, then sit.
 		else
 		{
-			NextAction nextAction = new NextAction(CtrlEvent.EVT_ARRIVED, CtrlIntention.MOVE_TO, new NextActionCallback()
+			NextAction nextAction = new NextAction(CtrlEvent.EVT_ARRIVED, CtrlIntention.MOVE_TO, new Runnable()
 			{
 				@Override
-				public void doWork()
+				public void run()
 				{
 					if (getMountType() != 0)
 						return;
@@ -3579,6 +3565,9 @@ public final class L2PcInstance extends L2Playable
 			if (!target.isVisible())
 				return;
 			
+			if (getPrivateStoreType() != 0)
+				return;
+			
 			if (!target.getDropProtection().tryPickUp(this))
 			{
 				sendPacket(SystemMessage.getSystemMessage(SystemMessageId.FAILED_TO_PICKUP_S1).addItemName(target.getItemId()));
@@ -4176,7 +4165,7 @@ public final class L2PcInstance extends L2Playable
 	{
 		if (!isCursedWeaponEquipped() && getKarma() > 0)
 		{
-			int karmaLost = Formulas.calculateKarmaLost(getLevel(), Math.round(exp));
+			int karmaLost = Formulas.calculateKarmaLost(getLevel(), exp);
 			if (karmaLost > 0)
 				setKarma(getKarma() - karmaLost);
 		}
@@ -4376,24 +4365,6 @@ public final class L2PcInstance extends L2Playable
 	public boolean isInPartyMatchRoom()
 	{
 		return _partyroom > 0;
-	}
-	
-	/**
-	 * Manage the increase level task of a L2PcInstance (Max MP, Max MP, Recommandation, Expertise and beginner skills...).
-	 * <ul>
-	 * <li>Send System Message to the L2PcInstance : YOU_INCREASED_YOUR_LEVEL</li>
-	 * <li>Send StatusUpdate to the L2PcInstance with new LEVEL, MAX_HP and MAX_MP</li>
-	 * <li>Set the current HP and MP of the L2PcInstance, Launch/Stop a HP/MP/CP Regeneration Task and send StatusUpdate packet to all other L2PcInstance to inform (exclusive broadcast)</li>
-	 * <li>Recalculate the party level</li>
-	 * <li>Recalculate the number of Recommandation that the L2PcInstance can give</li>
-	 * <li>Give Expertise skill of this level and remove beginner Lucky skill</li>
-	 * </ul>
-	 */
-	public void increaseLevel()
-	{
-		// Set the current HP and MP of the L2Character, Launch/Stop a HP/MP/CP Regeneration Task and send StatusUpdate packet to all other L2PcInstance to inform (exclusive broadcast)
-		setCurrentHpMp(getMaxHp(), getMaxMp());
-		setCurrentCp(getMaxCp());
 	}
 	
 	/**
@@ -5895,9 +5866,9 @@ public final class L2PcInstance extends L2Playable
 			statement.setInt(10, getAppearance().getHairColor());
 			statement.setInt(11, getAppearance().getSex() ? 1 : 0);
 			statement.setInt(12, getHeading());
-			statement.setInt(13, _observerMode ? _lastX : getX());
-			statement.setInt(14, _observerMode ? _lastY : getY());
-			statement.setInt(15, _observerMode ? _lastZ : getZ());
+			statement.setInt(13, _observerMode ? _savedLocation.getX() : getX());
+			statement.setInt(14, _observerMode ? _savedLocation.getY() : getY());
+			statement.setInt(15, _observerMode ? _savedLocation.getZ() : getZ());
 			statement.setLong(16, exp);
 			statement.setLong(17, getExpBeforeDeath());
 			statement.setInt(18, sp);
@@ -7809,10 +7780,7 @@ public final class L2PcInstance extends L2Playable
 	
 	public void enterObserverMode(int x, int y, int z)
 	{
-		_lastX = getX();
-		_lastY = getY();
-		_lastZ = getZ();
-		
+		_savedLocation.setXYZ(getX(), getY(), getZ());
 		_observerMode = true;
 		
 		standUp();
@@ -7831,13 +7799,6 @@ public final class L2PcInstance extends L2Playable
 		broadcastUserInfo();
 	}
 	
-	public void saveCurrentCoords()
-	{
-		_lastX = getX();
-		_lastY = getY();
-		_lastZ = getZ();
-	}
-	
 	public void enterOlympiadObserverMode(int id)
 	{
 		final OlympiadGameTask task = OlympiadGameManager.getInstance().getOlympiadTask(id);
@@ -7854,11 +7815,7 @@ public final class L2PcInstance extends L2Playable
 		standUp();
 		
 		if (!_observerMode)
-		{
-			_lastX = getX();
-			_lastY = getY();
-			_lastZ = getZ();
-		}
+			_savedLocation.setXYZ(getX(), getY(), getZ());
 		
 		_observerMode = true;
 		setTarget(null);
@@ -7873,7 +7830,7 @@ public final class L2PcInstance extends L2Playable
 	{
 		setTarget(null);
 		getKnownList().removeAllKnownObjects(); // reinit knownlist
-		setXYZ(_lastX, _lastY, _lastZ);
+		setXYZ(_savedLocation.getX(), _savedLocation.getY(), _savedLocation.getZ());
 		setIsParalyzed(false);
 		stopParalyze(false);
 		getAppearance().setVisible();
@@ -7886,8 +7843,8 @@ public final class L2PcInstance extends L2Playable
 		setFalling();
 		
 		_observerMode = false;
-		saveCurrentCoords();
-		sendPacket(new ObservationReturn(this));
+		_savedLocation.setXYZ(getX(), getY(), getZ());
+		sendPacket(new ObservationReturn(_savedLocation));
 		broadcastUserInfo();
 	}
 	
@@ -7901,14 +7858,14 @@ public final class L2PcInstance extends L2Playable
 		
 		setTarget(null);
 		sendPacket(new ExOlympiadMode(0));
-		teleToLocation(_lastX, _lastY, _lastZ, 20);
+		teleToLocation(_savedLocation, 20);
 		getAppearance().setVisible();
 		setIsInvul(false);
 		
 		if (hasAI())
 			getAI().setIntention(CtrlIntention.IDLE);
 		
-		saveCurrentCoords();
+		_savedLocation.setXYZ(getX(), getY(), getZ());
 		broadcastUserInfo();
 	}
 	
@@ -7932,19 +7889,9 @@ public final class L2PcInstance extends L2Playable
 		return _olympiadGameId;
 	}
 	
-	public int getLastX()
+	public Location getSavedLocation()
 	{
-		return _lastX;
-	}
-	
-	public int getLastY()
-	{
-		return _lastY;
-	}
-	
-	public int getLastZ()
-	{
-		return _lastZ;
+		return _savedLocation;
 	}
 	
 	public boolean inObserverMode()
@@ -8921,25 +8868,6 @@ public final class L2PcInstance extends L2Playable
 		}
 	}
 	
-	public void setLastServerPosition(int x, int y, int z)
-	{
-		_lastServerPosition.setXYZ(x, y, z);
-	}
-	
-	public boolean checkLastServerPosition(int x, int y, int z)
-	{
-		return _lastServerPosition.equals(x, y, z);
-	}
-	
-	public int getLastServerDistance(int x, int y, int z)
-	{
-		double dx = (x - _lastServerPosition.getX());
-		double dy = (y - _lastServerPosition.getY());
-		double dz = (z - _lastServerPosition.getZ());
-		
-		return (int) Math.sqrt(dx * dx + dy * dy + dz * dz);
-	}
-	
 	@Override
 	public void addExpAndSp(long addToExp, int addToSp)
 	{
@@ -9196,7 +9124,7 @@ public final class L2PcInstance extends L2Playable
 			// Check if the L2PcInstance is in observer mode to set its position to its position
 			// before entering in observer mode
 			if (inObserverMode())
-				setXYZInvisible(_lastX, _lastY, _lastZ);
+				setXYZInvisible(_savedLocation.getX(), _savedLocation.getY(), _savedLocation.getZ());
 			
 			// Oust player from boat
 			if (getVehicle() != null)

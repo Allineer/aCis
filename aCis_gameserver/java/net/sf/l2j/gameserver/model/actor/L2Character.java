@@ -4953,7 +4953,7 @@ public abstract class L2Character extends L2Object
 		if (skill == null || _disabledSkills == null)
 			return;
 		
-		_disabledSkills.remove(Integer.valueOf(skill.getReuseHashCode()));
+		_disabledSkills.remove(skill.getReuseHashCode());
 	}
 	
 	/**
@@ -4969,7 +4969,7 @@ public abstract class L2Character extends L2Object
 		if (_disabledSkills == null)
 			_disabledSkills = new ConcurrentHashMap<>();
 		
-		_disabledSkills.put(Integer.valueOf(skill.getReuseHashCode()), delay > 10 ? System.currentTimeMillis() + delay : Long.MAX_VALUE);
+		_disabledSkills.put(skill.getReuseHashCode(), (delay > 10) ? System.currentTimeMillis() + delay : Long.MAX_VALUE);
 	}
 	
 	/**
@@ -5006,13 +5006,13 @@ public abstract class L2Character extends L2Object
 		if (_disabledSkills == null)
 			return false;
 		
-		final Long timeStamp = _disabledSkills.get(Integer.valueOf(reuseHashcode));
+		final Long timeStamp = _disabledSkills.get(reuseHashcode);
 		if (timeStamp == null)
 			return false;
 		
 		if (timeStamp < System.currentTimeMillis())
 		{
-			_disabledSkills.remove(Integer.valueOf(reuseHashcode));
+			_disabledSkills.remove(reuseHashcode);
 			return false;
 		}
 		
@@ -5341,17 +5341,6 @@ public abstract class L2Character extends L2Object
 	public final void setSkillCast(Future<?> newSkillCast)
 	{
 		_skillCast = newSkillCast;
-	}
-	
-	/**
-	 * Sets _isCastingNow to true and _castInterruptTime is calculated from end time (ticks)
-	 * @param newSkillCastEndTick
-	 */
-	public final void forceIsCasting(int newSkillCastEndTick)
-	{
-		setIsCastingNow(true);
-		// for interrupt -400 ms
-		_castInterruptTime = newSkillCastEndTick - 4;
 	}
 	
 	/**

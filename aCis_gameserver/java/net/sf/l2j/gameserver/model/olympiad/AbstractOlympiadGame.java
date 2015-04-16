@@ -144,7 +144,7 @@ public abstract class AbstractOlympiadGame
 		
 		try
 		{
-			player.saveCurrentCoords();
+			player.getSavedLocation().setXYZ(player.getX(), player.getY(), player.getZ());
 			
 			player.forceStandUp();
 			player.setTarget(null);
@@ -353,11 +353,12 @@ public abstract class AbstractOlympiadGame
 		if (player == null)
 			return;
 		
-		if (player.getLastX() == 0 && player.getLastY() == 0)
+		final Location loc = player.getSavedLocation();
+		if (loc.equals(0, 0, 0))
 			return;
 		
-		player.teleToLocation(player.getLastX(), player.getLastY(), player.getLastZ(), 0);
-		player.saveCurrentCoords();
+		player.teleToLocation(loc, 0);
+		player.getSavedLocation().setXYZ(player.getX(), player.getY(), player.getZ());
 	}
 	
 	public static final void rewardParticipant(L2PcInstance player, int[][] reward)

@@ -787,7 +787,7 @@ public class Olympiad
 	
 	public int getNoblePoints(int objId)
 	{
-		if ((_nobles == null) || !_nobles.containsKey(objId))
+		if (_nobles == null || !_nobles.containsKey(objId))
 			return 0;
 		
 		return _nobles.get(objId).getInteger(POINTS);
@@ -815,7 +815,7 @@ public class Olympiad
 	
 	public int getCompetitionDone(int objId)
 	{
-		if ((_nobles == null) || !_nobles.containsKey(objId))
+		if (_nobles == null || !_nobles.containsKey(objId))
 			return 0;
 		
 		return _nobles.get(objId).getInteger(COMP_DONE);
@@ -823,7 +823,7 @@ public class Olympiad
 	
 	public int getCompetitionWon(int objId)
 	{
-		if ((_nobles == null) || !_nobles.containsKey(objId))
+		if (_nobles == null || !_nobles.containsKey(objId))
 			return 0;
 		
 		return _nobles.get(objId).getInteger(COMP_WON);
@@ -831,7 +831,7 @@ public class Olympiad
 	
 	public int getCompetitionLost(int objId)
 	{
-		if ((_nobles == null) || !_nobles.containsKey(objId))
+		if (_nobles == null || !_nobles.containsKey(objId))
 			return 0;
 		
 		return _nobles.get(objId).getInteger(COMP_LOST);
@@ -859,7 +859,7 @@ public class Olympiad
 	 */
 	protected static StatsSet addNobleStats(int charId, StatsSet data)
 	{
-		return _nobles.put(Integer.valueOf(charId), data);
+		return _nobles.put(charId, data);
 	}
 	
 	private static class SingletonHolder

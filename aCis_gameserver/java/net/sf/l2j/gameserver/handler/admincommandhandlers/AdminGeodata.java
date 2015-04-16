@@ -67,8 +67,8 @@ public class AdminGeodata implements IAdminCommandHandler
 		{
 			int geoX = GeoData.getInstance().getGeoX(activeChar.getX());
 			int geoY = GeoData.getInstance().getGeoY(activeChar.getY());
-			int rx = L2World.TILE_X_MIN + geoX / GeoStructure.REGION_CELLS_X;
-			int ry = L2World.TILE_Y_MIN + geoY / GeoStructure.REGION_CELLS_Y;
+			int rx = (activeChar.getX() - L2World.WORLD_X_MIN) / L2World.TILE_SIZE + L2World.TILE_X_MIN;
+			int ry = (activeChar.getY() - L2World.WORLD_Y_MIN) / L2World.TILE_SIZE + L2World.TILE_Y_MIN;
 			activeChar.sendMessage("Region: " + rx + "_" + ry);
 			if (GeoData.getInstance().hasGeoPos(geoX, geoY))
 			{

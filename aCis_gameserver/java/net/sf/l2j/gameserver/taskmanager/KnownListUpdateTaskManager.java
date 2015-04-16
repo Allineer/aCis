@@ -71,7 +71,7 @@ public class KnownListUpdateTaskManager
 						fullUpdate = fullUpdate || object instanceof L2Playable;
 						
 						if (updatePass)
-							object.getKnownList().forgetObjects(fullUpdate || needFastUpdate);
+							object.getKnownList().forgetObjects();
 						else
 						{
 							for (L2WorldRegion regi : r.getSurroundingRegions())

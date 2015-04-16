@@ -165,11 +165,9 @@ public final class ItemInstance extends L2Object
 		_itemId = item.getItemId();
 		_item = item;
 		
-		if (_itemId == 0 || _item == null)
-			throw new IllegalArgumentException();
-		
-		super.setName(_item.getName());
+		setName(_item.getName());
 		setCount(1);
+		
 		_loc = ItemLocation.VOID;
 		_mana = _item.getDuration();
 	}

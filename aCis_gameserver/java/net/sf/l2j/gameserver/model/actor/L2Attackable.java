@@ -608,10 +608,10 @@ public class L2Attackable extends L2Npc
 					}
 					
 					// Set new karma.
-					attacker.updateKarmaLoss(Math.round(exp));
+					attacker.updateKarmaLoss(exp);
 					
 					// Distribute the Exp and SP between the L2PcInstance and its L2Summon.
-					attacker.addExpAndSp(Math.round(exp), sp);
+					attacker.addExpAndSp(exp, sp);
 				}
 			}
 			// Share with party members.
@@ -1405,11 +1405,6 @@ public class L2Attackable extends L2Npc
 				_log.log(Level.SEVERE, "Item doesn't exist so cannot be dropped. Item ID: " + item.getId());
 		}
 		return ditem;
-	}
-	
-	public ItemInstance dropItem(L2PcInstance lastAttacker, int itemId, int itemCount)
-	{
-		return dropItem(lastAttacker, new ItemHolder(itemId, itemCount));
 	}
 	
 	/**

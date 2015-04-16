@@ -313,9 +313,7 @@ abstract class DocumentBase
 		lt = new EffectTemplate(attachCond, applayCond, name, lambda, count, time, abnormal, stackType, stackOrder, icon, effectPower, type, trigId, trigLvl, chance);
 		
 		parseTemplate(n, lt);
-		if (template instanceof Item)
-			((Item) template).attach(lt);
-		else if (template instanceof L2Skill)
+		if (template instanceof L2Skill)
 		{
 			if (self)
 				((L2Skill) template).attachSelf(lt);
