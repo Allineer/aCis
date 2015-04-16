@@ -36,6 +36,7 @@ import net.sf.l2j.gameserver.datatables.AdminCommandAccessRights;
 import net.sf.l2j.gameserver.datatables.ArmorSetsTable;
 import net.sf.l2j.gameserver.datatables.AugmentationData;
 import net.sf.l2j.gameserver.datatables.BookmarkTable;
+import net.sf.l2j.gameserver.datatables.BufferTable;
 import net.sf.l2j.gameserver.datatables.CharNameTable;
 import net.sf.l2j.gameserver.datatables.CharTemplateTable;
 import net.sf.l2j.gameserver.datatables.ClanTable;
@@ -225,6 +226,7 @@ public class GameServer
 		L2Manor.getInstance();
 		
 		Util.printSection("NPCs");
+		BufferTable.getInstance();
 		HerbDropTable.getInstance();
 		PetDataTable.getInstance();
 		NpcTable.getInstance();

@@ -279,7 +279,7 @@ public class AdminEditChar implements IAdminCommandHandler
 				
 				player.setTitle(val);
 				player.sendMessage("Your title has been changed by a GM.");
-				player.broadcastUserInfo();
+				player.broadcastTitleInfo();
 			}
 			catch (StringIndexOutOfBoundsException e)
 			{

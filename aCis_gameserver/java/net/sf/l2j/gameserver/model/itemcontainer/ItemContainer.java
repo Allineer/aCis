@@ -548,18 +548,18 @@ public abstract class ItemContainer
 	 */
 	public void deleteMe()
 	{
-		try
+		if (getOwner() != null)
 		{
-			updateDatabase();
+			for (ItemInstance item : _items)
+			{
+				if (item != null)
+				{
+					item.updateDatabase();
+					L2World.getInstance().removeObject(item);
+				}
+			}
 		}
-		catch (Exception e)
-		{
-			_log.log(Level.SEVERE, "deletedMe()", e);
-		}
-		List<L2Object> items = new ArrayList<L2Object>(_items);
 		_items.clear();
-		
-		L2World.getInstance().removeObjects(items);
 	}
 	
 	/**

@@ -29,6 +29,7 @@ import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
 import net.sf.l2j.commons.config.ExProperties;
+import net.sf.l2j.gameserver.model.holder.BuffSkillHolder;
 import net.sf.l2j.gameserver.util.FloodProtectorConfig;
 import net.sf.l2j.util.StringUtil;
 
@@ -292,6 +293,13 @@ public final class Config
 	public static int CHAMPION_REWARD;
 	public static int CHAMPION_REWARD_ID;
 	public static int CHAMPION_REWARD_QTY;
+	
+	/** Buffer */
+	public static int BUFFER_MAX_SCHEMES;
+	public static int BUFFER_MAX_SKILLS;
+	public static int BUFFER_STATIC_BUFF_COST;
+	public static String BUFFER_BUFFS;
+	public static Map<Integer, BuffSkillHolder> BUFFER_BUFFLIST;
 	
 	/** Misc */
 	public static boolean ALLOW_CLASS_MASTERS;
@@ -902,6 +910,18 @@ public final class Config
 			CHAMPION_REWARD = npcs.getProperty("ChampionRewardItem", 0);
 			CHAMPION_REWARD_ID = npcs.getProperty("ChampionRewardItemID", 6393);
 			CHAMPION_REWARD_QTY = npcs.getProperty("ChampionRewardItemQty", 1);
+			
+			BUFFER_MAX_SCHEMES = npcs.getProperty("BufferMaxSchemesPerChar", 4);
+			BUFFER_MAX_SKILLS = npcs.getProperty("BufferMaxSkillsPerScheme", 24);
+			BUFFER_STATIC_BUFF_COST = npcs.getProperty("BufferStaticCostPerBuff", -1);
+			BUFFER_BUFFS = npcs.getProperty("BufferBuffs");
+			
+			BUFFER_BUFFLIST = new HashMap<>();
+			for (String skillInfo : BUFFER_BUFFS.split(";"))
+			{
+				final String[] infos = skillInfo.split(",");
+				BUFFER_BUFFLIST.put(Integer.valueOf(infos[0]), new BuffSkillHolder(Integer.valueOf(infos[0]), Integer.valueOf(infos[1]), infos[2]));
+			}
 			
 			ALLOW_CLASS_MASTERS = npcs.getProperty("AllowClassMasters", false);
 			ALLOW_ENTIRE_TREE = npcs.getProperty("AllowEntireTree", false);

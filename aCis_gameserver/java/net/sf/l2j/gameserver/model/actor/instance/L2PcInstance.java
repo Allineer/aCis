@@ -215,6 +215,7 @@ import net.sf.l2j.gameserver.network.serverpackets.StopMove;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 import net.sf.l2j.gameserver.network.serverpackets.TargetSelected;
 import net.sf.l2j.gameserver.network.serverpackets.TargetUnselected;
+import net.sf.l2j.gameserver.network.serverpackets.TitleUpdate;
 import net.sf.l2j.gameserver.network.serverpackets.TradePressOtherOk;
 import net.sf.l2j.gameserver.network.serverpackets.TradePressOwnOk;
 import net.sf.l2j.gameserver.network.serverpackets.TradeStart;
@@ -3459,6 +3460,15 @@ public final class L2PcInstance extends L2Playable
 			if (getPet() != null)
 				player.sendPacket(new RelationChanged(getPet(), relation, isAutoAttackable(player)));
 		}
+	}
+	
+	/**
+	 * Broadcast player title information.
+	 */
+	public final void broadcastTitleInfo()
+	{
+		sendPacket(new UserInfo(this));
+		broadcastPacket(new TitleUpdate(this));
 	}
 	
 	/**

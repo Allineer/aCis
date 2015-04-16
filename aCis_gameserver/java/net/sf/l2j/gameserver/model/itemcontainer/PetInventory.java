@@ -14,11 +14,7 @@
  */
 package net.sf.l2j.gameserver.model.itemcontainer;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.sf.l2j.gameserver.datatables.ItemTable;
-import net.sf.l2j.gameserver.model.L2Object;
 import net.sf.l2j.gameserver.model.L2World;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2PetInstance;
@@ -142,17 +138,13 @@ public class PetInventory extends Inventory
 			{
 				// Transfer each item to master's inventory.
 				for (ItemInstance item : _items)
+				{
 					getOwner().transferItem("return", item.getObjectId(), item.getCount(), petOwner.getInventory(), petOwner, getOwner());
+					L2World.getInstance().removeObject(item);
+				}
 			}
-			
-			// Create a clone version (from ItemInstance to L2Object) items used just after for remove purpose.
-			List<L2Object> items = new ArrayList<L2Object>(_items);
-			
 			// Clear the internal inventory items list.
 			_items.clear();
-			
-			// Drop those items from the world.
-			L2World.getInstance().removeObjects(items);
 		}
 	}
 }

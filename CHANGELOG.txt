@@ -1,4 +1,30 @@
 ====================================================================================================
+Changeset 324 @ 2014.04.11
+
+Scheme Buffer, Misc
+
+Scheme Buffer
+    - Addition of Dr House scheme buffer, remasterized by me. The big differences are:
+        - Buffer buffs aren't loaded from a mySQL table, but from a Config line from npcs.properties (String split > register on Map).
+        - There is no L2Skill storage anywhere, only Integers (skillId). The skillLevel is generated from SkillTable getMaxLevel().
+        - The schemes loading/save is made GLOBALLY (understand, not on player login). Save is still done on server shutdown.
+        - The players schemes buffs lists are stored on a single varchar, which is parsed with String split method (before there was one entry on the database per skill).
+        - Fix all godamn typos and broken english.
+        - Statified HTMs content when it could be.
+        - Reworked the "Edit my schemes" button to be more logical: select a scheme, THEN a skill group, THEN a buff. The HTM content also scales with that progression to make it intuitive.
+        - Added infos everywhere (such as current selected scheme, number of max buffs allowed, number of current buffs per scheme,...)
+        - Added "Heal" and "Cleanup effects" buttons (affect your current pet aswell).
+        - The HTM system uses getHtmlPath(), meaning a different buffer npcId can be linked to different HTMs (unique dialogues for each buffer instance).
+
+Misc
+    - [L2J 6498] Drop double iterations on pet/player inventories deletion.
+    - [L2J 6382] FourSepulchersManager cleanup - drop Map .remove(), use Map.Entry instead of keySet() + .get(), format the class.
+    - Addition of method broadcastTitleInfo() which uses TitleUpdate packet; complete RequestGiveNickName clientpacket (adding numerous messages). Ty Root.
+    - Fix getMaxLevel() method, broken with Trove changeset.
+
+PS: the Scheme Buffer is a first shot. If you manage to propose better/easier organization, I would eventually take it.
+
+====================================================================================================
 Changeset 323 @ 2014.03.31
 
 Misc

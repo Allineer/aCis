@@ -12,29 +12,37 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.l2j.gameserver.network.serverpackets;
-
-import net.sf.l2j.gameserver.model.actor.L2Character;
+package net.sf.l2j.gameserver.model.holder;
 
 /**
- * @author devScarlet
+ * @author Tryskell
  */
-public class TitleUpdate extends L2GameServerPacket
+public final class BuffSkillHolder
 {
-	private final String _title;
-	private final int _objectId;
+	private final int _skillId;
+	private final int _price;
 	
-	public TitleUpdate(L2Character cha)
+	private final String _groupType;
+	
+	public BuffSkillHolder(int skillId, int price, String groupType)
 	{
-		_objectId = cha.getObjectId();
-		_title = cha.getTitle();
+		_skillId = skillId;
+		_price = price;
+		_groupType = groupType;
 	}
 	
-	@Override
-	protected void writeImpl()
+	public final int getSkillId()
 	{
-		writeC(0xcc);
-		writeD(_objectId);
-		writeS(_title);
+		return _skillId;
+	}
+	
+	public final int getPrice()
+	{
+		return _price;
+	}
+	
+	public final String getGroupType()
+	{
+		return _groupType;
 	}
 }

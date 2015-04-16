@@ -80,14 +80,14 @@ public class SkillTable
 		// Stores max level of skills in a map for future uses.
 		for (final L2Skill skill : _skills.values())
 		{
-			final int skillId = skill.getId();
-			final int skillLvl = skill.getLevel();
-			
 			// Only non-enchanted skills
+			final int skillLvl = skill.getLevel();
 			if (skillLvl < 99)
 			{
+				final int skillId = skill.getId();
 				final int maxLvl = getMaxLevel(skillId);
-				if (maxLvl > 0 || skillLvl > maxLvl)
+				
+				if (skillLvl > maxLvl)
 					_skillMaxLevel.put(skillId, skillLvl);
 			}
 		}

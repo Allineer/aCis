@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 
 import net.sf.l2j.Config;
 import net.sf.l2j.L2DatabaseFactory;
+import net.sf.l2j.gameserver.datatables.BufferTable;
 import net.sf.l2j.gameserver.instancemanager.CastleManorManager;
 import net.sf.l2j.gameserver.instancemanager.FishingChampionshipManager;
 import net.sf.l2j.gameserver.instancemanager.FourSepulchersManager;
@@ -193,6 +194,10 @@ public class Shutdown extends Thread
 			// Save Fishing tournament data
 			FishingChampionshipManager.getInstance().shutdown();
 			_log.info("Fishing Championship data has been saved.");
+			
+			// Schemes save.
+			BufferTable.getInstance().saveSchemes();
+			_log.info("BufferTable data has been saved.");
 			
 			// Save items on ground before closing
 			if (Config.SAVE_DROPPED_ITEM)

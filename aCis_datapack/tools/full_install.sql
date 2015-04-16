@@ -4,6 +4,7 @@ DROP TABLE IF EXISTS auction;
 DROP TABLE IF EXISTS auction_bid;
 DROP TABLE IF EXISTS augmentations;
 DROP TABLE IF EXISTS bookmarks;
+DROP TABLE IF EXISTS buffer_schemes;
 DROP TABLE IF EXISTS castle_doorupgrade;
 DROP TABLE IF EXISTS castle_manor_procure;
 DROP TABLE IF EXISTS castle_manor_production;
