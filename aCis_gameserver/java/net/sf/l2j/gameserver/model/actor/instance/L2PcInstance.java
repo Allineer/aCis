@@ -45,10 +45,13 @@ import net.sf.l2j.gameserver.RecipeController;
 import net.sf.l2j.gameserver.SevenSigns;
 import net.sf.l2j.gameserver.SevenSignsFestival;
 import net.sf.l2j.gameserver.ThreadPoolManager;
+import net.sf.l2j.gameserver.ai.CtrlEvent;
 import net.sf.l2j.gameserver.ai.CtrlIntention;
 import net.sf.l2j.gameserver.ai.L2CharacterAI;
 import net.sf.l2j.gameserver.ai.L2PlayerAI;
 import net.sf.l2j.gameserver.ai.L2SummonAI;
+import net.sf.l2j.gameserver.ai.NextAction;
+import net.sf.l2j.gameserver.ai.NextAction.NextActionCallback;
 import net.sf.l2j.gameserver.communitybbs.BB.Forum;
 import net.sf.l2j.gameserver.communitybbs.Manager.ForumsBBSManager;
 import net.sf.l2j.gameserver.datatables.AccessLevels;
@@ -78,6 +81,7 @@ import net.sf.l2j.gameserver.instancemanager.SiegeManager;
 import net.sf.l2j.gameserver.model.BlockList;
 import net.sf.l2j.gameserver.model.FishData;
 import net.sf.l2j.gameserver.model.L2AccessLevel;
+import net.sf.l2j.gameserver.model.L2CharPosition;
 import net.sf.l2j.gameserver.model.L2Clan;
 import net.sf.l2j.gameserver.model.L2ClanMember;
 import net.sf.l2j.gameserver.model.L2Effect;
@@ -145,6 +149,7 @@ import net.sf.l2j.gameserver.network.L2GameClient;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.AbstractNpcInfo;
 import net.sf.l2j.gameserver.network.serverpackets.ActionFailed;
+import net.sf.l2j.gameserver.network.serverpackets.ChairSit;
 import net.sf.l2j.gameserver.network.serverpackets.ChangeWaitType;
 import net.sf.l2j.gameserver.network.serverpackets.CharInfo;
 import net.sf.l2j.gameserver.network.serverpackets.ConfirmDlg;
@@ -194,6 +199,7 @@ import net.sf.l2j.gameserver.network.serverpackets.SkillCoolTime;
 import net.sf.l2j.gameserver.network.serverpackets.SkillList;
 import net.sf.l2j.gameserver.network.serverpackets.Snoop;
 import net.sf.l2j.gameserver.network.serverpackets.SocialAction;
+import net.sf.l2j.gameserver.network.serverpackets.StaticObject;
 import net.sf.l2j.gameserver.network.serverpackets.StatusUpdate;
 import net.sf.l2j.gameserver.network.serverpackets.StopMove;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
@@ -283,22 +289,23 @@ public final class L2PcInstance extends L2Playable
 	private static final String UPDATE_NOBLESS = "UPDATE characters SET nobless=? WHERE obj_Id=?";
 	
 	public static final int REQUEST_TIMEOUT = 15;
+	
 	public static final int STORE_PRIVATE_NONE = 0;
 	public static final int STORE_PRIVATE_SELL = 1;
+	public static final int STORE_PRIVATE_SELL_MANAGE = 2;
 	public static final int STORE_PRIVATE_BUY = 3;
-	public static final int STORE_PRIVATE_MANAGE = 4;
+	public static final int STORE_PRIVATE_BUY_MANAGE = 4;
 	public static final int STORE_PRIVATE_MANUFACTURE = 5;
 	public static final int STORE_PRIVATE_PACKAGE_SELL = 8;
 	
-	/** The table containing all minimum level needed for each Expertise (None, D, C, B, A, S) */
 	private static final int[] EXPERTISE_LEVELS =
 	{
-		SkillTreeTable.getInstance().getExpertiseLevel(0), // NONE
-		SkillTreeTable.getInstance().getExpertiseLevel(1), // D
-		SkillTreeTable.getInstance().getExpertiseLevel(2), // C
-		SkillTreeTable.getInstance().getExpertiseLevel(3), // B
-		SkillTreeTable.getInstance().getExpertiseLevel(4), // A
-		SkillTreeTable.getInstance().getExpertiseLevel(5), // S
+		0, // NONE
+		20, // D
+		40, // C
+		52, // B
+		61, // A
+		76, // S
 	};
 	
 	private static final int[] COMMON_CRAFT_LEVELS =
@@ -483,7 +490,6 @@ public final class L2PcInstance extends L2Playable
 	private PcFreight _freight;
 	private final List<PcFreight> _depositedFreight = new ArrayList<>();
 	
-	/** The Private Store type of the L2PcInstance (STORE_PRIVATE_NONE=0, STORE_PRIVATE_SELL=1, sellmanage=2, STORE_PRIVATE_BUY=3, buymanage=4, STORE_PRIVATE_MANUFACTURE=5) */
 	private int _privateStore;
 	
 	private TradeList _activeTradeList;
@@ -2086,9 +2092,12 @@ public final class L2PcInstance extends L2Playable
 	}
 	
 	/**
-	 * This method is kinda polymorph :<BR>
-	 * <BR>
-	 * <li>it gives proper Expertise, Dwarven && Common Craft skill level ;</li> <li>it controls the Lucky skill (remove at lvl 10) ;</li> <li>it finally sends the skill list.</li>
+	 * This method is kinda polymorph :
+	 * <ul>
+	 * <li>it gives proper Expertise, Dwarven && Common Craft skill level ;</li>
+	 * <li>it controls the Lucky skill (remove at lvl 10) ;</li>
+	 * <li>it finally sends the skill list.</li>
+	 * </ul>
 	 */
 	public void rewardSkills()
 	{
@@ -2405,8 +2414,89 @@ public final class L2PcInstance extends L2Playable
 		}
 		
 		// Stand up.
-		if (isSitting())
-			standUp();
+		standUp();
+	}
+	
+	/**
+	 * Used to sit or stand. If not possible, queue the action.
+	 * @param target The target, used for thrones types.
+	 * @param sittingState The sitting state, inheritated from packet or player status.
+	 */
+	public void tryToSitOrStand(final L2Object target, final boolean sittingState)
+	{
+		if (isFakeDeath())
+		{
+			stopFakeDeath(true);
+			return;
+		}
+		
+		final boolean isThrone = target instanceof L2StaticObjectInstance && ((L2StaticObjectInstance) target).getType() == 1;
+		
+		// Player wants to sit on a throne but is out of radius, move to the throne delaying the sit action.
+		if (isThrone && !sittingState && !isInsideRadius(target, L2Npc.INTERACTION_DISTANCE, false, false))
+		{
+			getAI().setIntention(CtrlIntention.MOVE_TO, new L2CharPosition(target.getX(), target.getY(), target.getZ(), 0));
+			
+			NextAction nextAction = new NextAction(CtrlEvent.EVT_ARRIVED, CtrlIntention.MOVE_TO, new NextActionCallback()
+			{
+				@Override
+				public void doWork()
+				{
+					if (getMountType() != 0)
+						return;
+					
+					sitDown();
+					broadcastPacket(new ChairSit(L2PcInstance.this, ((L2StaticObjectInstance) target).getStaticObjectId()));
+				}
+			});
+			
+			// Binding next action to AI.
+			getAI().setNextAction(nextAction);
+			return;
+		}
+		
+		// Player isn't moving, sit directly.
+		if (!isMoving())
+		{
+			if (getMountType() != 0)
+				return;
+			
+			if (sittingState)
+				standUp();
+			else
+			{
+				sitDown();
+				
+				if (isThrone && isInsideRadius(target, L2Npc.INTERACTION_DISTANCE, false, false))
+					broadcastPacket(new ChairSit(this, ((L2StaticObjectInstance) target).getStaticObjectId()));
+			}
+		}
+		// Player is moving, wait the current action is done, then sit.
+		else
+		{
+			NextAction nextAction = new NextAction(CtrlEvent.EVT_ARRIVED, CtrlIntention.MOVE_TO, new NextActionCallback()
+			{
+				@Override
+				public void doWork()
+				{
+					if (getMountType() != 0)
+						return;
+					
+					if (sittingState)
+						standUp();
+					else
+					{
+						sitDown();
+						
+						if (isThrone && isInsideRadius(target, L2Npc.INTERACTION_DISTANCE, false, false))
+							broadcastPacket(new ChairSit(L2PcInstance.this, ((L2StaticObjectInstance) target).getStaticObjectId()));
+					}
+				}
+			});
+			
+			// Binding next action to AI.
+			getAI().setNextAction(nextAction);
+		}
 	}
 	
 	/**
@@ -3733,15 +3823,14 @@ public final class L2PcInstance extends L2Playable
 	{
 		if (canOpenPrivateStore())
 		{
-			if (getPrivateStoreType() == STORE_PRIVATE_BUY || getPrivateStoreType() == STORE_PRIVATE_MANAGE)
+			if (getPrivateStoreType() == STORE_PRIVATE_BUY || getPrivateStoreType() == STORE_PRIVATE_BUY_MANAGE)
 				setPrivateStoreType(STORE_PRIVATE_NONE);
 			
 			if (getPrivateStoreType() == STORE_PRIVATE_NONE)
 			{
-				if (isSitting())
-					standUp();
+				standUp();
 				
-				setPrivateStoreType(STORE_PRIVATE_MANAGE);
+				setPrivateStoreType(STORE_PRIVATE_BUY_MANAGE);
 				sendPacket(new PrivateStoreManageListBuy(this));
 			}
 		}
@@ -3758,15 +3847,14 @@ public final class L2PcInstance extends L2Playable
 	{
 		if (canOpenPrivateStore())
 		{
-			if (getPrivateStoreType() == STORE_PRIVATE_SELL || getPrivateStoreType() == STORE_PRIVATE_SELL + 1 || getPrivateStoreType() == STORE_PRIVATE_PACKAGE_SELL)
+			if (getPrivateStoreType() == STORE_PRIVATE_SELL || getPrivateStoreType() == STORE_PRIVATE_SELL_MANAGE || getPrivateStoreType() == STORE_PRIVATE_PACKAGE_SELL)
 				setPrivateStoreType(STORE_PRIVATE_NONE);
 			
 			if (getPrivateStoreType() == STORE_PRIVATE_NONE)
 			{
-				if (isSitting())
-					standUp();
+				standUp();
 				
-				setPrivateStoreType(STORE_PRIVATE_SELL + 1);
+				setPrivateStoreType(STORE_PRIVATE_SELL_MANAGE);
 				sendPacket(new PrivateStoreManageListSell(this, isPackageSale));
 			}
 		}
@@ -3788,8 +3876,7 @@ public final class L2PcInstance extends L2Playable
 			
 			if (getPrivateStoreType() == STORE_PRIVATE_NONE)
 			{
-				if (isSitting())
-					standUp();
+				standUp();
 				
 				if (getCreateList() == null)
 					setCreateList(new L2ManufactureList());
@@ -3853,8 +3940,14 @@ public final class L2PcInstance extends L2Playable
 				((L2Character) oldTarget).removeStatusListener(this);
 		}
 		
+		// Verify if it's a static object.
+		if (newTarget instanceof L2StaticObjectInstance)
+		{
+			sendPacket(new MyTargetSelected(newTarget.getObjectId(), getLevel()));
+			sendPacket(new StaticObject((L2StaticObjectInstance) newTarget));
+		}
 		// Add the L2PcInstance to the _statusListener of the new target if it's a L2Character
-		if (newTarget instanceof L2Character)
+		else if (newTarget instanceof L2Character)
 		{
 			final L2Character target = (L2Character) newTarget;
 			
@@ -7911,8 +8004,7 @@ public final class L2PcInstance extends L2Playable
 		
 		_observerMode = true;
 		
-		if (isSitting())
-			standUp();
+		standUp();
 		
 		dropAllSummons();
 		setTarget(null);
@@ -7948,8 +8040,7 @@ public final class L2PcInstance extends L2Playable
 		
 		_olympiadGameId = id;
 		
-		if (isSitting())
-			standUp();
+		standUp();
 		
 		if (!_observerMode)
 		{
@@ -10199,59 +10290,52 @@ public final class L2PcInstance extends L2Playable
 	
 	public void calculateDeathPenaltyBuffLevel(L2Character killer)
 	{
-		if ((getKarma() > 0 || Rnd.get(1, 100) <= Config.DEATH_PENALTY_CHANCE) && !(killer instanceof L2PcInstance) && !isGM() && !(getCharmOfLuck() && killer.isRaid()) && !isPhoenixBlessed() && !(isInsideZone(ZoneId.PVP) || isInsideZone(ZoneId.SIEGE)))
-			increaseDeathPenaltyBuffLevel();
-	}
-	
-	public void increaseDeathPenaltyBuffLevel()
-	{
-		if (getDeathPenaltyBuffLevel() >= 15) // maximum level reached
+		if (_deathPenaltyBuffLevel >= 15) // maximum level reached
 			return;
 		
-		if (getDeathPenaltyBuffLevel() != 0)
+		if ((getKarma() > 0 || Rnd.get(1, 100) <= Config.DEATH_PENALTY_CHANCE) && !(killer instanceof L2PcInstance) && !isGM() && !(getCharmOfLuck() && (killer == null || killer.isRaid())) && !isPhoenixBlessed() && !(isInsideZone(ZoneId.PVP) || isInsideZone(ZoneId.SIEGE)))
 		{
-			L2Skill skill = SkillTable.getInstance().getInfo(5076, getDeathPenaltyBuffLevel());
+			if (_deathPenaltyBuffLevel != 0)
+			{
+				final L2Skill skill = SkillTable.getInstance().getInfo(5076, _deathPenaltyBuffLevel);
+				if (skill != null)
+					removeSkill(skill, true);
+			}
 			
-			if (skill != null)
-				removeSkill(skill, true);
+			_deathPenaltyBuffLevel++;
+			
+			addSkill(SkillTable.getInstance().getInfo(5076, _deathPenaltyBuffLevel), false);
+			sendPacket(new EtcStatusUpdate(this));
+			sendPacket(SystemMessage.getSystemMessage(SystemMessageId.DEATH_PENALTY_LEVEL_S1_ADDED).addNumber(_deathPenaltyBuffLevel));
 		}
-		
-		_deathPenaltyBuffLevel++;
-		
-		addSkill(SkillTable.getInstance().getInfo(5076, getDeathPenaltyBuffLevel()), false);
-		sendPacket(new EtcStatusUpdate(this));
-		sendPacket(SystemMessage.getSystemMessage(SystemMessageId.DEATH_PENALTY_LEVEL_S1_ADDED).addNumber(getDeathPenaltyBuffLevel()));
 	}
 	
 	public void reduceDeathPenaltyBuffLevel()
 	{
-		if (getDeathPenaltyBuffLevel() <= 0)
+		if (_deathPenaltyBuffLevel <= 0)
 			return;
 		
-		L2Skill skill = SkillTable.getInstance().getInfo(5076, getDeathPenaltyBuffLevel());
-		
+		final L2Skill skill = SkillTable.getInstance().getInfo(5076, _deathPenaltyBuffLevel);
 		if (skill != null)
 			removeSkill(skill, true);
 		
 		_deathPenaltyBuffLevel--;
 		
-		if (getDeathPenaltyBuffLevel() > 0)
+		if (_deathPenaltyBuffLevel > 0)
 		{
-			addSkill(SkillTable.getInstance().getInfo(5076, getDeathPenaltyBuffLevel()), false);
-			sendPacket(new EtcStatusUpdate(this));
-			sendPacket(SystemMessage.getSystemMessage(SystemMessageId.DEATH_PENALTY_LEVEL_S1_ADDED).addNumber(getDeathPenaltyBuffLevel()));
+			addSkill(SkillTable.getInstance().getInfo(5076, _deathPenaltyBuffLevel), false);
+			sendPacket(SystemMessage.getSystemMessage(SystemMessageId.DEATH_PENALTY_LEVEL_S1_ADDED).addNumber(_deathPenaltyBuffLevel));
 		}
 		else
-		{
-			sendPacket(new EtcStatusUpdate(this));
 			sendPacket(SystemMessageId.DEATH_PENALTY_LIFTED);
-		}
+		
+		sendPacket(new EtcStatusUpdate(this));
 	}
 	
 	public void restoreDeathPenaltyBuffLevel()
 	{
-		if (getDeathPenaltyBuffLevel() > 0)
-			addSkill(SkillTable.getInstance().getInfo(5076, getDeathPenaltyBuffLevel()), false);
+		if (_deathPenaltyBuffLevel > 0)
+			addSkill(SkillTable.getInstance().getInfo(5076, _deathPenaltyBuffLevel), false);
 	}
 	
 	private final Map<Integer, TimeStamp> _reuseTimeStamps = new ConcurrentHashMap<>();

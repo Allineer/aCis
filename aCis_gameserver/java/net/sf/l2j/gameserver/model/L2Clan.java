@@ -1966,74 +1966,46 @@ public class L2Clan
 		
 		switch (_level)
 		{
-			case 0:
-			{
-				// upgrade to 1
-				if (player.getSp() >= 30000 && player.getAdena() >= 650000)
+			case 0: // upgrade to 1
+				if (player.getSp() >= 30000 && player.reduceAdena("ClanLvl", 650000, player.getTarget(), true))
 				{
-					if (player.reduceAdena("ClanLvl", 650000, player.getTarget(), true))
-					{
-						player.removeExpAndSp(0, 30000);
-						increaseClanLevel = true;
-					}
+					player.removeExpAndSp(0, 30000);
+					increaseClanLevel = true;
 				}
 				break;
-			}
-			case 1:
-			{
-				// upgrade to 2
-				if (player.getSp() >= 150000 && player.getAdena() >= 2500000)
+			
+			case 1: // upgrade to 2
+				if (player.getSp() >= 150000 && player.reduceAdena("ClanLvl", 2500000, player.getTarget(), true))
 				{
-					if (player.reduceAdena("ClanLvl", 2500000, player.getTarget(), true))
-					{
-						player.removeExpAndSp(0, 150000);
-						increaseClanLevel = true;
-					}
+					player.removeExpAndSp(0, 150000);
+					increaseClanLevel = true;
 				}
 				break;
-			}
-			case 2:
-			{
-				// upgrade to 3
-				if (player.getSp() >= 500000 && player.getInventory().getItemByItemId(1419) != null)
+			
+			case 2:// upgrade to 3
+				if (player.getSp() >= 500000 && player.destroyItemByItemId("ClanLvl", 1419, 1, player.getTarget(), true))
 				{
-					// itemid 1419 == proof of blood
-					if (player.destroyItemByItemId("ClanLvl", 1419, 1, player.getTarget(), true))
-					{
-						player.removeExpAndSp(0, 500000);
-						increaseClanLevel = true;
-					}
+					player.removeExpAndSp(0, 500000);
+					increaseClanLevel = true;
 				}
 				break;
-			}
-			case 3:
-			{
-				// upgrade to 4
-				if (player.getSp() >= 1400000 && player.getInventory().getItemByItemId(3874) != null)
+			
+			case 3: // upgrade to 4
+				if (player.getSp() >= 1400000 && player.destroyItemByItemId("ClanLvl", 3874, 1, player.getTarget(), true))
 				{
-					// itemid 3874 == proof of alliance
-					if (player.destroyItemByItemId("ClanLvl", 3874, 1, player.getTarget(), true))
-					{
-						player.removeExpAndSp(0, 1400000);
-						increaseClanLevel = true;
-					}
+					player.removeExpAndSp(0, 1400000);
+					increaseClanLevel = true;
 				}
 				break;
-			}
-			case 4:
-			{
-				// upgrade to 5
-				if (player.getSp() >= 3500000 && player.getInventory().getItemByItemId(3870) != null)
+			
+			case 4: // upgrade to 5
+				if (player.getSp() >= 3500000 && player.destroyItemByItemId("ClanLvl", 3870, 1, player.getTarget(), true))
 				{
-					// itemid 3870 == proof of aspiration
-					if (player.destroyItemByItemId("ClanLvl", 3870, 1, player.getTarget(), true))
-					{
-						player.removeExpAndSp(0, 3500000);
-						increaseClanLevel = true;
-					}
+					player.removeExpAndSp(0, 3500000);
+					increaseClanLevel = true;
 				}
 				break;
-			}
+			
 			case 5:
 				if (_reputationScore >= 10000 && getMembersCount() >= 30)
 				{
@@ -2051,6 +2023,7 @@ public class L2Clan
 					increaseClanLevel = true;
 				}
 				break;
+			
 			case 7:
 				if (_reputationScore >= 40000 && getMembersCount() >= 120)
 				{
@@ -2059,8 +2032,6 @@ public class L2Clan
 					increaseClanLevel = true;
 				}
 				break;
-			default:
-				return false;
 		}
 		
 		if (!increaseClanLevel)

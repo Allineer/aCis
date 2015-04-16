@@ -24,6 +24,8 @@ import net.sf.l2j.gameserver.model.L2Skill;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2PetInstance;
 import net.sf.l2j.gameserver.model.itemcontainer.Inventory;
+import net.sf.l2j.gameserver.model.quest.Quest;
+import net.sf.l2j.gameserver.model.quest.QuestState;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.ItemList;
 import net.sf.l2j.gameserver.network.serverpackets.PetItemList;
@@ -242,6 +244,15 @@ public final class UseItem extends L2GameClientPacket
 			final IItemHandler handler = ItemHandler.getInstance().getItemHandler(item.getEtcItem());
 			if (handler != null)
 				handler.useItem(activeChar, item, _ctrlPressed);
+			
+			for (Quest quest : item.getQuestEvents())
+			{
+				QuestState state = activeChar.getQuestState(quest.getName());
+				if (state == null || !state.isStarted())
+					continue;
+				
+				quest.notifyItemUse(item, activeChar, activeChar.getTarget());
+			}
 		}
 	}
 }

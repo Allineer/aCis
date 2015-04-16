@@ -52,6 +52,7 @@ import net.sf.l2j.gameserver.datatables.NpcWalkerRoutesTable;
 import net.sf.l2j.gameserver.datatables.PetDataTable;
 import net.sf.l2j.gameserver.datatables.SkillTable;
 import net.sf.l2j.gameserver.datatables.SkillTreeTable;
+import net.sf.l2j.gameserver.datatables.SoulCrystalsTable;
 import net.sf.l2j.gameserver.datatables.SpawnTable;
 import net.sf.l2j.gameserver.datatables.SpellbookTable;
 import net.sf.l2j.gameserver.datatables.StaticObjects;
@@ -157,6 +158,7 @@ public class GameServer
 		ArmorSetsTable.getInstance();
 		FishTable.getInstance();
 		SpellbookTable.getInstance();
+		SoulCrystalsTable.load();
 		
 		Util.printSection("Augments");
 		AugmentationData.getInstance();

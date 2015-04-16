@@ -84,11 +84,11 @@ public class Q257_TheGuardIsBusy extends Quest
 				break;
 			
 			case STATE_STARTED:
-				int orc_a = st.getQuestItemsCount(ORC_AMULET);
-				int orc_n = st.getQuestItemsCount(ORC_NECKLACE);
-				int fang = st.getQuestItemsCount(WEREWOLF_FANG);
+				final int amulets = st.getQuestItemsCount(ORC_AMULET);
+				final int necklaces = st.getQuestItemsCount(ORC_NECKLACE);
+				final int fangs = st.getQuestItemsCount(WEREWOLF_FANG);
 				
-				if (orc_a + orc_n + fang == 0)
+				if (amulets + necklaces + fangs == 0)
 					htmltext = "30039-04.htm";
 				else
 				{
@@ -98,8 +98,8 @@ public class Q257_TheGuardIsBusy extends Quest
 					st.takeItems(ORC_NECKLACE, -1);
 					st.takeItems(WEREWOLF_FANG, -1);
 					
-					int reward = (10 * orc_a) + 20 * (orc_n + fang);
-					if (orc_a + orc_n + fang >= 10)
+					int reward = (10 * amulets) + 20 * (necklaces + fangs);
+					if (amulets + necklaces + fangs >= 10)
 						reward += 1000;
 					
 					st.rewardItems(57, reward);

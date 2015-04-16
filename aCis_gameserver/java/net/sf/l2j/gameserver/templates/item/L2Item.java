@@ -26,6 +26,7 @@ import net.sf.l2j.gameserver.model.L2Object;
 import net.sf.l2j.gameserver.model.actor.L2Character;
 import net.sf.l2j.gameserver.model.actor.L2Summon;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
+import net.sf.l2j.gameserver.model.quest.Quest;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 import net.sf.l2j.gameserver.skills.Env;
@@ -175,6 +176,8 @@ public abstract class L2Item
 	protected static final Func[] _emptyFunctionSet = new Func[0];
 	protected static final L2Effect[] _emptyEffectSet = new L2Effect[0];
 	
+	private final List<Quest> _questEvents = new ArrayList<>();
+
 	protected static final Logger _log = Logger.getLogger(L2Item.class.getName());
 	
 	/**
@@ -697,5 +700,15 @@ public abstract class L2Item
 	public String toString()
 	{
 		return _name + " (" + _itemId + ")";
+	}
+	
+	public void addQuestEvent(Quest q)
+	{
+		_questEvents.add(q);
+	}
+	 	
+	public List<Quest> getQuestEvents()
+	{
+		return _questEvents;
 	}
 }

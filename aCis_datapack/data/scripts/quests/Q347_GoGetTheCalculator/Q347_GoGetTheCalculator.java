@@ -32,9 +32,9 @@ public class Q347_GoGetTheCalculator extends Quest
 	private static final int CALCULATOR_QUEST = 4285;
 	private static final int CALCULATOR_REAL = 4393;
 	
-	public Q347_GoGetTheCalculator(int questId, String name, String descr)
+	public Q347_GoGetTheCalculator()
 	{
-		super(questId, name, descr);
+		super(347, qn, "Go Get the Calculator");
 		
 		setItemsIds(GEMSTONE_BEAST_CRYSTAL, CALCULATOR_QUEST);
 		
@@ -54,8 +54,8 @@ public class Q347_GoGetTheCalculator extends Quest
 		
 		if (event.equalsIgnoreCase("30526-05.htm"))
 		{
-			st.set("cond", "1");
 			st.setState(STATE_STARTED);
+			st.set("cond", "1");
 			st.playSound(QuestState.SOUND_ACCEPT);
 		}
 		else if (event.equalsIgnoreCase("30533-03.htm"))
@@ -111,10 +111,7 @@ public class Q347_GoGetTheCalculator extends Quest
 		switch (st.getState())
 		{
 			case STATE_CREATED:
-				if (player.getLevel() >= 12)
-					htmltext = "30526-01.htm";
-				else
-					htmltext = "30526-00.htm";
+				htmltext = (player.getLevel() < 12) ? "30526-00.htm" : "30526-01.htm";
 				break;
 			
 			case STATE_STARTED:
@@ -126,17 +123,11 @@ public class Q347_GoGetTheCalculator extends Quest
 						break;
 					
 					case SPIRON:
-						if (cond >= 1 && cond <= 3)
-							htmltext = "30532-01.htm";
-						else if (cond >= 4)
-							htmltext = "30532-05.htm";
+						htmltext = (cond < 4) ? "30532-01.htm" : "30532-05.htm";
 						break;
 					
 					case BALANKI:
-						if (cond >= 1 && cond <= 3)
-							htmltext = "30533-01.htm";
-						else if (cond >= 4)
-							htmltext = "30533-04.htm";
+						htmltext = (cond < 4) ? "30533-01.htm" : "30533-04.htm";
 						break;
 					
 					case SILVERA:
@@ -150,7 +141,9 @@ public class Q347_GoGetTheCalculator extends Quest
 						}
 						else if (cond == 5)
 						{
-							if (st.getQuestItemsCount(GEMSTONE_BEAST_CRYSTAL) >= 10)
+							if (st.getQuestItemsCount(GEMSTONE_BEAST_CRYSTAL) < 10)
+								htmltext = "30527-02.htm";
+							else
 							{
 								htmltext = "30527-03.htm";
 								st.set("cond", "6");
@@ -158,8 +151,6 @@ public class Q347_GoGetTheCalculator extends Quest
 								st.giveItems(CALCULATOR_QUEST, 1);
 								st.playSound(QuestState.SOUND_MIDDLE);
 							}
-							else
-								htmltext = "30527-02.htm";
 						}
 						else if (cond == 6)
 							htmltext = "30527-04.htm";
@@ -185,6 +176,6 @@ public class Q347_GoGetTheCalculator extends Quest
 	
 	public static void main(String[] args)
 	{
-		new Q347_GoGetTheCalculator(347, qn, "Go Get the Calculator");
+		new Q347_GoGetTheCalculator();
 	}
 }

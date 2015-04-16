@@ -1,4 +1,31 @@
 ====================================================================================================
+Changeset 316 @ 2014.01.05
+
+Quests, Misc
+
+Quests
+    - Cleaning up to Q350
+    - Addition of Q350 (+ dp/core support for crystals leveling). Compared to Hasha version:
+        - Addition of the itemget sound on a success.
+        - Change of % luck calculation (was messed).
+        - Slight edit on DP side (addition of all T. rex IDs, drop of the dummy Antharas ID).
+        - Slight edit on HTMs.
+
+Misc
+    - Drop getExpertiseLevel() method, hardcoding values directly on the array.
+    - Add the possibility to script item usage for scripts (one use for Q350, but can be useful for your custom scripts).
+    - Cleanup double checks on clan leveling.
+    - Fix a NPE (death penalty, due to attacker being possibly null from last revision).
+    - Add a missing break on RequestActionUse (cases 61 / 1000 were melted).
+    - Add a security check on RequestShortCutDel (ty Root).
+    - Fix an issue with static objects targeting (due to previous setTarget rework).
+    - Sit stuff
+        - Cleanup isSitting() check, avoid to send twice CharSit packet to yourself.
+        - Methods unification for the different uses.
+        - Delayed action for /sit is now implemented.
+        - When a throne is targeted, the player runs to it, and sit on destination if it's too far.
+
+====================================================================================================
 Changeset 315 @ 2013.11.03
 
 Quests, Misc

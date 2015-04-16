@@ -29,10 +29,12 @@ import net.sf.l2j.Config;
 import net.sf.l2j.L2DatabaseFactory;
 import net.sf.l2j.gameserver.ThreadPoolManager;
 import net.sf.l2j.gameserver.cache.HtmCache;
+import net.sf.l2j.gameserver.datatables.ItemTable;
 import net.sf.l2j.gameserver.datatables.NpcTable;
 import net.sf.l2j.gameserver.instancemanager.QuestManager;
 import net.sf.l2j.gameserver.instancemanager.ZoneManager;
 import net.sf.l2j.gameserver.model.L2Clan;
+import net.sf.l2j.gameserver.model.L2ItemInstance;
 import net.sf.l2j.gameserver.model.L2Object;
 import net.sf.l2j.gameserver.model.L2Skill;
 import net.sf.l2j.gameserver.model.L2Spawn;
@@ -46,6 +48,7 @@ import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
 import net.sf.l2j.gameserver.scripting.ManagedScript;
 import net.sf.l2j.gameserver.scripting.ScriptManager;
 import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
+import net.sf.l2j.gameserver.templates.item.L2Item;
 import net.sf.l2j.util.Rnd;
 
 /**
@@ -1207,6 +1210,39 @@ public class Quest extends ManagedScript
 	}
 	
 	public String onFirstTalk(L2Npc npc, L2PcInstance player)
+	{
+		return null;
+	}
+	
+	/**
+	 * Add the quest to an array of items templates.
+	 * @param itemIds A serie of ids.
+	 */
+	public void addItemUse(int... itemIds)
+	{
+		for (int itemId : itemIds)
+		{
+			L2Item t = ItemTable.getInstance().getTemplate(itemId);
+			if (t != null)
+				t.addQuestEvent(this);
+		}
+	}
+	
+	public final boolean notifyItemUse(L2ItemInstance item, L2PcInstance player, L2Object target)
+	{
+		String res = null;
+		try
+		{
+			res = onItemUse(item, player, target);
+		}
+		catch (Exception e)
+		{
+			return showError(player, e);
+		}
+		return showResult(null, player, res);
+	}
+	
+	public String onItemUse(L2ItemInstance item, L2PcInstance player, L2Object target)
 	{
 		return null;
 	}
