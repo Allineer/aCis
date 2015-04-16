@@ -158,7 +158,7 @@ public class SevenSigns
 			_log.severe("SevenSigns: Failed to load configuration: " + e);
 		}
 		
-		_log.info("SevenSigns: Currently in the " + getCurrentPeriodName() + " period!");
+		_log.info("SevenSigns: Currently on " + getCurrentPeriodName() + " period.");
 		initializeSeals();
 		
 		if (isSealValidationPeriod())
@@ -166,16 +166,16 @@ public class SevenSigns
 			if (getCabalHighestScore() == CABAL_NULL)
 				_log.info("SevenSigns: The competition ended with a tie last week.");
 			else
-				_log.info("SevenSigns: The " + getCabalName(getCabalHighestScore()) + " were victorious last week.");
+				_log.info("SevenSigns: " + getCabalName(getCabalHighestScore()) + " were victorious last week.");
 		}
 		else if (getCabalHighestScore() == CABAL_NULL)
-			_log.info("SevenSigns: The competition, if the current trend continues, will end in a tie this week.");
+			_log.info("SevenSigns: The competition will end in a tie this week.");
 		else
-			_log.info("SevenSigns: The " + getCabalName(getCabalHighestScore()) + " are in the lead this week.");
+			_log.info("SevenSigns: " + getCabalName(getCabalHighestScore()) + " are leading this week.");
 		
 		long milliToChange = 0;
 		if (isNextPeriodChangeInPast())
-			_log.info("SevenSigns: Next period change was in the past (server was offline), changing periods now!");
+			_log.info("SevenSigns: Next period change was in the past, changing periods now.");
 		else
 		{
 			setCalendarForNextPeriodChange();

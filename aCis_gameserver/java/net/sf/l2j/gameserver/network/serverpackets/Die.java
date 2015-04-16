@@ -66,7 +66,7 @@ public class Die extends L2GameServerPacket
 			boolean isInDefense = false;
 			
 			Castle castle = CastleManager.getInstance().getCastle(_activeChar);
-			if (castle != null && castle.getSiege().getIsInProgress())
+			if (castle != null && castle.getSiege().isInProgress())
 			{
 				// siege in progress
 				siegeClan = castle.getSiege().getAttackerClan(_clan);

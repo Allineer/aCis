@@ -975,8 +975,7 @@ public class Hero
 			String name = hero.getString("char_name");
 			
 			clan.addReputationScore(1000);
-			clan.broadcastToOnlineMembers(new PledgeShowInfoUpdate(clan));
-			clan.broadcastToOnlineMembers(SystemMessage.getSystemMessage(SystemMessageId.CLAN_MEMBER_S1_BECAME_HERO_AND_GAINED_S2_REPUTATION_POINTS).addString(name).addNumber(1000));
+			clan.broadcastToOnlineMembers(new PledgeShowInfoUpdate(clan), SystemMessage.getSystemMessage(SystemMessageId.CLAN_MEMBER_S1_BECAME_HERO_AND_GAINED_S2_REPUTATION_POINTS).addString(name).addNumber(1000));
 		}
 		
 		// Set Gained hero and reload data

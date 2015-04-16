@@ -43,7 +43,7 @@ public class L2SiegeNpcInstance extends L2NpcInstance
 	
 	private boolean validateCondition(L2PcInstance player)
 	{
-		if (getCastle().getSiege().getIsInProgress())
+		if (getCastle().getSiege().isInProgress())
 			return false; // Busy because of siege
 			
 		return true;

@@ -59,7 +59,7 @@ public class L2ManorManagerInstance extends L2MerchantInstance
 					manager.showChatWindow(player, "data/html/chamberlain/noprivs.htm");
 					return;
 				}
-				if (castle.getSiege().getIsInProgress())
+				if (castle.getSiege().isInProgress())
 				{
 					manager.showChatWindow(player, "data/html/chamberlain/busy.htm");
 					return;

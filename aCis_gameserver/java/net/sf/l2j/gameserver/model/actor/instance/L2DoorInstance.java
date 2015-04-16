@@ -327,7 +327,7 @@ public class L2DoorInstance extends L2Character
 			return true;
 		
 		// Attackable during siege by attacker only
-		final boolean isCastle = (getCastle() != null && getCastle().getCastleId() > 0 && getCastle().getSiege().getIsInProgress());
+		final boolean isCastle = (getCastle() != null && getCastle().getCastleId() > 0 && getCastle().getSiege().isInProgress());
 		if (isCastle)
 		{
 			final L2Clan clan = attacker.getActingPlayer().getClan();
@@ -586,7 +586,7 @@ public class L2DoorInstance extends L2Character
 		if (isWall() && !(attacker instanceof L2SiegeSummonInstance))
 			return;
 		
-		if (!(getCastle() != null && getCastle().getCastleId() > 0 && getCastle().getSiege().getIsInProgress()))
+		if (!(getCastle() != null && getCastle().getCastleId() > 0 && getCastle().getSiege().isInProgress()))
 			return;
 		
 		super.reduceCurrentHp(damage, attacker, awake, isDOT, skill);
@@ -604,7 +604,7 @@ public class L2DoorInstance extends L2Character
 		if (!super.doDie(killer))
 			return false;
 		
-		if (getCastle() != null && getCastle().getCastleId() > 0 && getCastle().getSiege().getIsInProgress())
+		if (getCastle() != null && getCastle().getCastleId() > 0 && getCastle().getSiege().isInProgress())
 			broadcastPacket(SystemMessage.getSystemMessage((isWall()) ? SystemMessageId.CASTLE_WALL_DAMAGED : SystemMessageId.CASTLE_GATE_BROKEN_DOWN));
 		
 		return true;

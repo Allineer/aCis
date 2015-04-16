@@ -1,4 +1,53 @@
 ====================================================================================================
+Changeset 311 @ 2013.09.19
+
+Pledge rework, Clans Wars, Misc (ty KaL for the good work)
+
+Pledge rework
+    - Unecessary packets removal and packet flood decreased (clan tab doesn't need to completely be refreshed for every update).
+    - Correct use of PledgeShowMemberListAll and PledgeReceiveSubPledgeCreated.
+    - Fixed a bug where clan members would be shown in main clan - no matter what his pledge type was - after logging out.
+    - Sponsor and Apprentice are real-time updated and have their name listed in yellow, except for themselves (client handled).
+    - RequestPledgeReorganizeMember updated: you can't send captains out of main clan.
+    - A clan member can only be assigned as captain of ONE sub-unit.
+    - L2Clan loading: a single query cares about clans loading, instead of one query for IDs + one query per loaded clan.
+    - PledgeReceiveWarList better sniffed and documented (now there's a new option of war display. They are: Declared, Under Attack, Declare War (new, so far unused).
+    - RequestSurrenderPledgeWar checks for priviledges (avoid packet exploit), although it's not certain that this packet is still used by Interlude client.
+    - The "Party" column located in Priviledges panel correctly works. Drop RankPrivs getParty() system (wasn't used).
+    - RequestPledgeMemberPowerInfo and RequestPledgeMemberInfo are better documented.
+    - Fix ManagePledgePower packet.
+    - broadcastToOnlineMembers() supports array of packets (avoid to create a list of clan members on every use).
+    - When a player is invited to a clan, he is setted to the correct affiliation rank.
+    - Sub-unit creation costs are setted to 5000 for Royal Guards && 10000 for Order of Knights (instead of 2500 for both).
+    - Update member's siege state on clan invitation / leave.
+
+Clan Wars
+    - Clan War request checks:
+        - You cannot send war to your own clan anymore.
+        - You can send war to clans with less than 15 members, but only if it has declared war on you first.
+        - A clan cannot have more than 30 active wars.
+        - Check is made on member's privileges instead of clan leader.
+        - You cannot send war against a dissolving clan.
+    - Clan War stop check:
+        - Cannot be stopped if any clan member is in combat.
+    - War info tab updated: Under Attack list supports pagination (13 clans/page).
+    - Clan War penalty: ending a Clan War brings 5 days penalty to the clan, so it cannot send war to the same clan again until it expires.
+    - Drop useless columns in clan_wars table (wantspeace1, wantspeace2).
+    - Command handlers 88, 89 && 90 show proper message if there are no wars/attackers.
+    - SystemMessage 247 typo ("S1" requiered, because it has parameters).
+    - Exp loss calculation considers if there's one-sided war.
+
+Misc
+    - Fix some Q219 HTMs encoding (was UTF-16 instead of ANSI).
+    - /clanpenalty usercommand is reworked:
+        - Cache the HTM && default String.
+        - Add Clan War penalty in the possible choices.
+        - Fix content when numerous penalites are listed.
+    - Addition of /siegestatus usercommand, I publically shared my implementation: http://www.l2jserver.com/forum/viewtopic.php?f=69&t=28345 (http://www.l2jserver.com/forum/viewtopic.php?f=69&t=28345)
+    - Cleanup onKillUpdatePvPKarma( and associated methods.
+    - Cleanup quests up to Q270.
+
+====================================================================================================
 Changeset 310 @ 2013.08.28
 
 Quests, Misc.

@@ -418,7 +418,7 @@ public final class Formulas
 			return false;
 		
 		final Siege siege = SiegeManager.getSiege(activeChar.getX(), activeChar.getY(), activeChar.getZ());
-		if (siege == null || !siege.getIsInProgress())
+		if (siege == null || !siege.isInProgress())
 			return false;
 		
 		final L2SiegeClan siegeClan = siege.getAttackerClan(activeChar.getClan().getClanId());

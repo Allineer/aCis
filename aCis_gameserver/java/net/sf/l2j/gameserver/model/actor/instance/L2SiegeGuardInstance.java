@@ -76,7 +76,7 @@ public final class L2SiegeGuardInstance extends L2Attackable
 	public boolean isAutoAttackable(L2Character attacker)
 	{
 		// Attackable during siege by all except defenders
-		return (attacker != null && attacker.getActingPlayer() != null && getCastle() != null && getCastle().getCastleId() > 0 && getCastle().getSiege().getIsInProgress() && !getCastle().getSiege().checkIsDefender(attacker.getActingPlayer().getClan()));
+		return (attacker != null && attacker.getActingPlayer() != null && getCastle() != null && getCastle().getCastleId() > 0 && getCastle().getSiege().isInProgress() && !getCastle().getSiege().checkIsDefender(attacker.getActingPlayer().getClan()));
 	}
 	
 	@Override

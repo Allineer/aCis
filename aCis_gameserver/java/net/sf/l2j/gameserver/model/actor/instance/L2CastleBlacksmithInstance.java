@@ -97,7 +97,7 @@ public class L2CastleBlacksmithInstance extends L2NpcInstance
 		{
 			if (player.getClan() != null)
 			{
-				if (getCastle().getSiege().getIsInProgress())
+				if (getCastle().getSiege().isInProgress())
 					return COND_BUSY_BECAUSE_OF_SIEGE;
 				else if (getCastle().getOwnerId() == player.getClanId() && (player.getClanPrivileges() & L2Clan.CP_CS_MANOR_ADMIN) == L2Clan.CP_CS_MANOR_ADMIN)
 					return COND_OWNER;

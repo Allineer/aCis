@@ -22,11 +22,8 @@ public class Q257_TheGuardIsBusy extends Quest
 {
 	private static final String qn = "Q257_TheGuardIsBusy";
 	
-	// NPC
-	private static final int GILBERT = 30039;
-	
 	// Items
-	private static final int GLUDIO_LORDS_MARK = 1084;
+	private static final int GLUDIO_LORD_MARK = 1084;
 	private static final int ORC_AMULET = 752;
 	private static final int ORC_NECKLACE = 1085;
 	private static final int WEREWOLF_FANG = 1086;
@@ -35,20 +32,20 @@ public class Q257_TheGuardIsBusy extends Quest
 	private static final int SPIRITSHOT_FOR_BEGINNERS = 5790;
 	private static final int SOULSHOT_FOR_BEGINNERS = 5789;
 	
-	public Q257_TheGuardIsBusy(int questId, String name, String descr)
+	public Q257_TheGuardIsBusy()
 	{
-		super(questId, name, descr);
+		super(257, qn, "The Guard Is Busy");
 		
 		questItemIds = new int[]
 		{
 			ORC_AMULET,
 			ORC_NECKLACE,
 			WEREWOLF_FANG,
-			GLUDIO_LORDS_MARK
+			GLUDIO_LORD_MARK
 		};
 		
-		addStartNpc(GILBERT);
-		addTalkId(GILBERT);
+		addStartNpc(30039); // Gilbert
+		addTalkId(30039);
 		
 		addKillId(20006, 20093, 20096, 20098, 20130, 20131, 20132, 20342, 20343);
 	}
@@ -63,14 +60,14 @@ public class Q257_TheGuardIsBusy extends Quest
 		
 		if (event.equalsIgnoreCase("30039-03.htm"))
 		{
-			st.set("cond", "1");
 			st.setState(STATE_STARTED);
+			st.set("cond", "1");
 			st.playSound(QuestState.SOUND_ACCEPT);
-			st.giveItems(GLUDIO_LORDS_MARK, 1);
+			st.giveItems(GLUDIO_LORD_MARK, 1);
 		}
 		else if (event.equalsIgnoreCase("30039-05.htm"))
 		{
-			st.takeItems(GLUDIO_LORDS_MARK, 1);
+			st.takeItems(GLUDIO_LORD_MARK, 1);
 			st.playSound(QuestState.SOUND_FINISH);
 			st.exitQuest(true);
 		}
@@ -143,39 +140,36 @@ public class Q257_TheGuardIsBusy extends Quest
 		if (st == null)
 			return null;
 		
-		if (st.hasQuestItems(GLUDIO_LORDS_MARK))
+		int chance = 50;
+		int item = WEREWOLF_FANG;
+		
+		switch (npc.getNpcId())
 		{
-			int chance = 50;
-			int item = WEREWOLF_FANG;
+			case 20006:
+			case 20130:
+			case 20131:
+				item = ORC_AMULET;
+				break;
 			
-			switch (npc.getNpcId())
-			{
-				case 20006:
-				case 20130:
-				case 20131:
-					item = ORC_AMULET;
-					break;
-				
-				case 20093:
-				case 20096:
-				case 20098:
-					item = ORC_NECKLACE;
-					break;
-				
-				case 20342:
-					chance = 20;
-					break;
-				
-				case 20343:
-					chance = 40;
-					break;
-			}
+			case 20093:
+			case 20096:
+			case 20098:
+				item = ORC_NECKLACE;
+				break;
 			
-			if (Rnd.get(100) < chance)
-			{
-				st.giveItems(item, 1);
-				st.playSound(QuestState.SOUND_ITEMGET);
-			}
+			case 20342:
+				chance = 20;
+				break;
+			
+			case 20343:
+				chance = 40;
+				break;
+		}
+		
+		if (Rnd.get(100) < chance)
+		{
+			st.giveItems(item, 1);
+			st.playSound(QuestState.SOUND_ITEMGET);
 		}
 		
 		return null;
@@ -183,6 +177,6 @@ public class Q257_TheGuardIsBusy extends Quest
 	
 	public static void main(String[] args)
 	{
-		new Q257_TheGuardIsBusy(257, qn, "The Guard Is Busy");
+		new Q257_TheGuardIsBusy();
 	}
 }

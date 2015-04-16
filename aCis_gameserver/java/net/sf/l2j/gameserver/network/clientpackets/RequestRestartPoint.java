@@ -77,7 +77,7 @@ public final class RequestRestartPoint extends L2GameClientPacket
 				case 2: // to castle
 					castle = CastleManager.getInstance().getCastle(activeChar);
 					
-					if (castle != null && castle.getSiege().getIsInProgress())
+					if (castle != null && castle.getSiege().isInProgress())
 					{
 						// Siege in progress
 						if (castle.getSiege().checkIsDefender(activeChar.getClan()))
@@ -104,7 +104,7 @@ public final class RequestRestartPoint extends L2GameClientPacket
 					L2SiegeClan siegeClan = null;
 					castle = CastleManager.getInstance().getCastle(activeChar);
 					
-					if (castle != null && castle.getSiege().getIsInProgress())
+					if (castle != null && castle.getSiege().isInProgress())
 						siegeClan = castle.getSiege().getAttackerClan(activeChar.getClan());
 					
 					// Not a normal scenario.
@@ -172,7 +172,7 @@ public final class RequestRestartPoint extends L2GameClientPacket
 		}
 		
 		Castle castle = CastleManager.getInstance().getCastle(activeChar.getX(), activeChar.getY(), activeChar.getZ());
-		if (castle != null && castle.getSiege().getIsInProgress())
+		if (castle != null && castle.getSiege().isInProgress())
 		{
 			if (activeChar.getClan() != null && castle.getSiege().checkIsAttacker(activeChar.getClan()))
 			{

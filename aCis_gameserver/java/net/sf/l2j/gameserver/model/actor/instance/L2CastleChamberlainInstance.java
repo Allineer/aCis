@@ -596,7 +596,7 @@ public class L2CastleChamberlainInstance extends L2MerchantInstance
 		{
 			if (player.getClan() != null)
 			{
-				if (getCastle().getSiege().getIsInProgress())
+				if (getCastle().getSiege().isInProgress())
 					return COND_BUSY_BECAUSE_OF_SIEGE;
 				
 				if (getCastle().getOwnerId() == player.getClanId())

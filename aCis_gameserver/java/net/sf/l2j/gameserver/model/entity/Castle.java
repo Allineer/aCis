@@ -344,7 +344,7 @@ public class Castle
 		updateOwnerInDB(clan);
 		
 		// If siege is in progress, mid victory phase of siege.
-		if (getSiege().getIsInProgress())
+		if (getSiege().isInProgress())
 		{
 			getSiege().midVictory();
 			
@@ -369,7 +369,7 @@ public class Castle
 		
 		updateOwnerInDB(null);
 		
-		if (getSiege().getIsInProgress())
+		if (getSiege().isInProgress())
 			getSiege().midVictory();
 		else
 		{
@@ -639,8 +639,7 @@ public class Castle
 			if (clan != null)
 			{
 				clan.setCastle(_castleId); // Set castle flag for new owner
-				clan.broadcastToOnlineMembers(new PledgeShowInfoUpdate(clan));
-				clan.broadcastToOnlineMembers(new PlaySound(1, "Siege_Victory", 0, 0, 0, 0, 0));
+				clan.broadcastToOnlineMembers(new PledgeShowInfoUpdate(clan), new PlaySound(1, "Siege_Victory", 0, 0, 0, 0, 0));
 				ThreadPoolManager.getInstance().scheduleGeneral(new CastleUpdater(clan, 1), 3600000); // Schedule owner tasks to start running
 			}
 		}

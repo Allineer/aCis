@@ -1950,14 +1950,7 @@ public final class L2PcInstance extends L2Playable
 				setLvlJoinedAcademy(0);
 				
 				// Oust pledge member from the academy, because he has finished his 2nd class transfer.
-				final SystemMessage msg = SystemMessage.getSystemMessage(SystemMessageId.CLAN_MEMBER_S1_EXPELLED).addString(getName());
-				final PledgeShowMemberListDelete update = new PledgeShowMemberListDelete(getName());
-				
-				for (L2PcInstance member : _clan.getOnlineMembers())
-				{
-					member.sendPacket(msg);
-					member.sendPacket(update);
-				}
+				_clan.broadcastToOnlineMembers(new PledgeShowMemberListDelete(getName()), SystemMessage.getSystemMessage(SystemMessageId.CLAN_MEMBER_S1_EXPELLED).addString(getName()));
 				_clan.removeClanMember(getObjectId(), 0);
 				sendPacket(SystemMessageId.ACADEMY_MEMBERSHIP_TERMINATED);
 				
@@ -4109,7 +4102,7 @@ public final class L2PcInstance extends L2Playable
 					
 					// Reduce player's xp and karma.
 					if (Config.ALT_GAME_DELEVEL && (getSkillLevel(L2Skill.SKILL_LUCKY) < 0 || getStat().getLevel() > 9))
-						deathPenalty(pk != null && getClan() != null && getClan().isAtWarWith(pk.getClanId()), pk != null, killer instanceof L2SiegeGuardInstance);
+						deathPenalty(pk != null && getClan() != null && (getClan().isAtWarWith(pk.getClanId()) || pk.getClan().isAtWarWith(getClanId())), pk != null, killer instanceof L2SiegeGuardInstance);
 				}
 			}
 		}
@@ -4230,9 +4223,14 @@ public final class L2PcInstance extends L2Playable
 		}
 	}
 	
-	public void onKillUpdatePvPKarma(L2Character target)
+	/**
+	 * This method is used to update PvP counter, or PK counter / add Karma if necessary.<br>
+	 * It also updates clan kills/deaths counters on siege.
+	 * @param target The L2Playable victim.
+	 */
+	public void onKillUpdatePvPKarma(L2Playable target)
 	{
-		if (!(target instanceof L2Playable))
+		if (target == null)
 			return;
 		
 		final L2PcInstance targetPlayer = target.getActingPlayer();
@@ -4251,54 +4249,44 @@ public final class L2PcInstance extends L2Playable
 			return;
 		
 		// If in pvp zone, do nothing.
-		if (isInsideZone(ZoneId.PVP) || targetPlayer.isInsideZone(ZoneId.PVP))
-			return;
-		
-		// Check if it's pvp
-		if ((checkIfPvP(target) && targetPlayer.getPvpFlag() != 0) || (isInsideZone(ZoneId.PVP) && targetPlayer.isInsideZone(ZoneId.PVP)))
-			increasePvpKills(target);
-		// Target player doesn't have pvp flag set
-		else
+		if (isInsideZone(ZoneId.PVP) && targetPlayer.isInsideZone(ZoneId.PVP))
 		{
-			// check about wars
-			if (targetPlayer.getClan() != null && getClan() != null && getClan().isAtWarWith(targetPlayer.getClanId()) && targetPlayer.getClan().isAtWarWith(getClanId()) && targetPlayer.getPledgeType() != L2Clan.SUBUNIT_ACADEMY && getPledgeType() != L2Clan.SUBUNIT_ACADEMY)
+			// Until the zone was a siege zone. Check also if victim was a player. Randomers aren't counted.
+			if (target instanceof L2PcInstance && getSiegeState() > 0 && targetPlayer.getSiegeState() > 0 && getSiegeState() != targetPlayer.getSiegeState())
 			{
-				// 'Both way war' -> 'PvP Kill'
-				increasePvpKills(target);
-				return;
-			}
-			
-			// 'No war' or 'One way war' -> 'Normal PK'
-			if (targetPlayer.getKarma() > 0)
-			{
-				if (Config.KARMA_AWARD_PK_KILL)
-					increasePvpKills(target);
-			}
-			else if (targetPlayer.getPvpFlag() == 0)
-			{
-				// PK Points are increased only if you kill a player.
-				if (target instanceof L2PcInstance)
-					setPkKills(getPkKills() + 1);
+				// Now check clan relations.
+				final L2Clan killerClan = getClan();
+				if (killerClan != null)
+					killerClan.setSiegeKills(killerClan.getSiegeKills() + 1);
 				
-				// Calculate new karma.
-				setKarma(getKarma() + Formulas.calculateKarmaGain(getPkKills(), target instanceof L2Summon));
+				final L2Clan targetClan = targetPlayer.getClan();
+				if (targetClan != null)
+					targetClan.setSiegeDeaths(targetClan.getSiegeDeaths() + 1);
+			}
+			return;
+		}
+		
+		// Check if it's pvp (cases : regular, wars, victim is PKer)
+		if (checkIfPvP(target) || (targetPlayer.getClan() != null && getClan() != null && getClan().isAtWarWith(targetPlayer.getClanId()) && targetPlayer.getClan().isAtWarWith(getClanId()) && targetPlayer.getPledgeType() != L2Clan.SUBUNIT_ACADEMY && getPledgeType() != L2Clan.SUBUNIT_ACADEMY) || (targetPlayer.getKarma() > 0 && Config.KARMA_AWARD_PK_KILL))
+		{
+			if (target instanceof L2PcInstance)
+			{
+				// Add PvP point to attacker.
+				setPvpKills(getPvpKills() + 1);
 				
 				// Send a Server->Client UserInfo packet to attacker with its Karma and PK Counter
 				sendPacket(new UserInfo(this));
 			}
 		}
-	}
-	
-	/**
-	 * Increase the pvp kills count and send the info to the player
-	 * @param target The victim to test.
-	 */
-	public void increasePvpKills(L2Character target)
-	{
-		if (target instanceof L2PcInstance)
+		// Otherwise, killer is considered as a PKer.
+		else if (targetPlayer.getKarma() == 0 && targetPlayer.getPvpFlag() == 0)
 		{
-			// Add PvP point to attacker.
-			setPvpKills(getPvpKills() + 1);
+			// PK Points are increased only if you kill a player.
+			if (target instanceof L2PcInstance)
+				setPkKills(getPkKills() + 1);
+			
+			// Calculate new karma.
+			setKarma(getKarma() + Formulas.calculateKarmaGain(getPkKills(), target instanceof L2Summon));
 			
 			// Send a Server->Client UserInfo packet to attacker with its Karma and PK Counter
 			sendPacket(new UserInfo(this));
@@ -7339,7 +7327,7 @@ public final class L2PcInstance extends L2Playable
 			sm = SystemMessage.getSystemMessage(SystemMessageId.INCORRECT_TARGET);
 		else if (castle == null || castle.getCastleId() <= 0)
 			sm = SystemMessage.getSystemMessage(SystemMessageId.S1_CANNOT_BE_USED).addSkillName(skill);
-		else if (!castle.getSiege().getIsInProgress() || castle.getSiege().getAttackerClan(getClan()) == null)
+		else if (!castle.getSiege().isInProgress() || castle.getSiege().getAttackerClan(getClan()) == null)
 			sm = SystemMessage.getSystemMessage(SystemMessageId.S1_CANNOT_BE_USED).addSkillName(skill);
 		else
 			return true;
@@ -7356,7 +7344,7 @@ public final class L2PcInstance extends L2Playable
 			sm = SystemMessage.getSystemMessage(SystemMessageId.S1_CANNOT_BE_USED).addSkillName(skill);
 		else if (!castle.getArtefacts().contains(target))
 			sm = SystemMessage.getSystemMessage(SystemMessageId.INCORRECT_TARGET);
-		else if (!castle.getSiege().getIsInProgress())
+		else if (!castle.getSiege().isInProgress())
 			sm = SystemMessage.getSystemMessage(SystemMessageId.S1_CANNOT_BE_USED).addSkillName(skill);
 		else if (!Util.checkIfInRange(200, this, target, true))
 			sm = SystemMessage.getSystemMessage(SystemMessageId.DIST_TOO_FAR_CASTING_STOPPED);

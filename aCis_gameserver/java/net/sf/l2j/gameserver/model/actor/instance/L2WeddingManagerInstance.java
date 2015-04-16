@@ -149,7 +149,7 @@ public class L2WeddingManagerInstance extends L2NpcInstance
 				return;
 			}
 			
-			if (partner.getClan() != null && CastleManager.getInstance().getCastleByOwner(partner.getClan()) != null && CastleManager.getInstance().getCastleByOwner(partner.getClan()).getSiege().getIsInProgress())
+			if (partner.getClan() != null && CastleManager.getInstance().getCastleByOwner(partner.getClan()) != null && CastleManager.getInstance().getCastleByOwner(partner.getClan()).getSiege().isInProgress())
 			{
 				player.sendMessage("As your partner is in siege, you can't go to him/her.");
 				return;

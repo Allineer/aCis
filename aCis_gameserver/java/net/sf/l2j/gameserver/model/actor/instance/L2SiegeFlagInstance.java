@@ -127,7 +127,7 @@ public class L2SiegeFlagInstance extends L2Npc
 	public void reduceCurrentHp(double damage, L2Character attacker, L2Skill skill)
 	{
 		// Send warning to owners of headquarters that theirs base is under attack.
-		if (isScriptValue(1) && _clan != null && getCastle() != null && getCastle().getSiege().getIsInProgress())
+		if (isScriptValue(1) && _clan != null && getCastle() != null && getCastle().getSiege().isInProgress())
 		{
 			_clan.broadcastToOnlineMembers(SystemMessage.getSystemMessage(SystemMessageId.BASE_UNDER_ATTACK));
 			setScriptValue(0);

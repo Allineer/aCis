@@ -69,7 +69,7 @@ public class L2SwampZone extends L2ZoneType
 		if (getCastle() != null)
 		{
 			// castle zones active only during siege
-			if (!getCastle().getSiege().getIsInProgress() || !getCastle().getSiege().isTrapsActive())
+			if (!getCastle().getSiege().isInProgress() || !getCastle().getSiege().isTrapsActive())
 				return;
 			
 			// defenders not affected

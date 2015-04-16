@@ -207,7 +207,7 @@ public final class L2TeleporterInstance extends L2NpcInstance
 	{
 		if (CastleManager.getInstance().getCastleIndex(this) < 0) // Teleporter isn't on castle ground
 			return COND_REGULAR; // Regular access
-		else if (getCastle().getSiege().getIsInProgress()) // Teleporter is on castle ground and siege is in progress
+		else if (getCastle().getSiege().isInProgress()) // Teleporter is on castle ground and siege is in progress
 			return COND_BUSY_BECAUSE_OF_SIEGE; // Busy because of siege
 		else if (player.getClan() != null) // Teleporter is on castle ground and player is in a clan
 		{

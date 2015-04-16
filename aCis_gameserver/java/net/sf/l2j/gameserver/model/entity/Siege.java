@@ -92,7 +92,7 @@ public class Siege implements Siegable
 		@Override
 		public void run()
 		{
-			if (!getIsInProgress())
+			if (!isInProgress())
 				return;
 			
 			try
@@ -103,22 +103,22 @@ public class Siege implements Siegable
 					announceToPlayer(SystemMessage.getSystemMessage(SystemMessageId.S1_HOURS_UNTIL_SIEGE_CONCLUSION).addNumber(2), true);
 					ThreadPoolManager.getInstance().scheduleGeneral(new ScheduleEndSiegeTask(_castleInst), timeRemaining - 3600000);
 				}
-				else if ((timeRemaining <= 3600000) && (timeRemaining > 600000))
+				else if (timeRemaining <= 3600000 && timeRemaining > 600000)
 				{
 					announceToPlayer(SystemMessage.getSystemMessage(SystemMessageId.S1_MINUTES_UNTIL_SIEGE_CONCLUSION).addNumber(Math.round(timeRemaining / 60000)), true);
 					ThreadPoolManager.getInstance().scheduleGeneral(new ScheduleEndSiegeTask(_castleInst), timeRemaining - 600000);
 				}
-				else if ((timeRemaining <= 600000) && (timeRemaining > 300000))
+				else if (timeRemaining <= 600000 && timeRemaining > 300000)
 				{
 					announceToPlayer(SystemMessage.getSystemMessage(SystemMessageId.S1_MINUTES_UNTIL_SIEGE_CONCLUSION).addNumber(Math.round(timeRemaining / 60000)), true);
 					ThreadPoolManager.getInstance().scheduleGeneral(new ScheduleEndSiegeTask(_castleInst), timeRemaining - 300000);
 				}
-				else if ((timeRemaining <= 300000) && (timeRemaining > 10000))
+				else if (timeRemaining <= 300000 && timeRemaining > 10000)
 				{
 					announceToPlayer(SystemMessage.getSystemMessage(SystemMessageId.S1_MINUTES_UNTIL_SIEGE_CONCLUSION).addNumber(Math.round(timeRemaining / 60000)), true);
 					ThreadPoolManager.getInstance().scheduleGeneral(new ScheduleEndSiegeTask(_castleInst), timeRemaining - 10000);
 				}
-				else if ((timeRemaining <= 10000) && (timeRemaining > 0))
+				else if (timeRemaining <= 10000 && timeRemaining > 0)
 				{
 					announceToPlayer(SystemMessage.getSystemMessage(SystemMessageId.CASTLE_SIEGE_S1_SECONDS_LEFT).addNumber(Math.round(timeRemaining / 1000)), true);
 					ThreadPoolManager.getInstance().scheduleGeneral(new ScheduleEndSiegeTask(_castleInst), timeRemaining);
@@ -146,7 +146,7 @@ public class Siege implements Siegable
 		public void run()
 		{
 			_scheduledStartSiegeTask.cancel(false);
-			if (getIsInProgress())
+			if (isInProgress())
 				return;
 			
 			try
@@ -218,7 +218,7 @@ public class Siege implements Siegable
 	@Override
 	public void endSiege()
 	{
-		if (getIsInProgress())
+		if (isInProgress())
 		{
 			Announcements.announceToAll(SystemMessage.getSystemMessage(SystemMessageId.SIEGE_OF_S1_HAS_ENDED).addString(getCastle().getName()));
 			Broadcast.toAllOnlinePlayers(new PlaySound("systemmsg_e.18"));
@@ -247,6 +247,27 @@ public class Siege implements Siegable
 			}
 			else
 				Announcements.announceToAll(SystemMessage.getSystemMessage(SystemMessageId.SIEGE_S1_DRAW).addString(getCastle().getName()));
+			
+			// Cleanup clans kills/deaths counters.
+			for (L2SiegeClan attackerClan : getAttackerClans())
+			{
+				final L2Clan clan = ClanTable.getInstance().getClan(attackerClan.getClanId());
+				if (clan != null)
+				{
+					clan.setSiegeKills(0);
+					clan.setSiegeDeaths(0);
+				}
+			}
+			
+			for (L2SiegeClan defenderClan : getDefenderClans())
+			{
+				final L2Clan clan = ClanTable.getInstance().getClan(defenderClan.getClanId());
+				if (clan != null)
+				{
+					clan.setSiegeKills(0);
+					clan.setSiegeDeaths(0);
+				}
+			}
 			
 			getCastle().updateClansReputation();
 			removeFlags(); // Removes all flags. Note: Remove flag before teleporting players
@@ -308,7 +329,7 @@ public class Siege implements Siegable
 	 */
 	public void midVictory()
 	{
-		if (getIsInProgress()) // Siege still in progress
+		if (isInProgress()) // Siege still in progress
 		{
 			if (getCastle().getOwnerId() > 0)
 				_siegeGuardManager.removeMercs(); // Remove all merc entry from db
@@ -408,7 +429,7 @@ public class Siege implements Siegable
 	@Override
 	public void startSiege()
 	{
-		if (!getIsInProgress())
+		if (!isInProgress())
 		{
 			if (getAttackerClans().isEmpty())
 			{
@@ -545,7 +566,7 @@ public class Siege implements Siegable
 	 */
 	public boolean checkIfInZone(int x, int y, int z)
 	{
-		return (getIsInProgress() && (getCastle().checkIfInZone(x, y, z))); // Castle zone during siege
+		return (isInProgress() && (getCastle().checkIfInZone(x, y, z))); // Castle zone during siege
 	}
 	
 	/**
@@ -975,7 +996,7 @@ public class Siege implements Siegable
 		
 		if (getIsRegistrationOver())
 			sm = SystemMessage.getSystemMessage(SystemMessageId.DEADLINE_FOR_SIEGE_S1_PASSED).addString(getCastle().getName());
-		else if (getIsInProgress())
+		else if (isInProgress())
 			sm = SystemMessage.getSystemMessage(SystemMessageId.NOT_SIEGE_REGISTRATION_TIME2);
 		else if (player.getClan() == null || player.getClan().getLevel() < SiegeManager.getInstance().getSiegeClanMinLevel())
 			sm = SystemMessage.getSystemMessage(SystemMessageId.ONLY_CLAN_LEVEL_4_ABOVE_MAY_SIEGE);
@@ -1447,7 +1468,7 @@ public class Siege implements Siegable
 		return _defenderWaitingClans;
 	}
 	
-	public final boolean getIsInProgress()
+	public final boolean isInProgress()
 	{
 		return _isInProgress;
 	}

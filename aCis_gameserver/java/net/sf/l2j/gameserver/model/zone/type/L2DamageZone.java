@@ -97,7 +97,7 @@ public class L2DamageZone extends L2ZoneType
 			
 			// Castle zone, siege and no defender
 			if (getCastle() != null)
-				if (!(getCastle().getSiege().getIsInProgress() && player != null && player.getSiegeState() != 2))
+				if (!(getCastle().getSiege().isInProgress() && player != null && player.getSiegeState() != 2))
 					return;
 			
 			synchronized (this)
@@ -169,7 +169,7 @@ public class L2DamageZone extends L2ZoneType
 			if (_castleZone != null)
 			{
 				// castle zones active only during siege
-				siege = _castleZone.getSiege().getIsInProgress();
+				siege = _castleZone.getSiege().isInProgress();
 				if (!siege)
 				{
 					_dmgZone.stopTask();

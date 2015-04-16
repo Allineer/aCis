@@ -46,7 +46,7 @@ public class L2CastleTeleporterInstance extends L2NpcInstance
 		{
 			if (!_currentTask)
 			{
-				if (getCastle().getSiege().getIsInProgress())
+				if (getCastle().getSiege().isInProgress())
 				{
 					if (getCastle().getSiege().getControlTowerCount() == 0)
 						_delay = 480000;
@@ -75,7 +75,7 @@ public class L2CastleTeleporterInstance extends L2NpcInstance
 		String filename;
 		if (!_currentTask)
 		{
-			if (getCastle().getSiege().getIsInProgress() && getCastle().getSiege().getControlTowerCount() == 0)
+			if (getCastle().getSiege().isInProgress() && getCastle().getSiege().getControlTowerCount() == 0)
 				filename = "data/html/castleteleporter/MassGK-2.htm";
 			else
 				filename = "data/html/castleteleporter/MassGK.htm";
@@ -96,7 +96,7 @@ public class L2CastleTeleporterInstance extends L2NpcInstance
 		public void run()
 		{
 			// Make the region talk only during a siege
-			if (getCastle().getSiege().getIsInProgress())
+			if (getCastle().getSiege().isInProgress())
 			{
 				final NpcSay cs = new NpcSay(getObjectId(), 1, getNpcId(), "The defenders of " + getCastle().getName() + " castle have been teleported to the inner castle.");
 				final int region = MapRegionTable.getMapRegion(getX(), getY());

@@ -174,19 +174,16 @@ public abstract class L2Playable extends L2Character
 		return true;
 	}
 	
-	public boolean checkIfPvP(L2Character target)
+	public boolean checkIfPvP(L2Playable target)
 	{
 		if (target == null || target == this)
 			return false;
 		
-		if (!(target instanceof L2Playable))
-			return false;
-		
-		L2PcInstance player = getActingPlayer();
+		final L2PcInstance player = getActingPlayer();
 		if (player == null || player.getKarma() != 0)
 			return false;
 		
-		L2PcInstance targetPlayer = target.getActingPlayer();
+		final L2PcInstance targetPlayer = target.getActingPlayer();
 		if (targetPlayer == null || targetPlayer == this)
 			return false;
 		
@@ -197,8 +194,7 @@ public abstract class L2Playable extends L2Character
 	}
 	
 	/**
-	 * Return True.<BR>
-	 * <BR>
+	 * Return True.
 	 */
 	@Override
 	public boolean isAttackable()
