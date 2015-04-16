@@ -554,7 +554,7 @@ public final class L2PcInstance extends L2Playable
 	
 	private ItemInstance _arrowItem;
 	
-	private long _protectEndTime = 0;
+	private ScheduledFuture<?> _protectTask = null;
 	
 	private long _recentFakeDeathEndTime = 0;
 	private boolean _isFakeDeath;
@@ -2938,7 +2938,7 @@ public final class L2PcInstance extends L2Playable
 		
 		item.dropMe(this, getX() + Rnd.get(50) - 25, getY() + Rnd.get(50) - 25, getZ() + 20);
 		
-		if (Config.AUTODESTROY_ITEM_AFTER > 0 && Config.DESTROY_DROPPED_PLAYER_ITEM && !Config.LIST_PROTECTED_ITEMS.contains(item.getItemId()))
+		if (Config.ITEM_AUTO_DESTROY_TIME > 0 && Config.DESTROY_DROPPED_PLAYER_ITEM && !Config.LIST_PROTECTED_ITEMS.contains(item.getItemId()))
 		{
 			if ((item.isEquipable() && Config.DESTROY_EQUIPABLE_PLAYER_ITEM) || !item.isEquipable())
 				ItemsAutoDestroyTaskManager.getInstance().addItem(item);
@@ -3008,7 +3008,7 @@ public final class L2PcInstance extends L2Playable
 		
 		item.dropMe(this, x, y, z);
 		
-		if (Config.AUTODESTROY_ITEM_AFTER > 0 && Config.DESTROY_DROPPED_PLAYER_ITEM && !Config.LIST_PROTECTED_ITEMS.contains(item.getItemId()))
+		if (Config.ITEM_AUTO_DESTROY_TIME > 0 && Config.DESTROY_DROPPED_PLAYER_ITEM && !Config.LIST_PROTECTED_ITEMS.contains(item.getItemId()))
 		{
 			if ((item.isEquipable() && Config.DESTROY_EQUIPABLE_PLAYER_ITEM) || !item.isEquipable())
 				ItemsAutoDestroyTaskManager.getInstance().addItem(item);
@@ -3076,20 +3076,37 @@ public final class L2PcInstance extends L2Playable
 	}
 	
 	/**
-	 * Set _protectEndTime according settings.
+	 * Launch a task corresponding to Config time.
 	 * @param protect boolean Drop timer or activate it.
 	 */
 	public void setProtection(boolean protect)
 	{
-		if (Config.DEVELOPER && (protect || _protectEndTime > 0))
-			_log.warning(getName() + ": Protection " + (protect ? "ON " + (GameTimeController.getGameTicks() + Config.PLAYER_SPAWN_PROTECTION * GameTimeController.TICKS_PER_SECOND) : "OFF") + " (currently " + GameTimeController.getGameTicks() + ")");
-		
-		_protectEndTime = protect ? GameTimeController.getGameTicks() + Config.PLAYER_SPAWN_PROTECTION * GameTimeController.TICKS_PER_SECOND : 0;
+		if (protect)
+		{
+			if (_protectTask == null)
+				_protectTask = ThreadPoolManager.getInstance().scheduleGeneral(new ProtectTask(), Config.PLAYER_SPAWN_PROTECTION * 1000);
+		}
+		else
+		{
+			_protectTask.cancel(true);
+			_protectTask = null;
+		}
+		broadcastUserInfo();
 	}
 	
 	public boolean isSpawnProtected()
 	{
-		return _protectEndTime > GameTimeController.getGameTicks();
+		return _protectTask != null;
+	}
+	
+	protected class ProtectTask implements Runnable
+	{
+		@Override
+		public void run()
+		{
+			setProtection(false);
+			sendMessage("The spawn protection has ended.");
+		}
 	}
 	
 	/**
@@ -5200,7 +5217,7 @@ public final class L2PcInstance extends L2Playable
 	@Override
 	public boolean isInvul()
 	{
-		return super.isInvul() || _protectEndTime > GameTimeController.getGameTicks();
+		return super.isInvul() || isSpawnProtected();
 	}
 	
 	/**
@@ -6798,25 +6815,16 @@ public final class L2PcInstance extends L2Playable
 	
 	private boolean checkUseMagicConditions(L2Skill skill, boolean forceUse, boolean dontMove)
 	{
-		L2SkillType sklType = skill.getSkillType();
-		
 		// ************************************* Check Player State *******************************************
 		
-		// Abnormal effects(ex : Stun, Sleep...) are checked in L2Character useMagic()
-		
-		if (isOutOfControl() || isParalyzed() || isStunned() || isSleeping())
+		// Check if the player is dead or out of control.
+		if (isDead() || isOutOfControl())
 		{
 			sendPacket(ActionFailed.STATIC_PACKET);
 			return false;
 		}
 		
-		// Check if the player is dead
-		if (isDead())
-		{
-			// Send ActionFailed to the L2PcInstance
-			sendPacket(ActionFailed.STATIC_PACKET);
-			return false;
-		}
+		L2SkillType sklType = skill.getSkillType();
 		
 		if (isFishing() && (sklType != L2SkillType.PUMPING && sklType != L2SkillType.REELING && sklType != L2SkillType.FISHING))
 		{
@@ -8858,7 +8866,8 @@ public final class L2PcInstance extends L2Playable
 	public void onActionRequest()
 	{
 		if (isSpawnProtected())
-			sendMessage("As you acted, you are no longer under teleport protection.");
+			sendMessage("As you acted, you are no longer under spawn protection.");
+		
 		setProtection(false);
 	}
 	

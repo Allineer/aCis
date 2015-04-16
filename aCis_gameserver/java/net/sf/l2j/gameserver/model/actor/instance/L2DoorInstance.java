@@ -45,8 +45,6 @@ import net.sf.l2j.gameserver.network.serverpackets.DoorInfo;
 import net.sf.l2j.gameserver.network.serverpackets.DoorStatusUpdate;
 import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
-import net.sf.l2j.gameserver.skills.funcs.FuncGatesMDefMod;
-import net.sf.l2j.gameserver.skills.funcs.FuncGatesPDefMod;
 
 public class L2DoorInstance extends L2Character
 {
@@ -584,7 +582,7 @@ public class L2DoorInstance extends L2Character
 	@Override
 	public void reduceCurrentHpByDOT(double i, L2Character attacker, L2Skill skill)
 	{
-		// doors can't be damaged by DOTs
+		// Doors can't be damaged by DOTs.
 	}
 	
 	@Override
@@ -618,8 +616,7 @@ public class L2DoorInstance extends L2Character
 	@Override
 	public void addFuncsToNewCharacter()
 	{
-		addStatFunc(FuncGatesPDefMod.getInstance());
-		addStatFunc(FuncGatesMDefMod.getInstance());
+		// Doors haven't any Func.
 	}
 	
 	@Override

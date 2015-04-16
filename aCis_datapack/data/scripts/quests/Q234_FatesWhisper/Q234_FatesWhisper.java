@@ -359,7 +359,7 @@ public class Q234_FatesWhisper extends Quest
 	@Override
 	public String onKill(L2Npc npc, L2PcInstance player, boolean isPet)
 	{
-		addSpawn(CHEST_SPAWN.get(npc.getNpcId()), npc, true, 60000, false);
+		addSpawn(CHEST_SPAWN.get(npc.getNpcId()), npc, true, 120000, false);
 		
 		return null;
 	}

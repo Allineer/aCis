@@ -191,9 +191,10 @@ public class Q101_SwordOfSolidarity extends Quest
 		if (st == null)
 			return null;
 		
-		if (st.dropItems(BROKEN_BLADE_BOTTOM, 1, 1, 300000))
-			if (st.dropItems(BROKEN_BLADE_TOP, 1, 1, 300000))
-				st.set("cond", "3");
+		if (!st.hasQuestItems(BROKEN_BLADE_TOP))
+			st.dropItems(BROKEN_BLADE_TOP, 1, 1, 200000);
+		else if (st.dropItems(BROKEN_BLADE_BOTTOM, 1, 1, 200000))
+			st.set("cond", "3");
 		
 		return null;
 	}

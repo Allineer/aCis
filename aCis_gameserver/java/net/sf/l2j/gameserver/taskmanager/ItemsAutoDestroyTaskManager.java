@@ -26,8 +26,6 @@ import net.sf.l2j.gameserver.model.item.type.EtcItemType;
 
 public class ItemsAutoDestroyTaskManager
 {
-	protected static int SLEEP_TIME = Config.AUTODESTROY_ITEM_AFTER * 1000;
-	
 	protected final List<ItemInstance> _items = new CopyOnWriteArrayList<>();
 	
 	protected ItemsAutoDestroyTaskManager()
@@ -61,7 +59,7 @@ public class ItemsAutoDestroyTaskManager
 					_items.remove(item);
 				else
 				{
-					if ((item.getItemType() == EtcItemType.HERB && (curtime - item.getDropTime()) > Config.HERB_AUTO_DESTROY_TIME) || ((curtime - item.getDropTime()) > SLEEP_TIME))
+					if ((item.getItemType() == EtcItemType.HERB && (curtime - item.getDropTime()) > Config.HERB_AUTO_DESTROY_TIME) || (item.getItemType() != EtcItemType.HERB && (curtime - item.getDropTime()) > Config.ITEM_AUTO_DESTROY_TIME))
 					{
 						L2World.getInstance().removeVisibleObject(item, item.getWorldRegion());
 						L2World.getInstance().removeObject(item);

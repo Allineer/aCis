@@ -555,18 +555,19 @@ public class AdminEditChar implements IAdminCommandHandler
 				st.nextToken();
 				
 				boolean changeCreateExpiryTime = st.nextToken().equalsIgnoreCase("create");
-				
 				String playerName = st.nextToken();
-				L2PcInstance player = null;
-				player = L2World.getInstance().getPlayer(playerName);
 				
+				L2PcInstance player = L2World.getInstance().getPlayer(playerName);
 				if (player == null)
 				{
-					Connection con = L2DatabaseFactory.getInstance().getConnection();
-					PreparedStatement ps = con.prepareStatement("UPDATE characters SET " + (changeCreateExpiryTime ? "clan_create_expiry_time" : "clan_join_expiry_time") + " WHERE char_name=? LIMIT 1");
-					
-					ps.setString(1, playerName);
-					ps.execute();
+					try (Connection con = L2DatabaseFactory.getInstance().getConnection())
+					{
+						PreparedStatement ps = con.prepareStatement("UPDATE characters SET " + (changeCreateExpiryTime ? "clan_create_expiry_time" : "clan_join_expiry_time") + " WHERE char_name=? LIMIT 1");
+						
+						ps.setString(1, playerName);
+						ps.execute();
+						ps.close();
+					}
 				}
 				else
 				{

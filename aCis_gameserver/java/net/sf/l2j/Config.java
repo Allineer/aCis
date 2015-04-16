@@ -344,6 +344,7 @@ public final class Config
 	
 	public static int SPAWN_INTERVAL_FRINTEZZA;
 	public static int RANDOM_SPAWN_TIME_FRINTEZZA;
+	public static int WAIT_TIME_FRINTEZZA;
 	
 	public static int SPAWN_INTERVAL_ORFEN;
 	public static int RANDOM_SPAWN_TIME_ORFEN;
@@ -535,7 +536,7 @@ public final class Config
 	/** Items Management */
 	public static boolean ALLOW_DISCARDITEM;
 	public static boolean MULTIPLE_ITEM_DROP;
-	public static int AUTODESTROY_ITEM_AFTER;
+	public static int ITEM_AUTO_DESTROY_TIME;
 	public static int HERB_AUTO_DESTROY_TIME;
 	public static String PROTECTED_ITEMS;
 	
@@ -964,6 +965,7 @@ public final class Config
 			
 			SPAWN_INTERVAL_FRINTEZZA = npcs.getProperty("FrintezzaSpawnInterval", 48);
 			RANDOM_SPAWN_TIME_FRINTEZZA = npcs.getProperty("FrintezzaRandomSpawn", 8);
+			WAIT_TIME_FRINTEZZA = npcs.getProperty("FrintezzaWaitTime", 1) * 60000;
 			
 			SPAWN_INTERVAL_ORFEN = npcs.getProperty("OrfenSpawnInterval", 48);
 			RANDOM_SPAWN_TIME_ORFEN = npcs.getProperty("OrfenRandomSpawn", 20);
@@ -1153,7 +1155,7 @@ public final class Config
 			
 			ALLOW_DISCARDITEM = server.getProperty("AllowDiscardItem", true);
 			MULTIPLE_ITEM_DROP = server.getProperty("MultipleItemDrop", true);
-			AUTODESTROY_ITEM_AFTER = server.getProperty("AutoDestroyDroppedItemAfter", 0);
+			ITEM_AUTO_DESTROY_TIME = server.getProperty("AutoDestroyItemTime", 0) * 1000;
 			HERB_AUTO_DESTROY_TIME = server.getProperty("AutoDestroyHerbTime", 15) * 1000;
 			PROTECTED_ITEMS = server.getProperty("ListOfProtectedItems");
 			

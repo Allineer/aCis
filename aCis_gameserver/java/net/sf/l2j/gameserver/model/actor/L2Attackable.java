@@ -1141,16 +1141,12 @@ public class L2Attackable extends L2Npc
 		return 0;
 	}
 	
-	private static ItemHolder calculateCategorizedHerbItem(L2PcInstance lastAttacker, DropCategory categoryDrops)
+	private static ItemHolder calculateCategorizedHerbItem(L2PcInstance lastAttacker, DropCategory categoryDrops, int levelModifier)
 	{
 		if (categoryDrops == null)
 			return null;
 		
-		// Get default drop chance for the category (that's the sum of chances for all items in the category)
-		// keep track of the base category chance as it'll be used later, if an item is drop from the category.
-		// for everything else, use the total "categoryDropChance"
-		int basecategoryDropChance = categoryDrops.getCategoryChance();
-		int categoryDropChance = basecategoryDropChance;
+		int categoryDropChance = categoryDrops.getCategoryChance();
 		
 		// Applies Drop rates
 		switch (categoryDrops.getCategoryType())
@@ -1168,15 +1164,19 @@ public class L2Attackable extends L2Npc
 				categoryDropChance *= Config.RATE_DROP_COMMON_HERBS;
 		}
 		
-		// Set our limits for chance of drop
-		if (categoryDropChance < 1)
-			categoryDropChance = 1;
+		// Drop chance is affected by deep blue drop rule.
+		if (Config.DEEPBLUE_DROP_RULES)
+		{
+			int deepBlueDrop = (levelModifier > 0) ? 3 : 1;
+			
+			// Check if we should apply our maths so deep blue mobs will not drop that easy
+			categoryDropChance = ((categoryDropChance - ((categoryDropChance * levelModifier) / 100)) / deepBlueDrop);
+		}
 		
 		// Check if an Item from this category must be dropped
-		if (Rnd.get(DropData.MAX_CHANCE) < categoryDropChance)
+		if (Rnd.get(DropData.MAX_CHANCE) < Math.max(1, categoryDropChance))
 		{
-			DropData drop = categoryDrops.dropOne(false);
-			
+			final DropData drop = categoryDrops.dropOne(false);
 			if (drop == null)
 				return null;
 			
@@ -1336,26 +1336,29 @@ public class L2Attackable extends L2Npc
 			}
 		}
 		
-		// Instant Item Drop
+		// Herbs.
 		if (getTemplate().getDropHerbGroup() > 0)
 		{
 			for (DropCategory cat : HerbDropTable.getInstance().getHerbDroplist(getTemplate().getDropHerbGroup()))
 			{
-				ItemHolder item = calculateCategorizedHerbItem(player, cat);
+				final ItemHolder item = calculateCategorizedHerbItem(player, cat, levelModifier);
 				if (item != null)
 				{
-					// more than one herb cant be auto looted!
-					int count = item.getCount();
-					if (count > 1)
+					if (Config.AUTO_LOOT_HERBS)
+						player.addItem("Loot", item.getId(), 1, this, true);
+					else
 					{
-						item.setCount(1);
-						for (int i = 0; i < count; i++)
+						// If multiple similar herbs drop, split them and make a unique drop per item.
+						final int count = item.getCount();
+						if (count > 1)
+						{
+							item.setCount(1);
+							for (int i = 0; i < count; i++)
+								dropItem(player, item);
+						}
+						else
 							dropItem(player, item);
 					}
-					else if (isFlying() || Config.AUTO_LOOT_HERBS)
-						player.addItem("Loot", item.getId(), count, this, true);
-					else
-						dropItem(player, item);
 				}
 			}
 		}
@@ -1389,7 +1392,7 @@ public class L2Attackable extends L2Npc
 				// Add drop to auto destroy item task
 				if (!Config.LIST_PROTECTED_ITEMS.contains(item.getId()))
 				{
-					if ((Config.AUTODESTROY_ITEM_AFTER > 0 && ditem.getItemType() != EtcItemType.HERB) || (Config.HERB_AUTO_DESTROY_TIME > 0 && ditem.getItemType() == EtcItemType.HERB))
+					if ((Config.ITEM_AUTO_DESTROY_TIME > 0 && ditem.getItemType() != EtcItemType.HERB) || (Config.HERB_AUTO_DESTROY_TIME > 0 && ditem.getItemType() == EtcItemType.HERB))
 						ItemsAutoDestroyTaskManager.getInstance().addItem(ditem);
 				}
 				ditem.setProtected(false);

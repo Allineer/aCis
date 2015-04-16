@@ -128,7 +128,7 @@ public class ItemsOnGroundManager
 				{
 					if (result.getLong(8) > -1)
 					{
-						if ((Config.AUTODESTROY_ITEM_AFTER > 0 && item.getItemType() != EtcItemType.HERB) || (Config.HERB_AUTO_DESTROY_TIME > 0 && item.getItemType() == EtcItemType.HERB))
+						if ((Config.ITEM_AUTO_DESTROY_TIME > 0 && item.getItemType() != EtcItemType.HERB) || (Config.HERB_AUTO_DESTROY_TIME > 0 && item.getItemType() == EtcItemType.HERB))
 							ItemsAutoDestroyTaskManager.getInstance().addItem(item);
 					}
 				}

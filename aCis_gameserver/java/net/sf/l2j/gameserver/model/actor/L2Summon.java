@@ -748,6 +748,12 @@ public abstract class L2Summon extends L2Playable
 	}
 	
 	@Override
+	public boolean isOutOfControl()
+	{
+		return super.isOutOfControl() || isBetrayed();
+	}
+	
+	@Override
 	public boolean isInCombat()
 	{
 		return getOwner() != null ? getOwner().isInCombat() : false;

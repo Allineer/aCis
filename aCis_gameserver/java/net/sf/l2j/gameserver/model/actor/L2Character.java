@@ -421,9 +421,6 @@ public abstract class L2Character extends L2Object
 		if (!needHpUpdate(352))
 			return;
 		
-		if (Config.DEBUG)
-			_log.fine("Broadcast Status Update for " + getObjectId() + "(" + getName() + "). HP: " + getCurrentHp());
-		
 		// Create the Server->Client packet StatusUpdate with current HP
 		StatusUpdate su = new StatusUpdate(this);
 		su.addAttribute(StatusUpdate.CUR_HP, (int) getCurrentHp());
@@ -494,9 +491,6 @@ public abstract class L2Character extends L2Object
 		}
 		
 		z += 5;
-		
-		if (Config.DEBUG)
-			_log.fine("Teleporting to: " + x + ", " + y + ", " + z);
 		
 		// Send TeleportToLocationt to the L2Character AND to all L2PcInstance in the _KnownPlayers of the L2Character
 		broadcastPacket(new TeleportToLocation(this, x, y, z));
@@ -966,9 +960,6 @@ public abstract class L2Character extends L2Object
 	{
 		int maxRadius = getPhysicalAttackRange();
 		int maxAngleDiff = (int) getStat().calcStat(Stats.POWER_ATTACK_ANGLE, 120, null, null);
-		
-		if (Config.DEBUG)
-			_log.info("doAttackHitByPole: Max radius = " + maxRadius + " Max angle = " + maxAngleDiff);
 		
 		// Get the number of targets (-1 because the main target is already used)
 		int attackRandomCountMax = (int) getStat().calcStat(Stats.ATTACK_COUNT_MAX, 0, null, null) - 1;
@@ -1881,7 +1872,7 @@ public abstract class L2Character extends L2Object
 	}
 	
 	/**
-	 * @return True if the L2Character can't move (stun, root, sleep, overload, paralyzed).
+	 * @return True if the L2Character is in a state where he can't move.
 	 */
 	public boolean isMovementDisabled()
 	{
@@ -1889,11 +1880,11 @@ public abstract class L2Character extends L2Object
 	}
 	
 	/**
-	 * @return True if the L2Character can be controlled by the player (confused, afraid).
+	 * @return True if the L2Character is in a state where he can't be controlled.
 	 */
-	public final boolean isOutOfControl()
+	public boolean isOutOfControl()
 	{
-		return isConfused() || isAfraid();
+		return isConfused() || isAfraid() || isParalyzed() || isStunned() || isSleeping();
 	}
 	
 	public final boolean isOverloaded()
@@ -3596,14 +3587,11 @@ public abstract class L2Character extends L2Object
 			// If no distance to go through, the movement is canceled
 			if (distance < 1 || distance - offset <= 0)
 			{
-				if (Config.DEBUG)
-					_log.fine("already in range, no movement needed.");
-				
 				// Notify the AI that the L2Character is arrived at destination
 				getAI().notifyEvent(CtrlEvent.EVT_ARRIVED);
-				
 				return;
 			}
+			
 			// Calculate movement angles needed
 			sin = dy / distance;
 			cos = dx / distance;
@@ -3775,21 +3763,15 @@ public abstract class L2Character extends L2Object
 		if ((isFlying() || isInsideZone(ZoneId.WATER)) && !verticalMovementOnly)
 			distance = Math.sqrt(distance * distance + dz * dz);
 		
-		// Caclulate the Nb of ticks between the current position and the destination
-		// One tick added for rounding reasons
-		int ticksToMove = 1 + (int) (GameTimeController.TICKS_PER_SECOND * distance / speed);
 		m._xDestination = x;
 		m._yDestination = y;
-		m._zDestination = z; // this is what was requested from client
+		m._zDestination = z;
 		
 		// Calculate and set the heading of the L2Character
 		m._heading = 0; // initial value for coordinate sync
 		// Does not broke heading on vertical movements
 		if (!verticalMovementOnly)
 			setHeading(Util.calculateHeadingFrom(cos, sin));
-		
-		if (Config.DEBUG)
-			_log.fine("dist:" + distance + "speed:" + speed + " ttt:" + ticksToMove + " heading:" + getHeading());
 		
 		m._moveStartTime = GameTimeController.getGameTicks();
 		
@@ -3798,10 +3780,6 @@ public abstract class L2Character extends L2Object
 		
 		// Add the L2Character to movingObjects of the GameTimeController
 		GameTimeController.getInstance().registerMovingObject(this);
-		
-		// Create a task to notify the AI that L2Character arrives at a check point of the movement
-		if (ticksToMove * GameTimeController.MILLIS_IN_TICK > 3000)
-			ThreadPoolManager.getInstance().scheduleAi(new NotifyAITask(CtrlEvent.EVT_ARRIVED_REVALIDATE), 2000);
 	}
 	
 	public boolean moveToNextRoutePoint()
@@ -3849,22 +3827,17 @@ public abstract class L2Character extends L2Object
 			m._yDestination = md.geoPath.get(m.onGeodataPathIndex).getY();
 			m._zDestination = md.geoPath.get(m.onGeodataPathIndex).getZ();
 		}
+		
 		double dx = (m._xDestination - super.getX());
 		double dy = (m._yDestination - super.getY());
 		double distance = Math.sqrt(dx * dx + dy * dy);
+		
 		// Calculate and set the heading of the L2Character
 		if (distance != 0)
 			setHeading(Util.calculateHeadingFrom(getX(), getY(), m._xDestination, m._yDestination));
 		
-		// Caclulate the Nb of ticks between the current position and the destination
-		// One tick added for rounding reasons
-		int ticksToMove = 1 + (int) (GameTimeController.TICKS_PER_SECOND * distance / speed);
-		
 		m._heading = 0; // initial value for coordinate sync
 		m._moveStartTime = GameTimeController.getGameTicks();
-		
-		if (Config.DEBUG)
-			_log.fine("time to target:" + ticksToMove);
 		
 		// Set the L2Character _move object to MoveData object
 		_move = m;
@@ -3873,13 +3846,8 @@ public abstract class L2Character extends L2Object
 		// The GameTimeController manage objects movement
 		GameTimeController.getInstance().registerMovingObject(this);
 		
-		// Create a task to notify the AI that L2Character arrives at a check point of the movement
-		if (ticksToMove * GameTimeController.MILLIS_IN_TICK > 3000)
-			ThreadPoolManager.getInstance().scheduleAi(new NotifyAITask(CtrlEvent.EVT_ARRIVED_REVALIDATE), 2000);
-		
 		// Send MoveToLocation to the actor and all L2PcInstance in its _knownPlayers
-		MoveToLocation msg = new MoveToLocation(this);
-		broadcastPacket(msg);
+		broadcastPacket(new MoveToLocation(this));
 		
 		return true;
 	}

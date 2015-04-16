@@ -184,7 +184,9 @@ public class Q106_ForgottenTruth extends Quest
 		if (st == null)
 			return null;
 		
-		if (st.dropItems(ANCIENT_SCROLL, 1, 1, 200000) && st.dropItems(ANCIENT_CLAY_TABLET, 1, 1, 200000))
+		if (!st.hasQuestItems(ANCIENT_SCROLL))
+			st.dropItems(ANCIENT_SCROLL, 1, 1, 200000);
+		else if (st.dropItems(ANCIENT_CLAY_TABLET, 1, 1, 200000))
 			st.set("cond", "3");
 		
 		return null;

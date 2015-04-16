@@ -133,7 +133,7 @@
 		<tstamp>
 			<format property="date" pattern="yyyy-MM-dd HH:mm:ss" />
 		</tstamp>
-		<exec dir="." executable="./subversion/svnversion" outputproperty="revision" failifexecutionfails="false">
+		<exec dir="." executable="svnversion" outputproperty="revision" failifexecutionfails="false">
 			<arg line="-n ." />
 		</exec>
 		<echo message="aCis gameserver revision: ${revision}" />

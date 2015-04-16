@@ -372,10 +372,6 @@ abstract class AbstractAI implements Ctrl
 				if (!_actor.isCastingNow() && !_actor.isCastingSimultaneouslyNow())
 					onEvtArrived();
 				break;
-			case EVT_ARRIVED_REVALIDATE:
-				if (_actor.isMoving())
-					onEvtArrivedRevalidate();
-				break;
 			case EVT_ARRIVED_BLOCKED:
 				onEvtArrivedBlocked((L2CharPosition) arg0);
 				break;
@@ -445,8 +441,6 @@ abstract class AbstractAI implements Ctrl
 	protected abstract void onEvtUserCmd(Object arg0, Object arg1);
 	
 	protected abstract void onEvtArrived();
-	
-	protected abstract void onEvtArrivedRevalidate();
 	
 	protected abstract void onEvtArrivedBlocked(L2CharPosition blocked_at_pos);
 	

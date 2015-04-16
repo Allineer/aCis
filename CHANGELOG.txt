@@ -1,4 +1,37 @@
 ====================================================================================================
+Changeset 329 @ 2014.08.09
+
+Quests, Herbs, Misc
+
+Quests rework by roko91 - part 1 (initial patch is splitted in 2, next part go from Q401)
+    - Fix drop chances and/or logic at onKill using retail C4 rates.
+    - Add (or even remove !) monsters IDs at onKill.
+    - Fix few NPC spawn/despawn times delays.
+    - Improved readability and/or performance.
+    - Tryskell edition made on roko91 patch:
+        - Q101, Q340: roko91 misconception.
+        - Q102: invalid state where HTM couldn't be sent on cond 2/3.
+        - Q296, Q345: invalid rate system.
+        - Q348: didn't include changes, have to rework it.
+        - Q369: deprecated variables should be dropped :P. Fix onKill section aswell, as it misses a check regarding other type of shards.
+    - General cleanup made up to Q400 (was previously stopped to Q360).
+
+Herbs
+    - Addition of "deep blue" drop rule for herbs.
+    - In case multiple herbs are dropped and AUTO_LOOT_HERBS config is on, the addItem is correctly made, but only one item is added. Drop the isFlying() check.
+    - Fix herbs destroy time.
+
+Misc
+    - Unify naming convention between herbs and items destroy time configs.
+    - Fix the spawn protection config, which now uses a task (+ different message when timer expires). Added a visual effect aswell.
+    - Doors Func are dropped.
+    - Dropped deprecated embedded svnversion for both DP and GS projects.
+    - isOutOfControl() got more checks included (stun, paralized, sleep), and is overidden on L2Summon to add isBetrayed() check.
+    - Replace RequestActionUse isMovementDisabled() pets checks for isOutOfControl(). Add a missing isOutOfControl() check on useSkill.
+    - Delete EVT_ARRIVED_REVALIDATE AI event, as it isn't needed for anything. More to be done for movement, probably will go after geoengine rework.
+    - Fix a Connection leak on //remove_clan_penalty admincommand. Ty SkyArg.
+
+====================================================================================================
 Changeset 328 @ 2014.06.19
 
 "Stat" classes, Misc

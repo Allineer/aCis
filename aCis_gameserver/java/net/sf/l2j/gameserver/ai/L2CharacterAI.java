@@ -642,19 +642,6 @@ public class L2CharacterAI extends AbstractAI
 	}
 	
 	/**
-	 * Launch actions corresponding to the Event ArrivedRevalidate.
-	 * <ul>
-	 * <li>Launch actions corresponding to the Event Think</li>
-	 * </ul>
-	 */
-	@Override
-	protected void onEvtArrivedRevalidate()
-	{
-		// Launch actions corresponding to the Event Think
-		onEvtThink();
-	}
-	
-	/**
 	 * Launch actions corresponding to the Event ArrivedBlocked.
 	 * <ul>
 	 * <li>Stop the actor movement server side AND client side by sending Server->Client packet StopMove/StopRotation (broadcast)</li>
@@ -868,10 +855,8 @@ public class L2CharacterAI extends AbstractAI
 		{
 			if (getFollowTarget() != null)
 			{
-				int foffset = offset + (((L2Character) target).isMoving() ? 100 : 0);
-				
 				// allow larger hit range when the target is moving (check is run only once per second)
-				if (!_actor.isInsideRadius(target, foffset, false, false))
+				if (!_actor.isInsideRadius(target, offset + 100, false, false))
 				{
 					if (!_actor.isAttackingNow() || _actor instanceof L2Summon)
 						moveToPawn(target, offset);

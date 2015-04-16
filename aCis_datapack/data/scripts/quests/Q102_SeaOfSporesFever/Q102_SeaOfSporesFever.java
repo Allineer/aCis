@@ -109,12 +109,9 @@ public class Q102_SeaOfSporesFever extends Quest
 				{
 					case ALBERIUS:
 						if (cond == 1)
-						{
-							if (st.hasQuestItems(ALBERIUS_LETTER))
-								htmltext = "30284-03.htm";
-							else if (st.hasQuestItems(EVERGREEN_AMULET))
-								htmltext = "30284-09.htm";
-						}
+							htmltext = "30284-03.htm";
+						else if (cond == 2 || cond == 3)
+							htmltext = "30284-09.htm";
 						else if (cond == 4)
 						{
 							htmltext = "30284-04.htm";
@@ -232,9 +229,8 @@ public class Q102_SeaOfSporesFever extends Quest
 		if (st == null)
 			return null;
 		
-		if (st.hasQuestItems(EVERGREEN_AMULET))
-			if (st.dropItems(DRYAD_TEARS, 1, 10, 300000))
-				st.set("cond", "3");
+		if (st.dropItems(DRYAD_TEARS, 1, 10, 300000))
+			st.set("cond", "3");
 		
 		return null;
 	}
