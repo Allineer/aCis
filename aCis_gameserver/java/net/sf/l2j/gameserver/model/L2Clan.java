@@ -139,6 +139,9 @@ public class L2Clan
 	private boolean _noticeEnabled;
 	private static final int MAX_NOTICE_LENGTH = 8192;
 	
+	private String _introduction;
+	private static final int MAX_INTRODUCTION_LENGTH = 300;
+	
 	private int _siegeKills;
 	private int _siegeDeaths;
 	
@@ -175,7 +178,6 @@ public class L2Clan
 			restoreSubPledges();
 			restoreRankPrivs();
 			restoreSkills();
-			restoreNotice();
 			checkCrests();
 		}
 		catch (Exception e)
@@ -802,29 +804,6 @@ public class L2Clan
 		}
 	}
 	
-	private void restoreNotice()
-	{
-		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
-		{
-			PreparedStatement statement = con.prepareStatement("SELECT enabled,notice FROM clan_notices WHERE clan_id=?");
-			statement.setInt(1, _clanId);
-			ResultSet noticeData = statement.executeQuery();
-			
-			while (noticeData.next())
-			{
-				_noticeEnabled = noticeData.getBoolean("enabled");
-				_notice = noticeData.getString("notice");
-			}
-			
-			noticeData.close();
-			statement.close();
-		}
-		catch (Exception e)
-		{
-			_log.log(Level.SEVERE, "Error restoring clan notice: " + e.getMessage(), e);
-		}
-	}
-	
 	private void storeNotice(String notice, boolean enabled)
 	{
 		if (notice == null)
@@ -835,41 +814,28 @@ public class L2Clan
 		
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
 		{
-			PreparedStatement statement = con.prepareStatement("INSERT INTO clan_notices (clan_id,notice,enabled) values (?,?,?) ON DUPLICATE KEY UPDATE notice=?,enabled=?");
-			statement.setInt(1, _clanId);
+			PreparedStatement statement = con.prepareStatement("UPDATE clan_data SET enabled=?,notice=? WHERE clan_id=?");
+			statement.setString(1, (enabled) ? "true" : "false");
 			statement.setString(2, notice);
-			
-			if (enabled)
-			{
-				statement.setString(3, "true");
-				statement.setString(4, notice);
-				statement.setString(5, "true");
-			}
-			else
-			{
-				statement.setString(3, "false");
-				statement.setString(4, notice);
-				statement.setString(5, "false");
-			}
-			
+			statement.setInt(3, _clanId);
 			statement.execute();
 			statement.close();
 		}
 		catch (Exception e)
 		{
-			_log.log(Level.WARNING, "Error could not store clan notice: " + e.getMessage(), e);
+			_log.log(Level.WARNING, "L2Clan : could not store clan notice: " + e.getMessage(), e);
 		}
 		
 		_notice = notice;
 		_noticeEnabled = enabled;
 	}
 	
-	public void setNoticeEnabled(boolean enabled)
+	public void setNoticeEnabledAndStore(boolean enabled)
 	{
 		storeNotice(_notice, enabled);
 	}
 	
-	public void setNotice(String notice)
+	public void setNoticeAndStore(String notice)
 	{
 		storeNotice(notice, _noticeEnabled);
 	}
@@ -879,9 +845,51 @@ public class L2Clan
 		return _noticeEnabled;
 	}
 	
+	public void setNoticeEnabled(boolean enabled)
+	{
+		_noticeEnabled = enabled;
+	}
+	
 	public String getNotice()
 	{
 		return (_notice == null) ? "" : _notice;
+	}
+	
+	public void setNotice(String notice)
+	{
+		_notice = notice;
+	}
+	
+	public String getIntroduction()
+	{
+		return (_introduction == null) ? "" : _introduction;
+	}
+	
+	public void setIntroduction(String intro, boolean saveOnDb)
+	{
+		if (saveOnDb)
+		{
+			if (intro == null)
+				intro = "";
+			
+			if (intro.length() > MAX_INTRODUCTION_LENGTH)
+				intro = intro.substring(0, MAX_INTRODUCTION_LENGTH - 1);
+			
+			try (Connection con = L2DatabaseFactory.getInstance().getConnection())
+			{
+				PreparedStatement statement = con.prepareStatement("UPDATE clan_data SET introduction=? WHERE clan_id=?");
+				statement.setString(1, intro);
+				statement.setInt(2, _clanId);
+				statement.execute();
+				statement.close();
+			}
+			catch (Exception e)
+			{
+				_log.log(Level.WARNING, "L2Clan : could not store clan introduction: " + e.getMessage(), e);
+			}
+		}
+		
+		_introduction = intro;
 	}
 	
 	public int getSiegeKills()

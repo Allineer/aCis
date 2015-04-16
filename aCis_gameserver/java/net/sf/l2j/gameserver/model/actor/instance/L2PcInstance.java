@@ -10836,12 +10836,14 @@ public final class L2PcInstance extends L2Playable
 	
 	public void selectFriend(Integer friendId)
 	{
-		_selectedFriendList.add(friendId);
+		if (!_selectedFriendList.contains(friendId))
+			_selectedFriendList.add(friendId);
 	}
 	
 	public void deselectFriend(Integer friendId)
 	{
-		_selectedFriendList.remove(friendId);
+		if (_selectedFriendList.contains(friendId))
+			_selectedFriendList.remove(friendId);
 	}
 	
 	public List<Integer> getSelectedFriendList()
@@ -10891,6 +10893,25 @@ public final class L2PcInstance extends L2Playable
 					friend.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.FRIEND_S1_HAS_LOGGED_IN).addPcName(this));
 			}
 		}
+	}
+	
+	private final List<Integer> _selectedBlocksList = new ArrayList<>();
+	
+	public void selectBlock(Integer friendId)
+	{
+		if (!_selectedBlocksList.contains(friendId))
+			_selectedBlocksList.add(friendId);
+	}
+	
+	public void deselectBlock(Integer friendId)
+	{
+		if (_selectedBlocksList.contains(friendId))
+			_selectedBlocksList.remove(friendId);
+	}
+	
+	public List<Integer> getSelectedBlocksList()
+	{
+		return _selectedBlocksList;
 	}
 	
 	/**

@@ -23,15 +23,17 @@ public class Q274_SkirmishWithTheWerewolves extends Quest
 {
 	private static final String qn = "Q274_SkirmishWithTheWerewolves";
 	
-	// Items
-	private static final int MARAKU_WEREWOLF_HEAD = 1477;
+	// Needed items
 	private static final int NECKLACE_OF_VALOR = 1507;
 	private static final int NECKLACE_OF_COURAGE = 1506;
+	
+	// Items
+	private static final int MARAKU_WEREWOLF_HEAD = 1477;
 	private static final int MARAKU_WOLFMEN_TOTEM = 1501;
 	
-	public Q274_SkirmishWithTheWerewolves(int questId, String name, String descr)
+	public Q274_SkirmishWithTheWerewolves()
 	{
-		super(questId, name, descr);
+		super(274, qn, "Skirmish with the Werewolves");
 		
 		questItemIds = new int[]
 		{
@@ -55,8 +57,8 @@ public class Q274_SkirmishWithTheWerewolves extends Quest
 		
 		if (event.equalsIgnoreCase("30569-03.htm"))
 		{
-			st.set("cond", "1");
 			st.setState(STATE_STARTED);
+			st.set("cond", "1");
 			st.playSound(QuestState.SOUND_ACCEPT);
 		}
 		
@@ -85,10 +87,9 @@ public class Q274_SkirmishWithTheWerewolves extends Quest
 				break;
 			
 			case STATE_STARTED:
-				int cond = st.getInt("cond");
-				if (cond == 1)
+				if (st.getInt("cond") == 1)
 					htmltext = "30569-04.htm";
-				else if (cond == 2)
+				else
 				{
 					htmltext = "30569-05.htm";
 					
@@ -125,6 +126,6 @@ public class Q274_SkirmishWithTheWerewolves extends Quest
 	
 	public static void main(String[] args)
 	{
-		new Q274_SkirmishWithTheWerewolves(274, qn, "Skirmish with the Werewolves");
+		new Q274_SkirmishWithTheWerewolves();
 	}
 }

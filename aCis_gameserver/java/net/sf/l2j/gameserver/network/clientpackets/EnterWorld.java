@@ -18,6 +18,7 @@ import net.sf.l2j.Config;
 import net.sf.l2j.gameserver.Announcements;
 import net.sf.l2j.gameserver.GameTimeController;
 import net.sf.l2j.gameserver.SevenSigns;
+import net.sf.l2j.gameserver.communitybbs.Manager.MailBBSManager;
 import net.sf.l2j.gameserver.datatables.AdminCommandAccessRights;
 import net.sf.l2j.gameserver.datatables.GmListTable;
 import net.sf.l2j.gameserver.datatables.MapRegionTable;
@@ -42,11 +43,13 @@ import net.sf.l2j.gameserver.model.zone.ZoneId;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.Die;
 import net.sf.l2j.gameserver.network.serverpackets.EtcStatusUpdate;
+import net.sf.l2j.gameserver.network.serverpackets.ExMailArrived;
 import net.sf.l2j.gameserver.network.serverpackets.ExStorageMaxCount;
 import net.sf.l2j.gameserver.network.serverpackets.FriendList;
 import net.sf.l2j.gameserver.network.serverpackets.HennaInfo;
 import net.sf.l2j.gameserver.network.serverpackets.ItemList;
 import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
+import net.sf.l2j.gameserver.network.serverpackets.PlaySound;
 import net.sf.l2j.gameserver.network.serverpackets.PledgeShowMemberListAll;
 import net.sf.l2j.gameserver.network.serverpackets.PledgeShowMemberListUpdate;
 import net.sf.l2j.gameserver.network.serverpackets.PledgeSkillList;
@@ -206,7 +209,24 @@ public class EnterWorld extends L2GameClientPacket
 		}
 		activeChar.sendPacket(new QuestList());
 		
-		if (Config.SERVER_NEWS)
+		// Unread mails make a popup appears.
+		if (Config.ENABLE_COMMUNITY_BOARD && MailBBSManager.getInstance().checkUnreadMail(activeChar) > 0)
+		{
+			activeChar.sendPacket(SystemMessageId.NEW_MAIL);
+			activeChar.sendPacket(new PlaySound("systemmsg_e.1233"));
+			activeChar.sendPacket(ExMailArrived.STATIC_PACKET);
+		}
+		
+		// Clan notice, if active.
+		if (Config.ENABLE_COMMUNITY_BOARD && clan != null && clan.isNoticeEnabled())
+		{
+			NpcHtmlMessage notice = new NpcHtmlMessage(0);
+			notice.setFile("data/html/clan_notice.htm");
+			notice.replace("%clan_name%", clan.getName());
+			notice.replace("%notice_text%", clan.getNotice().replaceAll("\r\n", "<br>").replaceAll("action", "").replaceAll("bypass", ""));
+			sendPacket(notice);
+		}
+		else if (Config.SERVER_NEWS)
 		{
 			NpcHtmlMessage html = new NpcHtmlMessage(0);
 			html.setFile("data/html/servnews.htm");

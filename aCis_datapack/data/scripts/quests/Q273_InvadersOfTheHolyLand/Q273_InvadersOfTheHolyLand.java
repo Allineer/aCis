@@ -30,9 +30,9 @@ public class Q273_InvadersOfTheHolyLand extends Quest
 	// Reward
 	private static final int SOULSHOT_FOR_BEGINNERS = 5789;
 	
-	public Q273_InvadersOfTheHolyLand(int questId, String name, String descr)
+	public Q273_InvadersOfTheHolyLand()
 	{
-		super(questId, name, descr);
+		super(273, qn, "Invaders of the Holy Land");
 		
 		questItemIds = new int[]
 		{
@@ -56,8 +56,8 @@ public class Q273_InvadersOfTheHolyLand extends Quest
 		
 		if (event.equalsIgnoreCase("30566-03.htm"))
 		{
-			st.set("cond", "1");
 			st.setState(STATE_STARTED);
+			st.set("cond", "1");
 			st.playSound(QuestState.SOUND_ACCEPT);
 		}
 		else if (event.equalsIgnoreCase("30566-07.htm"))
@@ -144,6 +144,6 @@ public class Q273_InvadersOfTheHolyLand extends Quest
 	
 	public static void main(String[] args)
 	{
-		new Q273_InvadersOfTheHolyLand(273, qn, "Invaders of the Holy Land");
+		new Q273_InvadersOfTheHolyLand();
 	}
 }

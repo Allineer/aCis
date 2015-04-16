@@ -1,4 +1,39 @@
 ====================================================================================================
+Changeset 312 @ 2013.09.28
+
+Quests, Community Board, Misc
+
+Quests
+    - Cleanup up to Q280.
+    - Fix 2 issues on Q039 (sound and drop rate), ty Ailierynn for report.
+
+Community Board - ty Erlandys
+    - Rework Community Board system to allow more inheritance uses (logger, error messages, etc).
+    - Polish && cache all HTMs content (and that was fucking long).
+    - "Clan" tab
+        - Send different clan details following randomer, member, or clan leader status.
+        - Implements clan mail panel.
+        - Implements clan management panel (with working introduction system).
+        - Completed the implementation of clan notices system, merging "clan_notices" table with "clan_data" table which avoids SQL queries.
+    - "Region" tab
+        - Two panels are added listing castles / CHs owners (custom as not existing on retail, but follow GoD vision).
+    - "Friend" tab
+        - Implements Blocklist panel.
+        - Implements friend mail panel.
+    - "Mail" tab:
+        - Add the "girl voice" (sexy as a robot) when you receive a mail, and add a popup at Enterworld if you got unread waiting messages.
+        - Cleanup core side.
+
+Misc
+    - Addition of missing use of SystemMessage 1761, ty Trance for report.
+
+TODO: rework "Top" && "Memo" tabs (didn't touch at all), implement "Clan" forums.
+
+IMPORTANT: need to add 3 columns in clan_data. The whole organization for CB HTMs is also edited.
+
+http://www.youtube.com/watch?v=ZUHPVlaFQZk# (http://www.youtube.com/watch?v=ZUHPVlaFQZk#)
+
+====================================================================================================
 Changeset 311 @ 2013.09.19
 
 Pledge rework, Clans Wars, Misc (ty KaL for the good work)

@@ -100,6 +100,11 @@ public class ClanTable
 				
 				if (clan.getDissolvingExpiryTime() != 0)
 					scheduleRemoveClan(clan);
+				
+				clan.setNoticeEnabled(result.getBoolean("enabled"));
+				clan.setNotice(result.getString("notice"));
+				
+				clan.setIntroduction(result.getString("introduction"), false);
 			}
 			result.close();
 			statement.close();
@@ -253,11 +258,6 @@ public class ClanTable
 			statement = con.prepareStatement("DELETE FROM clan_wars WHERE clan1=? OR clan2=?");
 			statement.setInt(1, clanId);
 			statement.setInt(2, clanId);
-			statement.execute();
-			statement.close();
-			
-			statement = con.prepareStatement("DELETE FROM clan_notices WHERE clan_id=?");
-			statement.setInt(1, clanId);
 			statement.execute();
 			statement.close();
 			
