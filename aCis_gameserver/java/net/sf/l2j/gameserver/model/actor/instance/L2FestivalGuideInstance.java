@@ -21,13 +21,13 @@ import net.sf.l2j.Config;
 import net.sf.l2j.gameserver.instancemanager.SevenSigns;
 import net.sf.l2j.gameserver.instancemanager.SevenSignsFestival;
 import net.sf.l2j.gameserver.model.L2Party;
+import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.ActionFailed;
 import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 import net.sf.l2j.gameserver.templates.StatsSet;
-import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
 
 /**
  * Festival of Darkness Guide (Seven Signs)
@@ -41,7 +41,7 @@ public final class L2FestivalGuideInstance extends L2NpcInstance
 	protected int _greenStonesNeeded;
 	protected int _redStonesNeeded;
 	
-	public L2FestivalGuideInstance(int objectId, L2NpcTemplate template)
+	public L2FestivalGuideInstance(int objectId, NpcTemplate template)
 	{
 		super(objectId, template);
 		

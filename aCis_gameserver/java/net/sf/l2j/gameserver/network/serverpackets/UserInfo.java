@@ -20,9 +20,9 @@ import net.sf.l2j.gameserver.instancemanager.CursedWeaponsManager;
 import net.sf.l2j.gameserver.model.Location;
 import net.sf.l2j.gameserver.model.actor.L2Summon;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
+import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 import net.sf.l2j.gameserver.model.itemcontainer.Inventory;
 import net.sf.l2j.gameserver.skills.AbnormalEffect;
-import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
 
 public class UserInfo extends L2GameServerPacket
 {
@@ -60,7 +60,7 @@ public class UserInfo extends L2GameServerPacket
 		String name = _activeChar.getName();
 		if (_activeChar.getPoly().isMorphed())
 		{
-			L2NpcTemplate polyObj = NpcTable.getInstance().getTemplate(_activeChar.getPoly().getPolyId());
+			NpcTemplate polyObj = NpcTable.getInstance().getTemplate(_activeChar.getPoly().getPolyId());
 			if (polyObj != null)
 				name = polyObj.getName();
 		}

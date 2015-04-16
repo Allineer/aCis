@@ -29,9 +29,9 @@ import net.sf.l2j.gameserver.idfactory.IdFactory;
 import net.sf.l2j.gameserver.model.L2World;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2SiegeGuardInstance;
+import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 import net.sf.l2j.gameserver.model.entity.Castle;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
-import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
 
 /**
  * This class is similar to the SiegeGuardManager, except it handles the loading of the mercenary tickets that are dropped on castle floors by the castle lords.<br>
@@ -853,7 +853,7 @@ public class MercTicketManager
 	
 	private static void spawnMercenary(int npcId, int x, int y, int z, int despawnDelay)
 	{
-		L2NpcTemplate template = NpcTable.getInstance().getTemplate(npcId);
+		NpcTemplate template = NpcTable.getInstance().getTemplate(npcId);
 		if (template != null)
 		{
 			final L2SiegeGuardInstance npc = new L2SiegeGuardInstance(IdFactory.getInstance().getNextId(), template);

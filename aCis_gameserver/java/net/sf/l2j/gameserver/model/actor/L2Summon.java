@@ -35,6 +35,7 @@ import net.sf.l2j.gameserver.model.actor.instance.L2SummonInstance;
 import net.sf.l2j.gameserver.model.actor.knownlist.SummonKnownList;
 import net.sf.l2j.gameserver.model.actor.stat.SummonStat;
 import net.sf.l2j.gameserver.model.actor.status.SummonStatus;
+import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 import net.sf.l2j.gameserver.model.base.Experience;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.model.item.kind.Weapon;
@@ -56,7 +57,6 @@ import net.sf.l2j.gameserver.network.serverpackets.RelationChanged;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 import net.sf.l2j.gameserver.network.serverpackets.TeleportToLocation;
 import net.sf.l2j.gameserver.taskmanager.DecayTaskManager;
-import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
 
 public abstract class L2Summon extends L2Playable
 {
@@ -88,7 +88,7 @@ public abstract class L2Summon extends L2Playable
 		}
 	}
 	
-	public L2Summon(int objectId, L2NpcTemplate template, L2PcInstance owner)
+	public L2Summon(int objectId, NpcTemplate template, L2PcInstance owner)
 	{
 		super(objectId, template);
 		
@@ -152,9 +152,9 @@ public abstract class L2Summon extends L2Playable
 	}
 	
 	@Override
-	public L2NpcTemplate getTemplate()
+	public NpcTemplate getTemplate()
 	{
-		return (L2NpcTemplate) super.getTemplate();
+		return (NpcTemplate) super.getTemplate();
 	}
 	
 	// this defines the action buttons, 1 for Summon, 2 for Pets

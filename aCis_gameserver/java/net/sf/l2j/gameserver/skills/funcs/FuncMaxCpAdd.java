@@ -17,7 +17,6 @@ package net.sf.l2j.gameserver.skills.funcs;
 import net.sf.l2j.gameserver.skills.Env;
 import net.sf.l2j.gameserver.skills.Stats;
 import net.sf.l2j.gameserver.skills.basefuncs.Func;
-import net.sf.l2j.gameserver.templates.chars.L2PcTemplate;
 
 public class FuncMaxCpAdd extends Func
 {
@@ -36,13 +35,6 @@ public class FuncMaxCpAdd extends Func
 	@Override
 	public void calc(Env env)
 	{
-		final L2PcTemplate t = (L2PcTemplate) env.getCharacter().getTemplate();
-		final int lvl = Math.max(env.getCharacter().getLevel() - t.classBaseLevel, 0);
-		
-		final double cpmod = t.lvlCpMod * lvl;
-		final double cpmax = (t.lvlCpAdd + cpmod) * lvl;
-		final double cpmin = (t.lvlCpAdd * lvl) + cpmod;
-		
-		env.addValue((cpmax + cpmin) / 2);
+		env.addValue(env.getPlayer().getTemplate().getBaseCp(env.getPlayer().getLevel()));
 	}
 }

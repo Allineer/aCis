@@ -1,4 +1,19 @@
 ====================================================================================================
+Changeset 325 @ 2014.04.14
+
+Misc
+
+Misc
+    - Add retail HP/MP/CP calculation for players. Biggest change is the mana pool, which is drastically lower.
+    - Add retail breath multiplier (based on race).
+    - Add support for player radius / height (based on sex). There isn't yet uses of that system (bored to edit everywhere...) and values would still be rounded for an int anyway.
+    - Move actors templates classes, rename them (drop "L2"), private the variable and add getters (PcTemplate). _baseCpMax is dropped, as there isn't base value for players anymore.
+    - Slight cleanup (CharStatus, QuestTimer). Drop checks on doRegeneration (useless, handled by setCurrentX()).
+    - [L2J 6301] Herbs aren't supposed to be delayed. Drop the task.
+
+PS: track eventual errors on Quest, I have to revert the drop of the try/catch otherwise.
+
+====================================================================================================
 Changeset 324 @ 2014.04.11
 
 Scheme Buffer, Misc

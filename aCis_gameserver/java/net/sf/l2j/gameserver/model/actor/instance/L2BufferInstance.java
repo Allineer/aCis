@@ -29,12 +29,12 @@ import net.sf.l2j.gameserver.datatables.SkillTable;
 import net.sf.l2j.gameserver.model.actor.L2Character;
 import net.sf.l2j.gameserver.model.actor.L2Npc;
 import net.sf.l2j.gameserver.model.actor.L2Summon;
+import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
-import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
 
 public class L2BufferInstance extends L2Npc
 {
-	public L2BufferInstance(int objectId, L2NpcTemplate template)
+	public L2BufferInstance(int objectId, NpcTemplate template)
 	{
 		super(objectId, template);
 	}

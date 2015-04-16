@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.l2j.gameserver.templates.chars;
+package net.sf.l2j.gameserver.model.actor.template;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,7 +36,7 @@ import net.sf.l2j.gameserver.templates.StatsSet;
 /**
  * This class contains the generic data of a L2Spawn object.
  */
-public final class L2NpcTemplate extends L2CharTemplate
+public final class NpcTemplate extends CharTemplate
 {
 	protected static final Logger _log = Logger.getLogger(Quest.class.getName());
 	
@@ -115,7 +115,7 @@ public final class L2NpcTemplate extends L2CharTemplate
 	 * Constructor of L2NpcTemplate.
 	 * @param set The StatsSet object to transfer data to the method.
 	 */
-	public L2NpcTemplate(StatsSet set)
+	public NpcTemplate(StatsSet set)
 	{
 		super(set);
 		

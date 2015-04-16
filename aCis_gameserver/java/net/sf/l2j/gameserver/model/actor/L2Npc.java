@@ -53,6 +53,8 @@ import net.sf.l2j.gameserver.model.actor.instance.L2WarehouseInstance;
 import net.sf.l2j.gameserver.model.actor.knownlist.NpcKnownList;
 import net.sf.l2j.gameserver.model.actor.stat.NpcStat;
 import net.sf.l2j.gameserver.model.actor.status.NpcStatus;
+import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
+import net.sf.l2j.gameserver.model.actor.template.NpcTemplate.AIType;
 import net.sf.l2j.gameserver.model.entity.Castle;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.model.item.kind.Item;
@@ -78,8 +80,6 @@ import net.sf.l2j.gameserver.network.serverpackets.StatusUpdate;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 import net.sf.l2j.gameserver.taskmanager.DecayTaskManager;
 import net.sf.l2j.gameserver.templates.L2HelperBuff;
-import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
-import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate.AIType;
 import net.sf.l2j.gameserver.templates.skills.L2SkillType;
 import net.sf.l2j.gameserver.util.Broadcast;
 import net.sf.l2j.util.Rnd;
@@ -264,7 +264,7 @@ public class L2Npc extends L2Character
 	 * @param objectId Identifier of the object to initialized
 	 * @param template The L2NpcTemplate to apply to the NPC
 	 */
-	public L2Npc(int objectId, L2NpcTemplate template)
+	public L2Npc(int objectId, NpcTemplate template)
 	{
 		// Call the L2Character constructor to set the _template of the L2Character, copy skills from template to object and link _calculators to NPC_STD_CALCULATOR
 		super(objectId, template);
@@ -322,9 +322,9 @@ public class L2Npc extends L2Character
 	
 	/** Return the L2NpcTemplate of the L2Npc. */
 	@Override
-	public final L2NpcTemplate getTemplate()
+	public final NpcTemplate getTemplate()
 	{
-		return (L2NpcTemplate) super.getTemplate();
+		return (NpcTemplate) super.getTemplate();
 	}
 	
 	/**

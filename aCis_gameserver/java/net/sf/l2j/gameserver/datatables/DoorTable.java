@@ -28,11 +28,11 @@ import net.sf.l2j.gameserver.idfactory.IdFactory;
 import net.sf.l2j.gameserver.instancemanager.CastleManager;
 import net.sf.l2j.gameserver.instancemanager.ClanHallManager;
 import net.sf.l2j.gameserver.model.actor.instance.L2DoorInstance;
+import net.sf.l2j.gameserver.model.actor.template.CharTemplate;
 import net.sf.l2j.gameserver.model.entity.Castle;
 import net.sf.l2j.gameserver.model.entity.ClanHall;
 import net.sf.l2j.gameserver.pathfinding.AbstractNodeLoc;
 import net.sf.l2j.gameserver.templates.StatsSet;
-import net.sf.l2j.gameserver.templates.chars.L2CharTemplate;
 import net.sf.l2j.gameserver.xmlfactory.XMLDocumentFactory;
 
 import org.w3c.dom.Document;
@@ -196,7 +196,7 @@ public class DoorTable
 							
 							npcDat.set("runSpd", 0); // Have to keep this, static object MUST BE 0 (critical error otherwise).
 							
-							final L2DoorInstance door = new L2DoorInstance(IdFactory.getInstance().getNextId(), new L2CharTemplate(npcDat), id, name, unlockable);
+							final L2DoorInstance door = new L2DoorInstance(IdFactory.getInstance().getNextId(), new CharTemplate(npcDat), id, name, unlockable);
 							door.setRange(rangeXMin, rangeYMin, rangeZMin, rangeXMax, rangeYMax, rangeZMax);
 							door.setCurrentHpMp(door.getMaxHp(), door.getMaxMp());
 							door.setXYZInvisible(x, y, z);

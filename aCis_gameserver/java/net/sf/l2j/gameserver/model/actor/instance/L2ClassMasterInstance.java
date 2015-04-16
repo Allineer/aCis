@@ -17,12 +17,12 @@ package net.sf.l2j.gameserver.model.actor.instance;
 import net.sf.l2j.Config;
 import net.sf.l2j.gameserver.datatables.CharTemplateTable;
 import net.sf.l2j.gameserver.datatables.ItemTable;
+import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 import net.sf.l2j.gameserver.model.base.ClassId;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.ActionFailed;
 import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
 import net.sf.l2j.gameserver.network.serverpackets.UserInfo;
-import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
 import net.sf.l2j.util.StringUtil;
 
 /**
@@ -40,7 +40,7 @@ import net.sf.l2j.util.StringUtil;
  */
 public final class L2ClassMasterInstance extends L2NpcInstance
 {
-	public L2ClassMasterInstance(int objectId, L2NpcTemplate template)
+	public L2ClassMasterInstance(int objectId, NpcTemplate template)
 	{
 		super(objectId, template);
 	}

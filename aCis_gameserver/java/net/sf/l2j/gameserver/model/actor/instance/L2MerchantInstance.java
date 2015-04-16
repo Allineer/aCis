@@ -20,12 +20,12 @@ import net.sf.l2j.Config;
 import net.sf.l2j.gameserver.TradeController;
 import net.sf.l2j.gameserver.model.L2Multisell;
 import net.sf.l2j.gameserver.model.L2TradeList;
+import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 import net.sf.l2j.gameserver.network.serverpackets.ActionFailed;
 import net.sf.l2j.gameserver.network.serverpackets.BuyList;
 import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
 import net.sf.l2j.gameserver.network.serverpackets.SellList;
 import net.sf.l2j.gameserver.network.serverpackets.ShopPreviewList;
-import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
 
 /**
  * L2Merchant type, it got buy/sell methods && bypasses.<br>
@@ -33,7 +33,7 @@ import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
  */
 public class L2MerchantInstance extends L2NpcInstance
 {
-	public L2MerchantInstance(int objectId, L2NpcTemplate template)
+	public L2MerchantInstance(int objectId, NpcTemplate template)
 	{
 		super(objectId, template);
 	}

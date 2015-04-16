@@ -25,13 +25,13 @@ import net.sf.l2j.gameserver.model.L2ShortCut;
 import net.sf.l2j.gameserver.model.L2SkillLearn;
 import net.sf.l2j.gameserver.model.L2World;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
+import net.sf.l2j.gameserver.model.actor.template.PcTemplate;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.model.item.kind.Item;
 import net.sf.l2j.gameserver.model.quest.Quest;
 import net.sf.l2j.gameserver.network.serverpackets.CharCreateFail;
 import net.sf.l2j.gameserver.network.serverpackets.CharCreateOk;
 import net.sf.l2j.gameserver.network.serverpackets.CharSelectInfo;
-import net.sf.l2j.gameserver.templates.chars.L2PcTemplate;
 import net.sf.l2j.gameserver.util.Util;
 
 @SuppressWarnings("unused")
@@ -104,7 +104,7 @@ public final class CharacterCreate extends L2GameClientPacket
 		}
 		
 		L2PcInstance newChar = null;
-		L2PcTemplate template = null;
+		PcTemplate template = null;
 		
 		/*
 		 * DrHouse: Since checks for duplicate names are done using SQL, lock must be held until data is written to DB as well.
@@ -124,7 +124,7 @@ public final class CharacterCreate extends L2GameClientPacket
 			}
 			
 			template = CharTemplateTable.getInstance().getTemplate(_classId);
-			if (template == null || template.classBaseLevel > 1)
+			if (template == null || template.getClassBaseLevel() > 1)
 			{
 				sendPacket(new CharCreateFail(CharCreateFail.REASON_CREATION_FAILED));
 				return;
@@ -144,7 +144,7 @@ public final class CharacterCreate extends L2GameClientPacket
 		L2World.getInstance().storeObject(newChar);
 		
 		newChar.addAdena("Init", Config.STARTING_ADENA, null, false);
-		newChar.setXYZInvisible(template.spawnX, template.spawnY, template.spawnZ);
+		newChar.setXYZInvisible(template.getSpawnX(), template.getSpawnY(), template.getSpawnZ());
 		newChar.setTitle("");
 		
 		newChar.registerShortCut(new L2ShortCut(0, 0, 3, 2, -1, 1)); // attack shortcut

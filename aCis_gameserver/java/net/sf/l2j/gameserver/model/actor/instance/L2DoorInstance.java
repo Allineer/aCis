@@ -33,6 +33,7 @@ import net.sf.l2j.gameserver.model.actor.L2Playable;
 import net.sf.l2j.gameserver.model.actor.knownlist.DoorKnownList;
 import net.sf.l2j.gameserver.model.actor.stat.DoorStat;
 import net.sf.l2j.gameserver.model.actor.status.DoorStatus;
+import net.sf.l2j.gameserver.model.actor.template.CharTemplate;
 import net.sf.l2j.gameserver.model.entity.Castle;
 import net.sf.l2j.gameserver.model.entity.ClanHall;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
@@ -46,7 +47,6 @@ import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 import net.sf.l2j.gameserver.skills.funcs.FuncGatesMDefMod;
 import net.sf.l2j.gameserver.skills.funcs.FuncGatesPDefMod;
-import net.sf.l2j.gameserver.templates.chars.L2CharTemplate;
 
 public class L2DoorInstance extends L2Character
 {
@@ -185,7 +185,7 @@ public class L2DoorInstance extends L2Character
 		}
 	}
 	
-	public L2DoorInstance(int objectId, L2CharTemplate template, int doorId, String name, boolean unlockable)
+	public L2DoorInstance(int objectId, CharTemplate template, int doorId, String name, boolean unlockable)
 	{
 		super(objectId, template);
 		

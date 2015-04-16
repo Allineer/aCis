@@ -19,13 +19,13 @@ import java.util.logging.Level;
 
 import net.sf.l2j.Config;
 import net.sf.l2j.gameserver.instancemanager.SevenSigns;
+import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.model.itemcontainer.PcInventory;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.ActionFailed;
 import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
-import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
 
 /**
  * Dawn/Dusk Seven Signs Priest Instance
@@ -33,7 +33,7 @@ import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
  */
 public class L2SignsPriestInstance extends L2NpcInstance
 {
-	public L2SignsPriestInstance(int objectId, L2NpcTemplate template)
+	public L2SignsPriestInstance(int objectId, NpcTemplate template)
 	{
 		super(objectId, template);
 	}

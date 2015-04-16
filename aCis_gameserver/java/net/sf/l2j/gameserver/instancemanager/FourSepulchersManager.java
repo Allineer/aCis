@@ -39,11 +39,11 @@ import net.sf.l2j.gameserver.model.actor.instance.L2DoorInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2SepulcherMonsterInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2SepulcherNpcInstance;
+import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.model.quest.QuestState;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
-import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
 import net.sf.l2j.gameserver.util.Util;
 import net.sf.l2j.util.Rnd;
 
@@ -415,7 +415,7 @@ public class FourSepulchersManager
 			if (i < 31921 || i > 31924)
 				continue;
 			
-			final L2NpcTemplate template = NpcTable.getInstance().getTemplate(i);
+			final NpcTemplate template = NpcTable.getInstance().getTemplate(i);
 			if (template == null)
 				continue;
 			
@@ -564,7 +564,7 @@ public class FourSepulchersManager
 			
 			while (rset.next())
 			{
-				final L2NpcTemplate template = NpcTable.getInstance().getTemplate(rset.getInt("npc_templateid"));
+				final NpcTemplate template = NpcTable.getInstance().getTemplate(rset.getInt("npc_templateid"));
 				if (template != null)
 				{
 					final L2Spawn spawn = new L2Spawn(template);
@@ -599,7 +599,7 @@ public class FourSepulchersManager
 		{
 			try
 			{
-				final L2NpcTemplate template = NpcTable.getInstance().getTemplate(keyNpc.getValue());
+				final NpcTemplate template = NpcTable.getInstance().getTemplate(keyNpc.getValue());
 				if (template != null)
 				{
 					final L2Spawn spawn = new L2Spawn(template);
@@ -647,7 +647,7 @@ public class FourSepulchersManager
 				
 				while (rset2.next())
 				{
-					final L2NpcTemplate template = NpcTable.getInstance().getTemplate(rset2.getInt("npc_templateid"));
+					final NpcTemplate template = NpcTable.getInstance().getTemplate(rset2.getInt("npc_templateid"));
 					if (template != null)
 					{
 						final L2Spawn spawn = new L2Spawn(template);
@@ -707,7 +707,7 @@ public class FourSepulchersManager
 				
 				while (rset2.next())
 				{
-					final L2NpcTemplate template = NpcTable.getInstance().getTemplate(rset2.getInt("npc_templateid"));
+					final NpcTemplate template = NpcTable.getInstance().getTemplate(rset2.getInt("npc_templateid"));
 					if (template != null)
 					{
 						final L2Spawn spawn = new L2Spawn(template);
@@ -768,7 +768,7 @@ public class FourSepulchersManager
 				
 				while (rset2.next())
 				{
-					final L2NpcTemplate template = NpcTable.getInstance().getTemplate(rset2.getInt("npc_templateid"));
+					final NpcTemplate template = NpcTable.getInstance().getTemplate(rset2.getInt("npc_templateid"));
 					if (template != null)
 					{
 						final L2Spawn spawn = new L2Spawn(template);
@@ -830,7 +830,7 @@ public class FourSepulchersManager
 				
 				while (rset2.next())
 				{
-					final L2NpcTemplate template = NpcTable.getInstance().getTemplate(rset2.getInt("npc_templateid"));
+					final NpcTemplate template = NpcTable.getInstance().getTemplate(rset2.getInt("npc_templateid"));
 					if (template != null)
 					{
 						final L2Spawn spawn = new L2Spawn(template);
@@ -880,7 +880,7 @@ public class FourSepulchersManager
 		
 		for (int i = 0; i <= 3; i++)
 		{
-			final L2NpcTemplate template = NpcTable.getInstance().getTemplate(_shadowSpawnLoc[locNo][i][0]);
+			final NpcTemplate template = NpcTable.getInstance().getTemplate(_shadowSpawnLoc[locNo][i][0]);
 			if (template != null)
 			{
 				try
@@ -911,7 +911,7 @@ public class FourSepulchersManager
 		{
 			try
 			{
-				final L2NpcTemplate template = NpcTable.getInstance().getTemplate(victimNpc.getValue());
+				final NpcTemplate template = NpcTable.getInstance().getTemplate(victimNpc.getValue());
 				if (template != null)
 				{
 					final L2Spawn spawn = new L2Spawn(template);
@@ -1211,7 +1211,7 @@ public class FourSepulchersManager
 				{
 					try
 					{
-						L2NpcTemplate template = NpcTable.getInstance().getTemplate(18149);
+						NpcTemplate template = NpcTable.getInstance().getTemplate(18149);
 						if (template != null)
 						{
 							L2Spawn keyBoxMobSpawn = new L2Spawn(template);

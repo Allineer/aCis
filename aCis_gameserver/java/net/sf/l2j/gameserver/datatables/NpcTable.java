@@ -27,9 +27,9 @@ import net.sf.l2j.gameserver.model.L2DropData;
 import net.sf.l2j.gameserver.model.L2MinionData;
 import net.sf.l2j.gameserver.model.L2NpcAIData;
 import net.sf.l2j.gameserver.model.L2Skill;
+import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 import net.sf.l2j.gameserver.model.base.ClassId;
 import net.sf.l2j.gameserver.templates.StatsSet;
-import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
 import net.sf.l2j.gameserver.xmlfactory.XMLDocumentFactory;
 
 import org.w3c.dom.Document;
@@ -40,7 +40,7 @@ public class NpcTable
 {
 	private static Logger _log = Logger.getLogger(NpcTable.class.getName());
 	
-	private final Map<Integer, L2NpcTemplate> _npcs = new HashMap<>();
+	private final Map<Integer, NpcTemplate> _npcs = new HashMap<>();
 	
 	public static NpcTable getInstance()
 	{
@@ -103,7 +103,7 @@ public class NpcTable
 						}
 						
 						// Create the template with basic infos.
-						L2NpcTemplate template = new L2NpcTemplate(set);
+						NpcTemplate template = new NpcTemplate(set);
 						
 						// Categories : add missing categories.
 						for (Node cat = npc.getFirstChild(); cat != null; cat = cat.getNextSibling())
@@ -245,7 +245,7 @@ public class NpcTable
 		_log.info("NpcTable: Loaded " + _npcs.size() + " NPC templates.");
 	}
 	
-	public L2NpcTemplate getTemplate(int id)
+	public NpcTemplate getTemplate(int id)
 	{
 		return _npcs.get(id);
 	}
@@ -254,9 +254,9 @@ public class NpcTable
 	 * @param name to search.
 	 * @return the template list of NPCs for a given name.
 	 */
-	public L2NpcTemplate getTemplateByName(String name)
+	public NpcTemplate getTemplateByName(String name)
 	{
-		for (L2NpcTemplate npcTemplate : _npcs.values())
+		for (NpcTemplate npcTemplate : _npcs.values())
 		{
 			if (npcTemplate.getName().equalsIgnoreCase(name))
 				return npcTemplate;
@@ -268,12 +268,12 @@ public class NpcTable
 	 * @param lvls to search.
 	 * @return the template list of NPCs for a given level.
 	 */
-	public List<L2NpcTemplate> getAllOfLevel(int... lvls)
+	public List<NpcTemplate> getAllOfLevel(int... lvls)
 	{
-		final List<L2NpcTemplate> list = new ArrayList<>();
+		final List<NpcTemplate> list = new ArrayList<>();
 		for (int lvl : lvls)
 		{
-			for (L2NpcTemplate npcTemplate : _npcs.values())
+			for (NpcTemplate npcTemplate : _npcs.values())
 			{
 				if (npcTemplate.getLevel() == lvl)
 					list.add(npcTemplate);
@@ -286,12 +286,12 @@ public class NpcTable
 	 * @param lvls to search.
 	 * @return the template list of monsters for a given level.
 	 */
-	public List<L2NpcTemplate> getAllMonstersOfLevel(int... lvls)
+	public List<NpcTemplate> getAllMonstersOfLevel(int... lvls)
 	{
-		final List<L2NpcTemplate> list = new ArrayList<>();
+		final List<NpcTemplate> list = new ArrayList<>();
 		for (int lvl : lvls)
 		{
-			for (L2NpcTemplate npcTemplate : _npcs.values())
+			for (NpcTemplate npcTemplate : _npcs.values())
 			{
 				if ((npcTemplate.getLevel() == lvl) && npcTemplate.isType("L2Monster"))
 					list.add(npcTemplate);
@@ -304,12 +304,12 @@ public class NpcTable
 	 * @param letters of all NPCs templates which its name start with.
 	 * @return the template list of NPCs for a given letter.
 	 */
-	public List<L2NpcTemplate> getAllNpcStartingWith(String... letters)
+	public List<NpcTemplate> getAllNpcStartingWith(String... letters)
 	{
-		final List<L2NpcTemplate> list = new ArrayList<>();
+		final List<NpcTemplate> list = new ArrayList<>();
 		for (String letter : letters)
 		{
-			for (L2NpcTemplate npcTemplate : _npcs.values())
+			for (NpcTemplate npcTemplate : _npcs.values())
 			{
 				if (npcTemplate.getName().startsWith(letter) && npcTemplate.isType("L2Npc"))
 					list.add(npcTemplate);
@@ -322,12 +322,12 @@ public class NpcTable
 	 * @param classTypes to search.
 	 * @return the template list of NPCs for a given class.
 	 */
-	public List<L2NpcTemplate> getAllNpcOfClassType(String... classTypes)
+	public List<NpcTemplate> getAllNpcOfClassType(String... classTypes)
 	{
-		final List<L2NpcTemplate> list = new ArrayList<>();
+		final List<NpcTemplate> list = new ArrayList<>();
 		for (String classType : classTypes)
 		{
-			for (L2NpcTemplate npcTemplate : _npcs.values())
+			for (NpcTemplate npcTemplate : _npcs.values())
 			{
 				if (npcTemplate.isType(classType))
 					list.add(npcTemplate);
@@ -336,7 +336,7 @@ public class NpcTable
 		return list;
 	}
 	
-	public Collection<L2NpcTemplate> getAllNpcs()
+	public Collection<NpcTemplate> getAllNpcs()
 	{
 		return _npcs.values();
 	}

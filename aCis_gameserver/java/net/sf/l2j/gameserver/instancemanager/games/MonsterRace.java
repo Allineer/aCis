@@ -33,13 +33,13 @@ import net.sf.l2j.gameserver.ThreadPoolManager;
 import net.sf.l2j.gameserver.datatables.NpcTable;
 import net.sf.l2j.gameserver.idfactory.IdFactory;
 import net.sf.l2j.gameserver.model.actor.L2Npc;
+import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 import net.sf.l2j.gameserver.model.zone.type.L2DerbyTrackZone;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.DeleteObject;
 import net.sf.l2j.gameserver.network.serverpackets.MonRaceInfo;
 import net.sf.l2j.gameserver.network.serverpackets.PlaySound;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
-import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
 import net.sf.l2j.gameserver.util.Broadcast;
 import net.sf.l2j.util.Rnd;
 
@@ -312,7 +312,7 @@ public class MonsterRace
 		{
 			try
 			{
-				L2NpcTemplate template = NpcTable.getInstance().getTemplate(_npcTemplates.get(i));
+				NpcTemplate template = NpcTable.getInstance().getTemplate(_npcTemplates.get(i));
 				_constructor = Class.forName("net.sf.l2j.gameserver.model.actor.instance." + template.getType() + "Instance").getConstructors()[0];
 				int objectId = IdFactory.getInstance().getNextId();
 				_monsters[i] = (L2Npc) _constructor.newInstance(objectId, template);

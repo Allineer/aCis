@@ -22,12 +22,12 @@ import net.sf.l2j.gameserver.instancemanager.games.MonsterRace;
 import net.sf.l2j.gameserver.instancemanager.games.MonsterRace.HistoryInfo;
 import net.sf.l2j.gameserver.instancemanager.games.MonsterRace.RaceState;
 import net.sf.l2j.gameserver.model.actor.knownlist.RaceManagerKnownList;
+import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.ActionFailed;
 import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
-import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
 import net.sf.l2j.util.StringUtil;
 
 public class L2RaceManagerInstance extends L2NpcInstance
@@ -44,7 +44,7 @@ public class L2RaceManagerInstance extends L2NpcInstance
 		100000
 	};
 	
-	public L2RaceManagerInstance(int objectId, L2NpcTemplate template)
+	public L2RaceManagerInstance(int objectId, NpcTemplate template)
 	{
 		super(objectId, template);
 	}

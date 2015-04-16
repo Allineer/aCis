@@ -32,13 +32,13 @@ import net.sf.l2j.gameserver.model.VehiclePathPoint;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.actor.knownlist.VehicleKnownList;
 import net.sf.l2j.gameserver.model.actor.stat.VehicleStat;
+import net.sf.l2j.gameserver.model.actor.template.CharTemplate;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.model.item.kind.Weapon;
 import net.sf.l2j.gameserver.model.zone.ZoneId;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.InventoryUpdate;
 import net.sf.l2j.gameserver.network.serverpackets.L2GameServerPacket;
-import net.sf.l2j.gameserver.templates.chars.L2CharTemplate;
 import net.sf.l2j.gameserver.util.Util;
 
 /**
@@ -54,7 +54,7 @@ public abstract class L2Vehicle extends L2Character
 	protected VehiclePathPoint[] _currentPath = null;
 	protected int _runState = 0;
 	
-	public L2Vehicle(int objectId, L2CharTemplate template)
+	public L2Vehicle(int objectId, CharTemplate template)
 	{
 		super(objectId, template);
 	}

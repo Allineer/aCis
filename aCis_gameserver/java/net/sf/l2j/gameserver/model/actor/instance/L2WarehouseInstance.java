@@ -18,6 +18,7 @@ import java.util.Map;
 
 import net.sf.l2j.Config;
 import net.sf.l2j.gameserver.model.L2Clan;
+import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 import net.sf.l2j.gameserver.model.itemcontainer.PcFreight;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.ActionFailed;
@@ -25,11 +26,10 @@ import net.sf.l2j.gameserver.network.serverpackets.EnchantResult;
 import net.sf.l2j.gameserver.network.serverpackets.PackageToList;
 import net.sf.l2j.gameserver.network.serverpackets.WareHouseDepositList;
 import net.sf.l2j.gameserver.network.serverpackets.WareHouseWithdrawalList;
-import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
 
 public class L2WarehouseInstance extends L2NpcInstance
 {
-	public L2WarehouseInstance(int objectId, L2NpcTemplate template)
+	public L2WarehouseInstance(int objectId, NpcTemplate template)
 	{
 		super(objectId, template);
 	}

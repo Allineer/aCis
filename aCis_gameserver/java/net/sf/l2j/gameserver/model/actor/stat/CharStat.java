@@ -228,7 +228,7 @@ public class CharStat
 		if (_activeChar == null)
 			return 1;
 		
-		return (int) calcStat(Stats.MAX_CP, _activeChar.getTemplate().getBaseCpMax(), null, null);
+		return (int) calcStat(Stats.MAX_CP, 0, null, null);
 	}
 	
 	public int getMaxMp()

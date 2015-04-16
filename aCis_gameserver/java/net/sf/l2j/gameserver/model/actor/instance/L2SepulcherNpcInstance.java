@@ -24,6 +24,7 @@ import net.sf.l2j.gameserver.datatables.DoorTable;
 import net.sf.l2j.gameserver.instancemanager.FourSepulchersManager;
 import net.sf.l2j.gameserver.model.L2World;
 import net.sf.l2j.gameserver.model.actor.L2Npc;
+import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.model.quest.Quest;
 import net.sf.l2j.gameserver.model.quest.QuestEventType;
@@ -32,7 +33,6 @@ import net.sf.l2j.gameserver.network.serverpackets.ActionFailed;
 import net.sf.l2j.gameserver.network.serverpackets.CreatureSay;
 import net.sf.l2j.gameserver.network.serverpackets.MoveToPawn;
 import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
-import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
 import net.sf.l2j.gameserver.util.Util;
 import net.sf.l2j.util.Rnd;
 
@@ -48,7 +48,7 @@ public class L2SepulcherNpcInstance extends L2NpcInstance
 	private final static String HTML_FILE_PATH = "data/html/sepulchers/";
 	private final static int HALLS_KEY = 7260;
 	
-	public L2SepulcherNpcInstance(int objectID, L2NpcTemplate template)
+	public L2SepulcherNpcInstance(int objectID, NpcTemplate template)
 	{
 		super(objectID, template);
 		setShowSummonAnimation(true);

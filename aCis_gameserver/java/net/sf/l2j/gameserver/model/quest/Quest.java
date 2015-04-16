@@ -41,6 +41,7 @@ import net.sf.l2j.gameserver.model.Location;
 import net.sf.l2j.gameserver.model.actor.L2Character;
 import net.sf.l2j.gameserver.model.actor.L2Npc;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
+import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.model.item.kind.Item;
 import net.sf.l2j.gameserver.model.zone.L2ZoneType;
@@ -48,7 +49,6 @@ import net.sf.l2j.gameserver.network.serverpackets.ActionFailed;
 import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
 import net.sf.l2j.gameserver.scripting.ManagedScript;
 import net.sf.l2j.gameserver.scripting.ScriptManager;
-import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
 import net.sf.l2j.util.Rnd;
 
 /**
@@ -591,7 +591,7 @@ public class Quest extends ManagedScript
 			return;
 		
 		// Get quest timers for this timer type.
-		List<QuestTimer> timers = _eventTimers.get(timer.getName().hashCode());
+		List<QuestTimer> timers = _eventTimers.get(timer.toString().hashCode());
 		
 		// Timer list does not exists or is empty, return.
 		if (timers == null || timers.isEmpty())
@@ -646,7 +646,7 @@ public class Quest extends ManagedScript
 		L2Npc result = null;
 		try
 		{
-			L2NpcTemplate template = NpcTable.getInstance().getTemplate(npcId);
+			NpcTemplate template = NpcTable.getInstance().getTemplate(npcId);
 			if (template != null)
 			{
 				// Sometimes, even if the quest script specifies some xyz (for example npc.getX() etc) by the time the code
@@ -809,7 +809,7 @@ public class Quest extends ManagedScript
 	{
 		try
 		{
-			final L2NpcTemplate t = NpcTable.getInstance().getTemplate(npcId);
+			final NpcTemplate t = NpcTable.getInstance().getTemplate(npcId);
 			if (t != null)
 				t.addQuestEvent(eventType, this);
 		}

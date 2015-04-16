@@ -46,6 +46,7 @@ import net.sf.l2j.gameserver.model.actor.L2Character;
 import net.sf.l2j.gameserver.model.actor.L2Summon;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance.TimeStamp;
 import net.sf.l2j.gameserver.model.actor.stat.PetStat;
+import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.model.item.kind.Item;
 import net.sf.l2j.gameserver.model.item.kind.Weapon;
@@ -63,7 +64,6 @@ import net.sf.l2j.gameserver.network.serverpackets.StatusUpdate;
 import net.sf.l2j.gameserver.network.serverpackets.StopMove;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 import net.sf.l2j.gameserver.taskmanager.DecayTaskManager;
-import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
 import net.sf.l2j.gameserver.util.Util;
 import net.sf.l2j.util.Rnd;
 
@@ -216,7 +216,7 @@ public class L2PetInstance extends L2Summon
 		}
 	}
 	
-	public synchronized static L2PetInstance spawnPet(L2NpcTemplate template, L2PcInstance owner, ItemInstance control)
+	public synchronized static L2PetInstance spawnPet(NpcTemplate template, L2PcInstance owner, ItemInstance control)
 	{
 		if (L2World.getInstance().getPet(owner.getObjectId()) != null)
 			return null; // owner has a pet listed in world
@@ -232,7 +232,7 @@ public class L2PetInstance extends L2Summon
 		return pet;
 	}
 	
-	public L2PetInstance(int objectId, L2NpcTemplate template, L2PcInstance owner, ItemInstance control)
+	public L2PetInstance(int objectId, NpcTemplate template, L2PcInstance owner, ItemInstance control)
 	{
 		super(objectId, template, owner);
 		
@@ -729,7 +729,7 @@ public class L2PetInstance extends L2Summon
 		return _mountable;
 	}
 	
-	private static L2PetInstance restore(ItemInstance control, L2NpcTemplate template, L2PcInstance owner)
+	private static L2PetInstance restore(ItemInstance control, NpcTemplate template, L2PcInstance owner)
 	{
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
 		{

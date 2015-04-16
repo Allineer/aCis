@@ -44,6 +44,7 @@ import net.sf.l2j.gameserver.model.SpawnListener;
 import net.sf.l2j.gameserver.model.actor.L2Npc;
 import net.sf.l2j.gameserver.model.actor.instance.L2FestivalMonsterInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
+import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 import net.sf.l2j.gameserver.model.base.Experience;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.network.SystemMessageId;
@@ -52,7 +53,6 @@ import net.sf.l2j.gameserver.network.serverpackets.CreatureSay;
 import net.sf.l2j.gameserver.network.serverpackets.MagicSkillUse;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 import net.sf.l2j.gameserver.templates.StatsSet;
-import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
 import net.sf.l2j.gameserver.util.Util;
 import net.sf.l2j.util.Rnd;
 
@@ -4454,7 +4454,7 @@ public class SevenSignsFestival implements SpawnListener
 				}
 			}
 			
-			L2NpcTemplate witchTemplate = NpcTable.getInstance().getTemplate(_witchSpawn._npcId);
+			NpcTemplate witchTemplate = NpcTable.getInstance().getTemplate(_witchSpawn._npcId);
 			
 			// Spawn the festival witch for this arena
 			try
@@ -4583,7 +4583,7 @@ public class SevenSignsFestival implements SpawnListener
 					if (spawnType == 1 && isFestivalArcher(currSpawn._npcId))
 						continue;
 					
-					L2NpcTemplate npcTemplate = NpcTable.getInstance().getTemplate(currSpawn._npcId);
+					NpcTemplate npcTemplate = NpcTable.getInstance().getTemplate(currSpawn._npcId);
 					
 					try
 					{

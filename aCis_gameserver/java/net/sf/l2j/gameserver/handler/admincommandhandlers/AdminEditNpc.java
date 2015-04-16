@@ -30,10 +30,10 @@ import net.sf.l2j.gameserver.model.L2TradeList.L2TradeItem;
 import net.sf.l2j.gameserver.model.actor.L2Npc;
 import net.sf.l2j.gameserver.model.actor.instance.L2MerchantInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
+import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 import net.sf.l2j.gameserver.model.quest.Quest;
 import net.sf.l2j.gameserver.model.quest.QuestEventType;
 import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
-import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
 import net.sf.l2j.gameserver.templates.skills.L2SkillType;
 import net.sf.l2j.util.StringUtil;
 
@@ -209,7 +209,7 @@ public class AdminEditNpc implements IAdminCommandHandler
 	
 	private static void showNpcDropList(L2PcInstance activeChar, int npcId, int page)
 	{
-		L2NpcTemplate npcData = NpcTable.getInstance().getTemplate(npcId);
+		NpcTemplate npcData = NpcTable.getInstance().getTemplate(npcId);
 		if (npcData == null)
 		{
 			activeChar.sendMessage("Unknown npc template id " + npcId);
@@ -319,7 +319,7 @@ public class AdminEditNpc implements IAdminCommandHandler
 	
 	private static void showNpcSkillList(L2PcInstance activeChar, int npcId, int page)
 	{
-		final L2NpcTemplate npcData = NpcTable.getInstance().getTemplate(npcId);
+		final NpcTemplate npcData = NpcTable.getInstance().getTemplate(npcId);
 		if (npcData == null)
 		{
 			activeChar.sendMessage("Template id unknown: " + npcId);
@@ -370,7 +370,7 @@ public class AdminEditNpc implements IAdminCommandHandler
 	
 	private static void showScriptsList(L2PcInstance activeChar, int npcId)
 	{
-		L2NpcTemplate npcData = NpcTable.getInstance().getTemplate(npcId);
+		NpcTemplate npcData = NpcTable.getInstance().getTemplate(npcId);
 		if (npcData == null)
 		{
 			activeChar.sendMessage("Unknown npc template id " + npcId);

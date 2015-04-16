@@ -117,6 +117,7 @@ import net.sf.l2j.gameserver.model.actor.knownlist.PcKnownList;
 import net.sf.l2j.gameserver.model.actor.position.PcPosition;
 import net.sf.l2j.gameserver.model.actor.stat.PcStat;
 import net.sf.l2j.gameserver.model.actor.status.PcStatus;
+import net.sf.l2j.gameserver.model.actor.template.PcTemplate;
 import net.sf.l2j.gameserver.model.base.ClassId;
 import net.sf.l2j.gameserver.model.base.ClassLevel;
 import net.sf.l2j.gameserver.model.base.Experience;
@@ -241,7 +242,6 @@ import net.sf.l2j.gameserver.taskmanager.AttackStanceTaskManager;
 import net.sf.l2j.gameserver.taskmanager.PvpFlagTaskManager;
 import net.sf.l2j.gameserver.taskmanager.TakeBreakTaskManager;
 import net.sf.l2j.gameserver.taskmanager.WaterTaskManager;
-import net.sf.l2j.gameserver.templates.chars.L2PcTemplate;
 import net.sf.l2j.gameserver.templates.skills.L2EffectFlag;
 import net.sf.l2j.gameserver.templates.skills.L2EffectType;
 import net.sf.l2j.gameserver.templates.skills.L2SkillType;
@@ -635,8 +635,6 @@ public final class L2PcInstance extends L2Playable
 	private static final int FALLING_VALIDATION_DELAY = 10000;
 	private volatile long _fallingTimestamp = 0;
 	
-	private int _herbstask = 0;
-	
 	ScheduledFuture<?> _shortBuffTask = null;
 	private int _shortBuffTaskSkillId = 0;
 	
@@ -648,30 +646,6 @@ public final class L2PcInstance extends L2Playable
 	private final SummonRequest _summonRequest = new SummonRequest();
 	
 	private final GatesRequest _gatesRequest = new GatesRequest();
-	
-	private class HerbTask implements Runnable
-	{
-		private final String _process;
-		private final int _itemId;
-		private final int _count;
-		private final L2Object _reference;
-		private final boolean _sendMessage;
-		
-		HerbTask(String process, int itemId, int count, L2Object reference, boolean sendMessage)
-		{
-			_process = process;
-			_itemId = itemId;
-			_count = count;
-			_reference = reference;
-			_sendMessage = sendMessage;
-		}
-		
-		@Override
-		public void run()
-		{
-			addItem(_process, _itemId, _count, _reference, _sendMessage);
-		}
-	}
 	
 	protected class ShortBuffTask implements Runnable
 	{
@@ -755,7 +729,7 @@ public final class L2PcInstance extends L2Playable
 	 * @param sex The sex type Identifier of the L2PcInstance
 	 * @return The L2PcInstance added to the database or null
 	 */
-	public static L2PcInstance create(int objectId, L2PcTemplate template, String accountName, String name, byte hairStyle, byte hairColor, byte face, boolean sex)
+	public static L2PcInstance create(int objectId, PcTemplate template, String accountName, String name, byte hairStyle, byte hairColor, byte face, boolean sex)
 	{
 		// Create a new L2PcInstance with an account name
 		PcAppearance app = new PcAppearance(face, hairColor, hairStyle, sex);
@@ -853,7 +827,7 @@ public final class L2PcInstance extends L2Playable
 	 * @param accountName The name of the account including this L2PcInstance
 	 * @param app The PcAppearance of the L2PcInstance
 	 */
-	private L2PcInstance(int objectId, L2PcTemplate template, String accountName, PcAppearance app)
+	private L2PcInstance(int objectId, PcTemplate template, String accountName, PcAppearance app)
 	{
 		super(objectId, template);
 		super.initCharStatusUpdateValues();
@@ -958,16 +932,16 @@ public final class L2PcInstance extends L2Playable
 	/**
 	 * @return the base L2PcTemplate link to the L2PcInstance.
 	 */
-	public final L2PcTemplate getBaseTemplate()
+	public final PcTemplate getBaseTemplate()
 	{
 		return CharTemplateTable.getInstance().getTemplate(_baseClass);
 	}
 	
 	/** Return the L2PcTemplate link to the L2PcInstance. */
 	@Override
-	public final L2PcTemplate getTemplate()
+	public final PcTemplate getTemplate()
 	{
-		return (L2PcTemplate) super.getTemplate();
+		return (PcTemplate) super.getTemplate();
 	}
 	
 	public void setTemplate(ClassId newclass)
@@ -1844,7 +1818,7 @@ public final class L2PcInstance extends L2Playable
 	 */
 	public ClassId getClassId()
 	{
-		return getTemplate().classId;
+		return getTemplate().getClassId();
 	}
 	
 	/**
@@ -2117,10 +2091,9 @@ public final class L2PcInstance extends L2Playable
 	public Race getRace()
 	{
 		if (!isSubClassActive())
-			return getTemplate().race;
+			return getTemplate().getRace();
 		
-		L2PcTemplate charTemp = CharTemplateTable.getInstance().getTemplate(_baseClass);
-		return charTemp.race;
+		return CharTemplateTable.getInstance().getTemplate(_baseClass).getRace();
 	}
 	
 	public L2Radar getRadar()
@@ -2711,23 +2684,11 @@ public final class L2PcInstance extends L2Playable
 			// If the item is herb type, dont add it to inventory.
 			if (item.getItemType() == EtcItemType.HERB)
 			{
-				if (!isCastingNow())
-				{
-					final ItemInstance herb = new ItemInstance(0, itemId);
-					
-					final IItemHandler handler = ItemHandler.getInstance().getItemHandler(herb.getEtcItem());
-					if (handler != null)
-					{
-						handler.useItem(this, herb, false);
-						if (_herbstask >= 100)
-							_herbstask -= 100;
-					}
-				}
-				else
-				{
-					_herbstask += 100;
-					ThreadPoolManager.getInstance().scheduleAi(new HerbTask(process, itemId, count, reference, sendMessage), _herbstask);
-				}
+				final ItemInstance herb = new ItemInstance(0, itemId);
+				
+				final IItemHandler handler = ItemHandler.getInstance().getItemHandler(herb.getEtcItem());
+				if (handler != null)
+					handler.useItem(this, herb, false);
 			}
 			else
 			{
@@ -5521,7 +5482,7 @@ public final class L2PcInstance extends L2Playable
 			while (rset.next())
 			{
 				final int activeClassId = rset.getInt("classid");
-				final L2PcTemplate template = CharTemplateTable.getInstance().getTemplate(activeClassId);
+				final PcTemplate template = CharTemplateTable.getInstance().getTemplate(activeClassId);
 				final PcAppearance app = new PcAppearance(rset.getByte("face"), rset.getByte("hairColor"), rset.getByte("hairStyle"), rset.getInt("sex") != 0);
 				
 				player = new L2PcInstance(objectId, template, rset.getString("account_name"), app);
@@ -8509,7 +8470,7 @@ public final class L2PcInstance extends L2Playable
 	{
 		_activeClass = classId;
 		
-		L2PcTemplate t = CharTemplateTable.getInstance().getTemplate(classId);
+		PcTemplate t = CharTemplateTable.getInstance().getTemplate(classId);
 		
 		if (t == null)
 		{
@@ -8663,7 +8624,7 @@ public final class L2PcInstance extends L2Playable
 		if (!isDead() && !_isInWater)
 		{
 			_isInWater = true;
-			int time = (int) calcStat(Stats.BREATH, 60000, this, null);
+			final int time = (int) calcStat(Stats.BREATH, 60000 * getRace().getBreathMultiplier(), this, null);
 			
 			sendPacket(new SetupGauge(2, time));
 			WaterTaskManager.getInstance().add(this, System.currentTimeMillis() + time);

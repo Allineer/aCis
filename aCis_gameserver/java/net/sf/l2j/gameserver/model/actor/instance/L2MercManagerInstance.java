@@ -20,9 +20,9 @@ import net.sf.l2j.Config;
 import net.sf.l2j.gameserver.TradeController;
 import net.sf.l2j.gameserver.model.L2Clan;
 import net.sf.l2j.gameserver.model.L2TradeList;
+import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 import net.sf.l2j.gameserver.network.serverpackets.BuyList;
 import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
-import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
 
 public final class L2MercManagerInstance extends L2NpcInstance
 {
@@ -30,7 +30,7 @@ public final class L2MercManagerInstance extends L2NpcInstance
 	private static final int COND_BUSY_BECAUSE_OF_SIEGE = 1;
 	private static final int COND_OWNER = 2;
 	
-	public L2MercManagerInstance(int objectId, L2NpcTemplate template)
+	public L2MercManagerInstance(int objectId, NpcTemplate template)
 	{
 		super(objectId, template);
 	}

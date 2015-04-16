@@ -63,6 +63,8 @@ import net.sf.l2j.gameserver.model.actor.knownlist.CharKnownList;
 import net.sf.l2j.gameserver.model.actor.position.CharPosition;
 import net.sf.l2j.gameserver.model.actor.stat.CharStat;
 import net.sf.l2j.gameserver.model.actor.status.CharStatus;
+import net.sf.l2j.gameserver.model.actor.template.CharTemplate;
+import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 import net.sf.l2j.gameserver.model.holder.SkillUseHolder;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.model.item.kind.Armor;
@@ -115,8 +117,6 @@ import net.sf.l2j.gameserver.skills.funcs.FuncPAtkMod;
 import net.sf.l2j.gameserver.skills.funcs.FuncPAtkSpeed;
 import net.sf.l2j.gameserver.skills.funcs.FuncPDefMod;
 import net.sf.l2j.gameserver.taskmanager.AttackStanceTaskManager;
-import net.sf.l2j.gameserver.templates.chars.L2CharTemplate;
-import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
 import net.sf.l2j.gameserver.templates.skills.L2EffectFlag;
 import net.sf.l2j.gameserver.templates.skills.L2EffectType;
 import net.sf.l2j.gameserver.templates.skills.L2SkillType;
@@ -161,7 +161,7 @@ public abstract class L2Character extends L2Object
 	
 	private CharStat _stat;
 	private CharStatus _status;
-	private L2CharTemplate _template; // The link on the L2CharTemplate object containing generic and static properties
+	private CharTemplate _template; // The link on the L2CharTemplate object containing generic and static properties
 	private CharKnownList _knownList;
 	
 	private String _title;
@@ -206,7 +206,7 @@ public abstract class L2Character extends L2Object
 	 * @param objectId Identifier of the object to initialized
 	 * @param template The L2CharTemplate to apply to the object
 	 */
-	public L2Character(int objectId, L2CharTemplate template)
+	public L2Character(int objectId, CharTemplate template)
 	{
 		super(objectId);
 		initKnownList();
@@ -221,7 +221,7 @@ public abstract class L2Character extends L2Object
 		
 		if (this instanceof L2Npc || this instanceof L2Summon)
 		{
-			_skills.putAll(((L2NpcTemplate) template).getSkills());
+			_skills.putAll(((NpcTemplate) template).getSkills());
 			
 			if (!_skills.isEmpty())
 			{
@@ -2062,7 +2062,7 @@ public abstract class L2Character extends L2Object
 		return (CharPosition) super.getPosition();
 	}
 	
-	public L2CharTemplate getTemplate()
+	public CharTemplate getTemplate()
 	{
 		return _template;
 	}
@@ -2074,7 +2074,7 @@ public abstract class L2Character extends L2Object
 	 * L2Character is spawned, server just create a link between the instance and the template This link is stored in <B>_template</B>
 	 * @param template The template to set up.
 	 */
-	protected final void setTemplate(L2CharTemplate template)
+	protected final void setTemplate(CharTemplate template)
 	{
 		_template = template;
 	}

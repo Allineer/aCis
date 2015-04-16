@@ -44,6 +44,7 @@ import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2SummonInstance;
 import net.sf.l2j.gameserver.model.actor.knownlist.AttackableKnownList;
 import net.sf.l2j.gameserver.model.actor.status.AttackableStatus;
+import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.model.item.type.EtcItemType;
 import net.sf.l2j.gameserver.model.quest.Quest;
@@ -52,7 +53,6 @@ import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.clientpackets.Say2;
 import net.sf.l2j.gameserver.network.serverpackets.CreatureSay;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
-import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
 import net.sf.l2j.gameserver.util.Util;
 import net.sf.l2j.util.Rnd;
 
@@ -314,7 +314,7 @@ public class L2Attackable extends L2Npc
 	 * @param objectId Identifier of the object to initialized
 	 * @param template Template to apply to the NPC
 	 */
-	public L2Attackable(int objectId, L2NpcTemplate template)
+	public L2Attackable(int objectId, NpcTemplate template)
 	{
 		super(objectId, template);
 	}
@@ -1287,7 +1287,7 @@ public class L2Attackable extends L2Npc
 		doItemDrop(getTemplate(), mainDamageDealer);
 	}
 	
-	public void doItemDrop(L2NpcTemplate npcTemplate, L2Character mainDamageDealer)
+	public void doItemDrop(NpcTemplate npcTemplate, L2Character mainDamageDealer)
 	{
 		if (mainDamageDealer == null)
 			return;

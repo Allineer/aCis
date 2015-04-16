@@ -25,6 +25,7 @@ import net.sf.l2j.gameserver.instancemanager.CoupleManager;
 import net.sf.l2j.gameserver.model.L2Skill;
 import net.sf.l2j.gameserver.model.L2World;
 import net.sf.l2j.gameserver.model.actor.L2Npc;
+import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 import net.sf.l2j.gameserver.model.entity.Couple;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.network.serverpackets.ActionFailed;
@@ -32,14 +33,13 @@ import net.sf.l2j.gameserver.network.serverpackets.ConfirmDlg;
 import net.sf.l2j.gameserver.network.serverpackets.MagicSkillUse;
 import net.sf.l2j.gameserver.network.serverpackets.MoveToPawn;
 import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
-import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
 
 /**
  * @author evill33t & squeezed, rework Tryskell
  */
 public class L2WeddingManagerInstance extends L2NpcInstance
 {
-	public L2WeddingManagerInstance(int objectId, L2NpcTemplate template)
+	public L2WeddingManagerInstance(int objectId, NpcTemplate template)
 	{
 		super(objectId, template);
 	}

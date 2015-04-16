@@ -38,7 +38,7 @@ import net.sf.l2j.gameserver.idfactory.IdFactory;
 import net.sf.l2j.gameserver.model.L2Spawn;
 import net.sf.l2j.gameserver.model.Location;
 import net.sf.l2j.gameserver.model.actor.L2Npc;
-import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
+import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 import net.sf.l2j.util.Rnd;
 
 /**
@@ -413,7 +413,7 @@ public class AutoSpawnManager
 				final int heading = locationList[locationIndex].getHeading();
 				
 				// Fetch the template for this NPC ID and create a new spawn.
-				L2NpcTemplate npcTemp = NpcTable.getInstance().getTemplate(spawnInst.getNpcId());
+				NpcTemplate npcTemp = NpcTable.getInstance().getTemplate(spawnInst.getNpcId());
 				if (npcTemp == null)
 				{
 					_log.warning("Couldnt find npcId: " + spawnInst.getNpcId() + ".");

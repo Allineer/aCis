@@ -31,10 +31,10 @@ import net.sf.l2j.gameserver.model.L2Party;
 import net.sf.l2j.gameserver.model.L2Spawn;
 import net.sf.l2j.gameserver.model.actor.L2Npc;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
+import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 import net.sf.l2j.gameserver.model.entity.DimensionalRift;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
-import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
 import net.sf.l2j.gameserver.xmlfactory.XMLDocumentFactory;
 import net.sf.l2j.util.Rnd;
 
@@ -114,7 +114,7 @@ public class DimensionalRiftManager
 											int delay = Integer.parseInt(attrs.getNamedItem("delay").getNodeValue());
 											int count = Integer.parseInt(attrs.getNamedItem("count").getNodeValue());
 											
-											L2NpcTemplate template = NpcTable.getInstance().getTemplate(mobId);
+											NpcTemplate template = NpcTable.getInstance().getTemplate(mobId);
 											if (template == null)
 												_log.log(Level.WARNING, "Template " + mobId + " not found!");
 											if (!_rooms.containsKey(type))
