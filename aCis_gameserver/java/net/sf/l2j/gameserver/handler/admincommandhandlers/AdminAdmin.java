@@ -44,16 +44,16 @@ import net.sf.l2j.gameserver.scripting.L2ScriptEngineManager;
 import net.sf.l2j.gameserver.util.Util;
 
 /**
- * This class handles following admin commands:<br>
- * <br>
- * - admin|admin1/admin2/admin3/admin4 = slots for the starting admin menus<br>
- * - gmliston/gmlistoff = includes/excludes active character from /gmlist results<br>
- * - silence = toggles private messages acceptance mode<br>
- * - tradeoff = toggles trade acceptance mode<br>
- * - reload = reloads specified component from multisell|skill|npc|htm|item|instancemanager<br>
- * - saveolymp = saves olympiad state manually<br>
- * - script_load = loads following script. MUSTN'T be used instead of //reload quest !<br>
- * - manualhero = cycles olympiad and calculate new heroes.
+ * This class handles following admin commands:
+ * <ul>
+ * <li>admin/admin1/admin2/admin3/admin4 : the different admin menus.</li>
+ * <li>gmlist : includes/excludes active character from /gmlist results.</li>
+ * <li>kill : handles the kill command.</li>
+ * <li>silence : toggles private messages acceptance mode.</li>
+ * <li>tradeoff : toggles trade acceptance mode.</li>
+ * <li>reload : reloads specified component.</li>
+ * <li>script_load : loads following script. MUSTN'T be used instead of //reload quest !</li>
+ * </ul>
  */
 public class AdminAdmin implements IAdminCommandHandler
 {
@@ -64,8 +64,7 @@ public class AdminAdmin implements IAdminCommandHandler
 		"admin_admin2",
 		"admin_admin3",
 		"admin_admin4",
-		"admin_gmliston",
-		"admin_gmlistoff",
+		"admin_gmlist",
 		"admin_kill",
 		"admin_silence",
 		"admin_tradeoff",
@@ -78,15 +77,12 @@ public class AdminAdmin implements IAdminCommandHandler
 	{
 		if (command.startsWith("admin_admin"))
 			showMainPage(activeChar, command);
-		else if (command.startsWith("admin_gmliston"))
+		else if (command.startsWith("admin_gmlist"))
 		{
-			GmListTable.getInstance().showGm(activeChar);
-			activeChar.sendMessage("Registered into GMList.");
-		}
-		else if (command.startsWith("admin_gmlistoff"))
-		{
-			GmListTable.getInstance().hideGm(activeChar);
-			activeChar.sendMessage("Removed from GMList.");
+			final boolean visibleStatus = GmListTable.getInstance().isGmVisible(activeChar);
+			
+			GmListTable.getInstance().showOrHideGm(activeChar, !visibleStatus);
+			activeChar.sendMessage((visibleStatus) ? "Registered into GMList." : "Removed from GMList.");
 		}
 		else if (command.startsWith("admin_kill"))
 		{

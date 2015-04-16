@@ -94,6 +94,17 @@ public final class GameTimeController extends Thread
 	}
 	
 	/**
+	 * @return a String forming the hour under four digits, seperated by a ":".
+	 */
+	public String getStringHour()
+	{
+		final int hour = getGameHour();
+		final int min = getGameMinute();
+		
+		return ((hour < 10) ? "0" : "") + hour + ":" + ((min < 10) ? "0" : "") + min;
+	}
+	
+	/**
 	 * The true GameTime tick. Directly taken from current time. This represents the tick of the time.
 	 * @return
 	 */

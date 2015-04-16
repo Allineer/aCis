@@ -7,8 +7,7 @@
 	<aCar name="admin_admin2" accessLevel="1" />
 	<aCar name="admin_admin3" accessLevel="1" />
 	<aCar name="admin_admin4" accessLevel="1" />
-	<aCar name="admin_gmliston" accessLevel="1" />
-	<aCar name="admin_gmlistoff" accessLevel="1" />
+	<aCar name="admin_gmlist" accessLevel="1" />
 	<aCar name="admin_kill" accessLevel="1" />
 	<aCar name="admin_silence" accessLevel="1" />
 	<aCar name="admin_tradeoff" accessLevel="1" />
@@ -253,8 +252,6 @@
 	
 	<!-- OLYMPIADS -->
 	<aCar name="admin_endoly" accessLevel="1" />
-	<aCar name="admin_manualhero" accessLevel="1" />
-	<aCar name="admin_saveoly" accessLevel="1" />
 	<aCar name="admin_sethero" accessLevel="1" />
 	<aCar name="admin_setnoble" accessLevel="1" />
 	

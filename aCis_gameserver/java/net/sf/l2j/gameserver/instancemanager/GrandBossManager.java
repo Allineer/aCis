@@ -112,7 +112,7 @@ public class GrandBossManager
 					zone = getZoneById(currentZoneId);
 				
 				if (zone != null)
-					zone.addAllowedPlayer(rset.getInt("player_id"));
+					zone.allowPlayerEntry(rset.getInt("player_id"));
 			}
 			
 			rset.close();

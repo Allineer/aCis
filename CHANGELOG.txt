@@ -1,4 +1,36 @@
 ================================================================================
+Changeset 335 @ 2014.12.27
+
+AdminCommands, UserCommands, GrandBosses && BossZone, Trainers, Misc
+
+AdminCommands
+    - Delete //manualhero, as it's a mirror command of //sethero.
+    - Delete //saveoly, it's already handled by task or shutdown.
+    - //gmliston && //gmlistoff are merged into //gmlist (which works as a toggle now).
+    - Cleanup AdminMaintenance (new Integer.intValue(), really?!).
+
+UserCommands
+    - Delete command id check (pointless).
+    - /time now benefits from GTC rework.
+
+GrandBosses && BossZone
+    - Baium town-teleporting waker issue is now fixed.
+    - All GrandBosses scripts are cleaned up:
+        - Variable names follow regular conventions (caps for static, etc).
+        - Uses of SpawnLocation instead of int[] when it's possible.
+        - Unification of variables names.
+    - Cleaned up L2BossZone, fixing issues with registered players - ty Hasha.
+
+Trainers
+    - Add support for trainers no skills HTMs. Ty ArhsGr && ErHard.
+    - Fixed numerous HTM typos, notably psychotic PNJ names (A single NPC had 3 different names...).
+    - Remove npcIds 30926, 30927 from L2Trainer.
+
+Misc
+    - Reworked few scripts.
+    - Added getStringHour() method into GTC, which return a formatted 00:00 String without having to go by a godamn Calendar object.
+
+================================================================================
 Changeset 334 @ 2014.12.25
 
 GeoEngine rework - a big thanks to Hasha for this awesome piece of code!
