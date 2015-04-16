@@ -21,10 +21,7 @@ import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.model.item.kind.Item;
 
-/**
- * dh (h dddhh dhhh d)
- */
-public final class WareHouseDepositList extends L2GameServerPacket
+public final class WarehouseDepositList extends L2GameServerPacket
 {
 	public static final int PRIVATE = 1;
 	public static final int CLAN = 2;
@@ -35,7 +32,7 @@ public final class WareHouseDepositList extends L2GameServerPacket
 	private final List<ItemInstance> _items;
 	private final int _whType;
 	
-	public WareHouseDepositList(L2PcInstance player, int type)
+	public WarehouseDepositList(L2PcInstance player, int type)
 	{
 		_whType = type;
 		_playerAdena = player.getAdena();

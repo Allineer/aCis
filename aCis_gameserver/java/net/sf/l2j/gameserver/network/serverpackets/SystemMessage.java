@@ -246,8 +246,6 @@ public final class SystemMessage extends L2GameServerPacket
 	
 	public final SystemMessage addSkillName(final L2Skill skill)
 	{
-		if (skill.getId() != skill.getDisplayId()) // custom skill - need nameId or smth like this.
-			return addString(skill.getName());
 		return addSkillName(skill.getId(), skill.getLevel());
 	}
 	

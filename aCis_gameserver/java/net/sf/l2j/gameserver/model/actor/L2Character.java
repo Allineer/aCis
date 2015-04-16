@@ -1330,7 +1330,7 @@ public abstract class L2Character extends L2Object
 		}
 		
 		// Get the Display Identifier for a skill that client can't display
-		int displayId = skill.getDisplayId();
+		int displayId = skill.getId();
 		
 		// Get the level of the skill
 		int level = skill.getLevel();

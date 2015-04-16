@@ -233,7 +233,18 @@ public class DoorTable
 								}
 							}
 							
-							putDoor(door);
+							_staticItems.put(door.getDoorId(), door);
+							
+							if (_regions.containsKey(door.getMapRegion()))
+								_regions.get(door.getMapRegion()).add(door);
+							else
+							{
+								final ArrayList<L2DoorInstance> region = new ArrayList<>();
+								region.add(door);
+								
+								_regions.put(door.getMapRegion(), region);
+							}
+							
 							door.spawnMe(door.getX(), door.getY(), door.getZ());
 						}
 					}
@@ -251,20 +262,6 @@ public class DoorTable
 	public L2DoorInstance getDoor(Integer id)
 	{
 		return _staticItems.get(id);
-	}
-	
-	public void putDoor(L2DoorInstance door)
-	{
-		_staticItems.put(door.getDoorId(), door);
-		
-		if (_regions.containsKey(door.getMapRegion()))
-			_regions.get(door.getMapRegion()).add(door);
-		else
-		{
-			final ArrayList<L2DoorInstance> region = new ArrayList<>();
-			region.add(door);
-			_regions.put(door.getMapRegion(), region);
-		}
 	}
 	
 	public Collection<L2DoorInstance> getDoors()

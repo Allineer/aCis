@@ -1502,11 +1502,11 @@
     <product id="1382" price="3380" />
     <product id="1381" price="3380" />
     <product id="8616" price="8125" />
-    <product id="8890" price="10010" />
-    <product id="8891" price="8775" />
-    <product id="8909" price="12480" />
-    <product id="8945" price="10530" />
-    <product id="8946" price="8125" />
+    <product id="8890" price="10010" count="1" restockDelay="60" />
+    <product id="8891" price="8775" count="1" restockDelay="60" />
+    <product id="8909" price="12480" count="1" restockDelay="60" />
+    <product id="8945" price="10530" count="1" restockDelay="60" />
+    <product id="8946" price="8125" count="1" restockDelay="60" />
   </buylist>
   <buylist id="47" npcId="30178">
     <product id="412" price="14605" />
@@ -4043,11 +4043,11 @@
     <product id="1530" price="2940" />
     <product id="3038" price="1860" />
     <product id="8616" price="7500" />
-    <product id="8890" price="9240" />
-    <product id="8891" price="8100" />
-    <product id="8909" price="11520" />
-    <product id="8945" price="9720" />
-    <product id="8946" price="7500" />
+    <product id="8890" price="9240" count="1" restockDelay="60" />
+    <product id="8891" price="8100" count="1" restockDelay="60" />
+    <product id="8909" price="11520" count="1" restockDelay="60" />
+    <product id="8945" price="9720" count="1" restockDelay="60" />
+    <product id="8946" price="7500" count="1" restockDelay="60" />
   </buylist>
   <buylist id="116" npcId="31263">
     <product id="4445" price="6120" />
@@ -4912,11 +4912,11 @@
     <product id="1530" price="2940" />
     <product id="3038" price="1860" />
     <product id="8616" price="7500" />
-    <product id="8890" price="9240" />
-    <product id="8891" price="8100" />
-    <product id="8909" price="11520" />
-    <product id="8945" price="9720" />
-    <product id="8946" price="7500" />
+    <product id="8890" price="9240" count="1" restockDelay="60" />
+    <product id="8891" price="8100" count="1" restockDelay="60" />
+    <product id="8909" price="11520" count="1" restockDelay="60" />
+    <product id="8945" price="9720" count="1" restockDelay="60" />
+    <product id="8946" price="7500" count="1" restockDelay="60" />
   </buylist>
   <buylist id="134" npcId="31307">
     <product id="4445" price="6120" />

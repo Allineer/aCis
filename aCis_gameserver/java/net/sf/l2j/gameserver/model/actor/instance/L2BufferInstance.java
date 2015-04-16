@@ -27,12 +27,11 @@ import net.sf.l2j.Config;
 import net.sf.l2j.gameserver.datatables.BufferTable;
 import net.sf.l2j.gameserver.datatables.SkillTable;
 import net.sf.l2j.gameserver.model.actor.L2Character;
-import net.sf.l2j.gameserver.model.actor.L2Npc;
 import net.sf.l2j.gameserver.model.actor.L2Summon;
 import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
 
-public class L2BufferInstance extends L2Npc
+public class L2BufferInstance extends L2NpcInstance
 {
 	public L2BufferInstance(int objectId, NpcTemplate template)
 	{
@@ -364,17 +363,17 @@ public class L2BufferInstance extends L2Npc
 			if (count == 0)
 				tb.append("<tr>");
 			
-			if (skillId <= 100)
-				tb.append("<td><button value=\"\" action=\"bypass -h npc_%objectId%_skillselect " + groupType + " " + schemeName + " " + skillId + "\" width=32 height=32 back=\"icon.skill00" + skillId + "\" fore=\"icon.skill00" + skillId + "\"></td>");
-			else if (skillId <= 1000)
-				tb.append("<td><button value=\"\" action=\"bypass -h npc_%objectId%_skillselect " + groupType + " " + schemeName + " " + skillId + "\" width=32 height=32 back=\"icon.skill0" + skillId + "\" fore=\"icon.skill0" + skillId + "\"></td>");
+			if (skillId < 100)
+				tb.append("<td><img src=\"icon.skill00" + skillId + "\" width=32 height=13></td><td width=180><font color=\"6e6e6a\"><a action=\"bypass -h npc_%objectId%_skillselect " + groupType + " " + schemeName + " " + skillId + "\">" + SkillTable.getInstance().getInfo(skillId, 1).getName() + "</a></font></td>");
+			else if (skillId < 1000)
+				tb.append("<td><img src=\"icon.skill0" + skillId + "\" width=32 height=13></td><td width=180><font color=\"6e6e6a\"><a action=\"bypass -h npc_%objectId%_skillselect " + groupType + " " + schemeName + " " + skillId + "\">" + SkillTable.getInstance().getInfo(skillId, 1).getName() + "</a></font></td>");
 			else
-				tb.append("<td><button value=\"\" action=\"bypass -h npc_%objectId%_skillselect " + groupType + " " + schemeName + " " + skillId + "\" width=32 height=32 back=\"icon.skill" + skillId + "\" fore=\"icon.skill" + skillId + "\"></td>");
+				tb.append("<td><img src=\"icon.skill" + skillId + "\" width=32 height=13></td><td width=180><font color=\"6e6e6a\"><a action=\"bypass -h npc_%objectId%_skillselect " + groupType + " " + schemeName + " " + skillId + "\">" + SkillTable.getInstance().getInfo(skillId, 1).getName() + "</a></font></td>");
 			
 			count++;
-			if (count == 6)
+			if (count == 2)
 			{
-				tb.append("</tr>");
+				tb.append("</tr><tr><td></td></tr>");
 				count = 0;
 			}
 		}
@@ -408,17 +407,17 @@ public class L2BufferInstance extends L2Npc
 			if (count == 0)
 				tb.append("<tr>");
 			
-			if (sk <= 100)
-				tb.append("<td><button value=\"\" action=\"bypass -h npc_%objectId%_skillunselect " + groupType + " " + schemeName + " " + sk + "\" width=32 height=32 back=\"icon.skill00" + sk + "\" fore=\"icon.skill00" + sk + "\"></td>");
-			else if (sk <= 1000)
-				tb.append("<td><button value=\"\" action=\"bypass -h npc_%objectId%_skillunselect " + groupType + " " + schemeName + " " + sk + "\" width=32 height=32 back=\"icon.skill0" + sk + "\" fore=\"icon.skill0" + sk + "\"></td>");
+			if (sk < 100)
+				tb.append("<td><img src=\"icon.skill00" + sk + "\" width=32 height=13></td><td width=180><font color=\"6e6e6a\"><a action=\"bypass -h npc_%objectId%_skillunselect " + groupType + " " + schemeName + " " + sk + "\">" + SkillTable.getInstance().getInfo(sk, 1).getName() + "</a></font></td>");
+			else if (sk < 1000)
+				tb.append("<td><img src=\"icon.skill0" + sk + "\" width=32 height=13></td><td width=180><font color=\"6e6e6a\"><a action=\"bypass -h npc_%objectId%_skillunselect " + groupType + " " + schemeName + " " + sk + "\">" + SkillTable.getInstance().getInfo(sk, 1).getName() + "</a></font></td>");
 			else
-				tb.append("<td><button value=\"\" action=\"bypass -h npc_%objectId%_skillunselect " + groupType + " " + schemeName + " " + sk + "\" width=32 height=32 back=\"icon.skill" + sk + "\" fore=\"icon.skill" + sk + "\"></td>");
+				tb.append("<td><img src=\"icon.skill" + sk + "\" width=32 height=13></td><td width=180><font color=\"6e6e6a\"><a action=\"bypass -h npc_%objectId%_skillunselect " + groupType + " " + schemeName + " " + sk + "\">" + SkillTable.getInstance().getInfo(sk, 1).getName() + "</a></font></td>");
 			
 			count++;
-			if (count == 6)
+			if (count == 2)
 			{
-				tb.append("</tr>");
+				tb.append("</tr><tr><td></td></tr>");
 				count = 0;
 			}
 		}

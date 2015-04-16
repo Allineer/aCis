@@ -205,11 +205,12 @@ public class GameServer
 		if (Config.GEODATA == 2)
 			PathFinding.getInstance();
 		
+		Util.printSection("World Bosses");
+		GrandBossManager.getInstance();
+		
 		Util.printSection("Zones");
 		ZoneManager.getInstance();
-		
-		Util.printSection("World Bosses");
-		GrandBossManager.init();
+		GrandBossManager.getInstance().initZones();
 		
 		Util.printSection("Castles");
 		CastleManager.getInstance().load();

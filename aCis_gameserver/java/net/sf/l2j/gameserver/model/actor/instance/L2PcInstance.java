@@ -5539,7 +5539,6 @@ public final class L2PcInstance extends L2Playable
 				else
 					player.setClanPrivileges(L2Clan.CP_NOTHING);
 				
-				player.setPledgeClass(L2ClanMember.calculatePledgeClass(player));
 				player.setDeleteTimer(rset.getLong("deletetime"));
 				
 				player.setTitle(rset.getString("title"));
@@ -5603,6 +5602,9 @@ public final class L2PcInstance extends L2Playable
 				// Set Hero status if it applies
 				if (Hero.getInstance().isActiveHero(objectId))
 					player.setHero(true);
+				
+				// Set pledge class rank.
+				player.setPledgeClass(L2ClanMember.calculatePledgeClass(player));
 				
 				// Retrieve from the database all secondary data of this L2PcInstance and reward expertise/lucky skills if necessary.
 				// Note that Clan, Noblesse and Hero skills are given separately and not here.
@@ -10247,7 +10249,7 @@ public final class L2PcInstance extends L2Playable
 	{
 		try
 		{
-			for (L2BossZone _zone : GrandBossManager.getZones())
+			for (L2BossZone _zone : GrandBossManager.getInstance().getZones())
 				_zone.removePlayer(this);
 		}
 		catch (Exception e)

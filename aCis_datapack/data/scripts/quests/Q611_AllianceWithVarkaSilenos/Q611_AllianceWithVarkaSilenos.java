@@ -339,7 +339,7 @@ public class Q611_AllianceWithVarkaSilenos extends Quest
 		
 		// Support for Q612.
 		QuestState st = partyMember.getQuestState(qn2);
-		if (st != null && Rnd.get(1) == 0)
+		if (st != null && Rnd.nextBoolean() && ChanceMolar.containsKey(npcId))
 		{
 			int chance = ChanceMolar.get(npcId);
 			if (chance != 0)

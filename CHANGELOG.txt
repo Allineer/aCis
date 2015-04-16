@@ -1,4 +1,29 @@
 ====================================================================================================
+Changeset 327 @ 2014.05.30
+
+GrandBossManager, Misc
+
+GrandBossManager
+    - Edit GrandBossManager to use a singleton, to fit with overall project writing style.
+    - "Allowed players" system:
+        - Move the initialization AFTER zones loading (it wasn't making any errors, but the system wasn't working).
+        - Reworked it to simply use .add(), instead to set it using a temporary List.
+        - Use an index system based on zoneId to avoid to search/retrieve current L2GrandBoss zone info on every SQL raw (it's doable since we order the query by ZONE and not by PLAYER anymore).
+
+Misc
+    - Fix 2 NPEs on 2 quests, due to Trove drop (Trove was handling null by returning 0, while Java Map simply send null). Ty Root for fix.
+    - Fix a NPE on itemid 8811. Ty sahar for report.
+    - Add skill names on scheme buffer, using kdDer64 buffer graphic style. Also edit the extends in order to be invul. Ty sahar for patch.
+    - Added few missing restock delays on Interlude spellbooks. Ty rebelstrik for report.
+    - Move setPledgeClass() call leading to rank miscalculation for heroes on player restore, ty sahar.
+    - Some Hasha TODO list:
+        - Drop L2Skill._displayId, getter/setter. Replaced by getId().
+        - getAvailableHenna() is edited from array to List. Drop external null checks, as it is empty at worst.
+        - Rename few packets typos, such as ware*H*ouse / withdraw*AL*
+        - Drop DoorTable.putDoor(), single use.
+        - Edited TaskSevenSignsUpdate _log definition (task system needs to be edited anyway).
+
+====================================================================================================
 Changeset 326 @ 2014.04.23
 
 Recipes / Craft, TradeController, Misc

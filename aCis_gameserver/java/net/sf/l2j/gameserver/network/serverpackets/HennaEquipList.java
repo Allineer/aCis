@@ -14,15 +14,17 @@
  */
 package net.sf.l2j.gameserver.network.serverpackets;
 
+import java.util.List;
+
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.item.Henna;
 
 public class HennaEquipList extends L2GameServerPacket
 {
 	private final L2PcInstance _player;
-	private final Henna[] _hennaEquipList;
+	private final List<Henna> _hennaEquipList;
 	
-	public HennaEquipList(L2PcInstance player, Henna[] hennaEquipList)
+	public HennaEquipList(L2PcInstance player, List<Henna> hennaEquipList)
 	{
 		_player = player;
 		_hennaEquipList = hennaEquipList;
@@ -34,7 +36,7 @@ public class HennaEquipList extends L2GameServerPacket
 		writeC(0xe2);
 		writeD(_player.getAdena());
 		writeD(3);
-		writeD(_hennaEquipList.length);
+		writeD(_hennaEquipList.size());
 		
 		for (Henna temp : _hennaEquipList)
 		{

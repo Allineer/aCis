@@ -339,7 +339,7 @@ public class Q605_AllianceWithKetraOrcs extends Quest
 		
 		// Support for Q606.
 		QuestState st = partyMember.getQuestState(qn2);
-		if (st != null && Rnd.get(1) == 0)
+		if (st != null && Rnd.nextBoolean() && ChanceMane.containsKey(npcId))
 		{
 			int chance = ChanceMane.get(npcId);
 			if (chance != 0)

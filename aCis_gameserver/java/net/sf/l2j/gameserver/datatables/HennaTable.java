@@ -16,6 +16,7 @@ package net.sf.l2j.gameserver.datatables;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,8 +33,6 @@ import org.w3c.dom.Node;
 public class HennaTable
 {
 	private static Logger _log = Logger.getLogger(HennaTable.class.getName());
-	
-	private static final Henna[] EMPTY_HENNAS = new Henna[0];
 	
 	private final Map<Integer, Henna> _henna = new HashMap<>();
 	private final Map<Integer, List<Henna>> _hennaTrees = new HashMap<>();
@@ -96,13 +95,13 @@ public class HennaTable
 		return _henna.get(id);
 	}
 	
-	public Henna[] getAvailableHenna(int classId)
+	public List<Henna> getAvailableHenna(int classId)
 	{
 		final List<Henna> henna = _hennaTrees.get(classId);
-		if (henna == null || henna.isEmpty())
-			return EMPTY_HENNAS;
+		if (henna == null)
+			return Collections.emptyList();
 		
-		return henna.toArray(new Henna[henna.size()]);
+		return henna;
 	}
 	
 	public static HennaTable getInstance()

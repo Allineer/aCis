@@ -21,7 +21,7 @@ import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.PledgeShowMemberListDelete;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 
-public final class RequestWithdrawalPledge extends L2GameClientPacket
+public final class RequestWithdrawPledge extends L2GameClientPacket
 {
 	@Override
 	protected void readImpl()

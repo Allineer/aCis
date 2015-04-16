@@ -19,10 +19,7 @@ import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.model.item.kind.Item;
 
-/**
- * 0x42 WarehouseWithdrawalList dh (h dddhh dhhh d)
- */
-public class WareHouseWithdrawalList extends L2GameServerPacket
+public class WarehouseWithdrawList extends L2GameServerPacket
 {
 	public static final int PRIVATE = 1;
 	public static final int CLAN = 2;
@@ -34,7 +31,7 @@ public class WareHouseWithdrawalList extends L2GameServerPacket
 	private ItemInstance[] _items;
 	private int _whType;
 	
-	public WareHouseWithdrawalList(L2PcInstance player, int type)
+	public WarehouseWithdrawList(L2PcInstance player, int type)
 	{
 		_activeChar = player;
 		_whType = type;

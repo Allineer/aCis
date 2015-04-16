@@ -28,7 +28,7 @@ import net.sf.l2j.gameserver.model.itemcontainer.PcInventory;
 import net.sf.l2j.gameserver.model.quest.Quest;
 import net.sf.l2j.gameserver.model.quest.QuestState;
 import net.sf.l2j.gameserver.network.serverpackets.ActionFailed;
-import net.sf.l2j.gameserver.network.serverpackets.WareHouseWithdrawalList;
+import net.sf.l2j.gameserver.network.serverpackets.WarehouseWithdrawList;
 import net.sf.l2j.gameserver.util.Util;
 
 /**
@@ -181,7 +181,7 @@ public class VarkaSilenosSupport extends Quest
 			{
 				player.sendPacket(ActionFailed.STATIC_PACKET);
 				player.setActiveWarehouse(player.getWarehouse());
-				player.sendPacket(new WareHouseWithdrawalList(player, 1));
+				player.sendPacket(new WarehouseWithdrawList(player, 1));
 			}
 		}
 		else if (event.equals("Teleport"))

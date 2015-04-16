@@ -29,7 +29,7 @@ import net.sf.l2j.gameserver.taskmanager.models.TaskTypes;
  */
 public class TaskSevenSignsUpdate extends Task
 {
-	private static final Logger _log = Logger.getLogger(TaskOlympiadSave.class.getName());
+	private static final Logger _log = Logger.getLogger(TaskSevenSignsUpdate.class.getName());
 	public static final String NAME = "SevenSignsUpdate";
 	
 	@Override

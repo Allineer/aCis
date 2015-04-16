@@ -29,12 +29,10 @@ import net.sf.l2j.gameserver.network.serverpackets.StatusUpdate;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 import net.sf.l2j.gameserver.util.Util;
 
-/**
- * 32 SendWareHouseWithDrawList cd (dd) WootenGil rox :P
- */
-public final class SendWareHouseWithDrawList extends L2GameClientPacket
+public final class SendWarehouseWithdrawList extends L2GameClientPacket
 {
-	private static final int BATCH_LENGTH = 8; // length of the one item
+	private static final int BATCH_LENGTH = 8; // length of one item
+	
 	private WarehouseItem _items[] = null;
 	
 	@Override

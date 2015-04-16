@@ -171,7 +171,7 @@ public class Shutdown extends Thread
 			_log.info("Raid Bosses data has been saved.");
 			
 			// Save grandbosses status
-			GrandBossManager.cleanUp();
+			GrandBossManager.getInstance().cleanUp();
 			_log.info("World Bosses data has been saved.");
 			
 			// Save olympiads

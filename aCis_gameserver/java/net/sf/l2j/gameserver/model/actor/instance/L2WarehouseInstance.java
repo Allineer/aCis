@@ -24,8 +24,8 @@ import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.ActionFailed;
 import net.sf.l2j.gameserver.network.serverpackets.EnchantResult;
 import net.sf.l2j.gameserver.network.serverpackets.PackageToList;
-import net.sf.l2j.gameserver.network.serverpackets.WareHouseDepositList;
-import net.sf.l2j.gameserver.network.serverpackets.WareHouseWithdrawalList;
+import net.sf.l2j.gameserver.network.serverpackets.WarehouseDepositList;
+import net.sf.l2j.gameserver.network.serverpackets.WarehouseWithdrawList;
 
 public class L2WarehouseInstance extends L2NpcInstance
 {
@@ -63,7 +63,7 @@ public class L2WarehouseInstance extends L2NpcInstance
 			return;
 		}
 		
-		player.sendPacket(new WareHouseWithdrawalList(player, WareHouseWithdrawalList.PRIVATE));
+		player.sendPacket(new WarehouseWithdrawList(player, WarehouseWithdrawList.PRIVATE));
 	}
 	
 	private static void showDepositWindow(L2PcInstance player)
@@ -72,7 +72,7 @@ public class L2WarehouseInstance extends L2NpcInstance
 		player.setActiveWarehouse(player.getWarehouse());
 		player.tempInventoryDisable();
 		
-		player.sendPacket(new WareHouseDepositList(player, WareHouseDepositList.PRIVATE));
+		player.sendPacket(new WarehouseDepositList(player, WarehouseDepositList.PRIVATE));
 	}
 	
 	private static void showDepositWindowClan(L2PcInstance player)
@@ -86,7 +86,7 @@ public class L2WarehouseInstance extends L2NpcInstance
 			{
 				player.setActiveWarehouse(player.getClan().getWarehouse());
 				player.tempInventoryDisable();
-				player.sendPacket(new WareHouseDepositList(player, WareHouseDepositList.CLAN));
+				player.sendPacket(new WarehouseDepositList(player, WarehouseDepositList.CLAN));
 			}
 		}
 	}
@@ -105,7 +105,7 @@ public class L2WarehouseInstance extends L2NpcInstance
 		else
 		{
 			player.setActiveWarehouse(player.getClan().getWarehouse());
-			player.sendPacket(new WareHouseWithdrawalList(player, WareHouseWithdrawalList.CLAN));
+			player.sendPacket(new WarehouseWithdrawList(player, WarehouseWithdrawList.CLAN));
 		}
 	}
 	
@@ -124,7 +124,7 @@ public class L2WarehouseInstance extends L2NpcInstance
 					freight.setActiveLocation(getWorldRegion().hashCode());
 				
 				player.setActiveWarehouse(freight);
-				player.sendPacket(new WareHouseWithdrawalList(player, WareHouseWithdrawalList.FREIGHT));
+				player.sendPacket(new WarehouseWithdrawList(player, WarehouseWithdrawList.FREIGHT));
 			}
 			else
 				player.sendPacket(SystemMessageId.NO_ITEM_DEPOSITED_IN_WH);
@@ -164,7 +164,7 @@ public class L2WarehouseInstance extends L2NpcInstance
 		
 		player.setActiveWarehouse(freight);
 		player.tempInventoryDisable();
-		player.sendPacket(new WareHouseDepositList(player, WareHouseDepositList.FREIGHT));
+		player.sendPacket(new WarehouseDepositList(player, WarehouseDepositList.FREIGHT));
 	}
 	
 	@Override

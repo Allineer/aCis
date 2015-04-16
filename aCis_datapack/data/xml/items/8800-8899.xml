@@ -294,7 +294,7 @@
 		<set name="soulshots" val="1" />
 		<set name="spiritshots" val="1" />
 		<set name="oncrit_chance" val="10" />
-		<set name="oncrit_skill" val="3039-7" />
+		<set name="oncrit_skill" val="3039-6" />
 		<set name="item_skill" val="3552-1" />
 		<for>
 			<set order="0x08" stat="pAtk" val="305" />

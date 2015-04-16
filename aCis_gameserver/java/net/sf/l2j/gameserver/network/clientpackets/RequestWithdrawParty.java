@@ -22,7 +22,7 @@ import net.sf.l2j.gameserver.network.serverpackets.ExClosePartyRoom;
 import net.sf.l2j.gameserver.network.serverpackets.ExPartyRoomMember;
 import net.sf.l2j.gameserver.network.serverpackets.PartyMatchDetail;
 
-public final class RequestWithDrawalParty extends L2GameClientPacket
+public final class RequestWithdrawParty extends L2GameClientPacket
 {
 	@Override
 	protected void readImpl()

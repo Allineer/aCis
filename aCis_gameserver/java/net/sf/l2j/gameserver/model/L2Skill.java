@@ -124,7 +124,6 @@ public abstract class L2Skill implements IChanceSkillTrigger
 	private final int _id;
 	private final int _level;
 	
-	private int _displayId;
 	private final String _name;
 	private final SkillOpType _operateType;
 	
@@ -264,7 +263,6 @@ public abstract class L2Skill implements IChanceSkillTrigger
 		_id = set.getInteger("skill_id");
 		_level = set.getInteger("level");
 		
-		_displayId = set.getInteger("displayId", _id);
 		_name = set.getString("name");
 		_operateType = set.getEnum("operateType", SkillOpType.class);
 		
@@ -785,16 +783,6 @@ public abstract class L2Skill implements IChanceSkillTrigger
 	public final int getId()
 	{
 		return _id;
-	}
-	
-	public int getDisplayId()
-	{
-		return _displayId;
-	}
-	
-	public void setDisplayId(int id)
-	{
-		_displayId = id;
 	}
 	
 	public final Stats getStat()
