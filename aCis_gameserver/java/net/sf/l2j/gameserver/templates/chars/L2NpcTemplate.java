@@ -14,8 +14,6 @@
  */
 package net.sf.l2j.gameserver.templates.chars;
 
-import gnu.trove.map.hash.TIntObjectHashMap;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -110,7 +108,7 @@ public final class L2NpcTemplate extends L2CharTemplate
 	private final List<L2DropCategory> _categories = new LinkedList<>();
 	private final List<L2MinionData> _minions = new ArrayList<>();
 	private final List<ClassId> _teachInfo = new ArrayList<>();
-	private final TIntObjectHashMap<L2Skill> _skills = new TIntObjectHashMap<>();
+	private final Map<Integer, L2Skill> _skills = new HashMap<>();
 	private final Map<QuestEventType, List<Quest>> _questEvents = new HashMap<>();
 	
 	/**
@@ -120,21 +118,29 @@ public final class L2NpcTemplate extends L2CharTemplate
 	public L2NpcTemplate(StatsSet set)
 	{
 		super(set);
-		_npcId = set.getInteger("id");
-		_idTemplate = set.getInteger("idTemplate");
-		_type = set.getString("type");
-		_name = set.getString("name");
-		_title = set.getString("title");
-		_cantBeChampionMonster = (_title.equalsIgnoreCase("Quest Monster") || isType("L2Chest")) ? true : false;
-		_level = set.getByte("level");
-		_exp = set.getInteger("exp");
-		_sp = set.getInteger("sp");
-		_rHand = set.getInteger("rHand");
-		_lHand = set.getInteger("lHand");
-		_enchantEffect = set.getInteger("enchant", 0);
 		
-		_corpseTime = set.getInteger("corpseTime");
-		_dropHerbGroup = set.getInteger("dropHerbGroup");
+		_npcId = set.getInteger("id");
+		_idTemplate = set.getInteger("idTemplate", _npcId);
+		
+		_type = set.getString("type");
+		
+		_name = set.getString("name");
+		_title = set.getString("title", "");
+		
+		_cantBeChampionMonster = (_title.equalsIgnoreCase("Quest Monster") || isType("L2Chest")) ? true : false;
+		
+		_level = set.getByte("level", (byte) 1);
+		
+		_exp = set.getInteger("exp", 0);
+		_sp = set.getInteger("sp", 0);
+		
+		_rHand = set.getInteger("rHand", 0);
+		_lHand = set.getInteger("lHand", 0);
+		
+		_enchantEffect = set.getInteger("enchant", 0);
+		_corpseTime = set.getInteger("corpseTime", 7);
+		_dropHerbGroup = set.getInteger("dropHerbGroup", 0);
+		
 		if (_dropHerbGroup > 0 && HerbDropTable.getInstance().getHerbDroplist(_dropHerbGroup) == null)
 		{
 			_log.warning("Missing dropHerbGroup information for npcId: " + _npcId + ", dropHerbGroup: " + _dropHerbGroup);
@@ -280,14 +286,14 @@ public final class L2NpcTemplate extends L2CharTemplate
 		return _minions;
 	}
 	
-	public TIntObjectHashMap<L2Skill> getSkills()
+	public Map<Integer, L2Skill> getSkills()
 	{
 		return _skills;
 	}
 	
 	public L2Skill[] getSkillsArray()
 	{
-		return _skills.values(new L2Skill[0]);
+		return _skills.values().toArray(new L2Skill[_skills.values().size()]);
 	}
 	
 	public void addQuestEvent(QuestEventType eventType, Quest quest)
@@ -301,10 +307,9 @@ public final class L2NpcTemplate extends L2CharTemplate
 		}
 		else
 		{
-			if (eventList.contains(quest))
-				return;
+			eventList.remove(quest);
 			
-			if (eventType.isMultipleRegistrationAllowed())
+			if (eventType.isMultipleRegistrationAllowed() || eventList.isEmpty())
 				eventList.add(quest);
 			else
 				_log.warning("Quest event not allow multiple quest registrations. Skipped addition of EventType \"" + eventType + "\" for NPC \"" + getName() + "\" and quest \"" + quest.getName() + "\".");

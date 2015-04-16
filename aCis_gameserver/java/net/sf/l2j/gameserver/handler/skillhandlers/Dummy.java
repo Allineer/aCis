@@ -26,7 +26,8 @@ public class Dummy implements ISkillHandler
 	private static final L2SkillType[] SKILL_IDS =
 	{
 		L2SkillType.DUMMY,
-		L2SkillType.BEAST_FEED
+		L2SkillType.BEAST_FEED,
+		L2SkillType.DELUXE_KEY_UNLOCK
 	};
 	
 	@Override

@@ -37,6 +37,7 @@ import net.sf.l2j.L2DatabaseFactory;
 import net.sf.l2j.gameserver.ThreadPoolManager;
 import net.sf.l2j.gameserver.taskmanager.models.Task;
 import net.sf.l2j.gameserver.taskmanager.models.TaskTypes;
+import net.sf.l2j.gameserver.taskmanager.tasks.TaskClansLadder;
 import net.sf.l2j.gameserver.taskmanager.tasks.TaskCleanUp;
 import net.sf.l2j.gameserver.taskmanager.tasks.TaskOlympiadSave;
 import net.sf.l2j.gameserver.taskmanager.tasks.TaskRaidPointsReset;
@@ -166,6 +167,7 @@ public final class TaskManager
 	
 	private void initializate()
 	{
+		registerTask(new TaskClansLadder());
 		registerTask(new TaskCleanUp());
 		registerTask(new TaskScript());
 		registerTask(new TaskOlympiadSave());

@@ -22,25 +22,25 @@ public class Q029_ChestCaughtWithABaitOfEarth extends Quest
 	private static final String qn = "Q029_ChestCaughtWithABaitOfEarth";
 	
 	// NPCs
-	private static final int Willie = 31574;
-	private static final int Anabel = 30909;
+	private static final int WILLIE = 31574;
+	private static final int ANABEL = 30909;
 	
 	// Items
-	private static final int SmallPurpleTreasureChest = 6507;
-	private static final int SmallGlassBox = 7627;
-	private static final int PlatedLeatherGloves = 2455;
+	private static final int SMALL_PURPLE_TREASURE_CHEST = 6507;
+	private static final int SMALL_GLASS_BOX = 7627;
+	private static final int PLATED_LEATHER_GLOVES = 2455;
 	
-	public Q029_ChestCaughtWithABaitOfEarth(int questId, String name, String descr)
+	public Q029_ChestCaughtWithABaitOfEarth()
 	{
-		super(questId, name, descr);
+		super(29, qn, "Chest caught with a bait of earth");
 		
 		questItemIds = new int[]
 		{
-			SmallGlassBox
+			SMALL_GLASS_BOX
 		};
 		
-		addStartNpc(Willie);
-		addTalkId(Willie, Anabel);
+		addStartNpc(WILLIE);
+		addTalkId(WILLIE, ANABEL);
 	}
 	
 	@Override
@@ -53,28 +53,28 @@ public class Q029_ChestCaughtWithABaitOfEarth extends Quest
 		
 		if (event.equalsIgnoreCase("31574-04.htm"))
 		{
-			st.set("cond", "1");
 			st.setState(STATE_STARTED);
+			st.set("cond", "1");
 			st.playSound(QuestState.SOUND_ACCEPT);
 		}
 		else if (event.equalsIgnoreCase("31574-07.htm"))
 		{
-			if (st.hasQuestItems(SmallPurpleTreasureChest))
+			if (st.hasQuestItems(SMALL_PURPLE_TREASURE_CHEST))
 			{
 				st.set("cond", "2");
-				st.takeItems(SmallPurpleTreasureChest, 1);
-				st.giveItems(SmallGlassBox, 1);
+				st.takeItems(SMALL_PURPLE_TREASURE_CHEST, 1);
+				st.giveItems(SMALL_GLASS_BOX, 1);
 			}
 			else
 				htmltext = "31574-08.htm";
 		}
 		else if (event.equalsIgnoreCase("30909-02.htm"))
 		{
-			if (st.hasQuestItems(SmallGlassBox))
+			if (st.hasQuestItems(SMALL_GLASS_BOX))
 			{
 				htmltext = "30909-02.htm";
-				st.takeItems(SmallGlassBox, 1);
-				st.giveItems(PlatedLeatherGloves, 1);
+				st.takeItems(SMALL_GLASS_BOX, 1);
+				st.giveItems(PLATED_LEATHER_GLOVES, 1);
 				st.playSound(QuestState.SOUND_FINISH);
 				st.exitQuest(false);
 			}
@@ -112,14 +112,14 @@ public class Q029_ChestCaughtWithABaitOfEarth extends Quest
 				int cond = st.getInt("cond");
 				switch (npc.getNpcId())
 				{
-					case Willie:
+					case WILLIE:
 						if (cond == 1)
-							htmltext = (!st.hasQuestItems(SmallPurpleTreasureChest)) ? "31574-06.htm" : "31574-05.htm";
+							htmltext = (!st.hasQuestItems(SMALL_PURPLE_TREASURE_CHEST)) ? "31574-06.htm" : "31574-05.htm";
 						else if (cond == 2)
 							htmltext = "31574-09.htm";
 						break;
 					
-					case Anabel:
+					case ANABEL:
 						if (cond == 2)
 							htmltext = "30909-01.htm";
 						break;
@@ -136,6 +136,6 @@ public class Q029_ChestCaughtWithABaitOfEarth extends Quest
 	
 	public static void main(String[] args)
 	{
-		new Q029_ChestCaughtWithABaitOfEarth(29, qn, "Chest caught with a bait of earth");
+		new Q029_ChestCaughtWithABaitOfEarth();
 	}
 }

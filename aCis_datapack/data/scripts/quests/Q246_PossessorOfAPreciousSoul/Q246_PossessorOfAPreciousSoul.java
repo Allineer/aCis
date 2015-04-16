@@ -28,21 +28,21 @@ public class Q246_PossessorOfAPreciousSoul extends Quest
 	private static final int LADD = 30721;
 	
 	// Items
-	private static final int CARADINE_LETTER_2 = 7678;
 	private static final int WATERBINDER = 7591;
 	private static final int EVERGREEN = 7592;
 	private static final int RAIN_SONG = 7593;
 	private static final int RELIC_BOX = 7594;
-	private static final int CARADINE_LETTER_3 = 7679;
+	private static final int CARADINE_LETTER_1 = 7678;
+	private static final int CARADINE_LETTER_2 = 7679;
 	
 	// Mobs
 	private static final int PILGRIM_OF_SPLENDOR = 21541;
 	private static final int JUDGE_OF_SPLENDOR = 21544;
 	private static final int BARAKIEL = 25325;
 	
-	public Q246_PossessorOfAPreciousSoul(int questId, String name, String descr)
+	public Q246_PossessorOfAPreciousSoul()
 	{
-		super(questId, name, descr);
+		super(246, qn, "Possessor of a Precious Soul - 3");
 		
 		questItemIds = new int[]
 		{
@@ -69,10 +69,10 @@ public class Q246_PossessorOfAPreciousSoul extends Quest
 		// Caradine
 		if (event.equalsIgnoreCase("31740-04.htm"))
 		{
-			st.set("cond", "1");
-			st.takeItems(CARADINE_LETTER_2, 1);
 			st.setState(STATE_STARTED);
+			st.set("cond", "1");
 			st.playSound(QuestState.SOUND_ACCEPT);
+			st.takeItems(CARADINE_LETTER_1, 1);
 		}
 		// Ossian
 		else if (event.equalsIgnoreCase("31741-02.htm"))
@@ -85,9 +85,9 @@ public class Q246_PossessorOfAPreciousSoul extends Quest
 			if (st.hasQuestItems(WATERBINDER) && st.hasQuestItems(EVERGREEN))
 			{
 				st.set("cond", "4");
+				st.playSound(QuestState.SOUND_MIDDLE);
 				st.takeItems(WATERBINDER, 1);
 				st.takeItems(EVERGREEN, 1);
-				st.playSound(QuestState.SOUND_MIDDLE);
 			}
 			else
 				htmltext = null;
@@ -97,9 +97,9 @@ public class Q246_PossessorOfAPreciousSoul extends Quest
 			if (st.hasQuestItems(RAIN_SONG))
 			{
 				st.set("cond", "6");
+				st.playSound(QuestState.SOUND_MIDDLE);
 				st.takeItems(RAIN_SONG, 1);
 				st.giveItems(RELIC_BOX, 1);
-				st.playSound(QuestState.SOUND_MIDDLE);
 			}
 			else
 				htmltext = null;
@@ -110,7 +110,7 @@ public class Q246_PossessorOfAPreciousSoul extends Quest
 			if (st.hasQuestItems(RELIC_BOX))
 			{
 				st.takeItems(RELIC_BOX, 1);
-				st.giveItems(CARADINE_LETTER_3, 1);
+				st.giveItems(CARADINE_LETTER_2, 1);
 				st.rewardExpAndSp(719843, 0);
 				st.playSound(QuestState.SOUND_FINISH);
 				st.exitQuest(false);
@@ -118,6 +118,7 @@ public class Q246_PossessorOfAPreciousSoul extends Quest
 			else
 				htmltext = null;
 		}
+		
 		return htmltext;
 	}
 	
@@ -132,16 +133,8 @@ public class Q246_PossessorOfAPreciousSoul extends Quest
 		switch (st.getState())
 		{
 			case STATE_CREATED:
-				if (st.hasQuestItems(CARADINE_LETTER_2))
-				{
-					if (!player.isSubClassActive() || player.getLevel() < 65)
-					{
-						htmltext = "31740-02.htm";
-						st.exitQuest(true);
-					}
-					else
-						htmltext = "31740-01.htm";
-				}
+				if (st.hasQuestItems(CARADINE_LETTER_1))
+					htmltext = (!player.isSubClassActive() || player.getLevel() < 65) ? "31740-02.htm" : "31740-01.htm";
 				break;
 			
 			case STATE_STARTED:
@@ -157,29 +150,24 @@ public class Q246_PossessorOfAPreciousSoul extends Quest
 						break;
 					
 					case OSSIAN:
-						switch (cond)
+						if (cond == 1)
+							htmltext = "31741-01.htm";
+						else if (cond == 2)
+							htmltext = "31741-03.htm";
+						else if (cond == 3)
 						{
-							case 1:
-								htmltext = "31741-01.htm";
-								break;
-							case 2:
-								htmltext = "31741-03.htm";
-								break;
-							case 3:
-								if (st.hasQuestItems(WATERBINDER) && st.hasQuestItems(EVERGREEN))
-									htmltext = "31741-04.htm";
-								break;
-							case 4:
-								htmltext = "31741-06.htm";
-								break;
-							case 5:
-								if (st.hasQuestItems(RAIN_SONG))
-									htmltext = "31741-07.htm";
-								break;
-							case 6:
-								htmltext = "31741-09.htm";
-								break;
+							if (st.hasQuestItems(WATERBINDER) && st.hasQuestItems(EVERGREEN))
+								htmltext = "31741-04.htm";
 						}
+						else if (cond == 4)
+							htmltext = "31741-06.htm";
+						else if (cond == 5)
+						{
+							if (st.hasQuestItems(RAIN_SONG))
+								htmltext = "31741-07.htm";
+						}
+						else if (cond == 6)
+							htmltext = "31741-09.htm";
 						break;
 					
 					case LADD:
@@ -211,8 +199,8 @@ public class Q246_PossessorOfAPreciousSoul extends Quest
 				if (!st.hasQuestItems(RAIN_SONG))
 				{
 					st.set("cond", "5");
-					st.giveItems(RAIN_SONG, 1);
 					st.playSound(QuestState.SOUND_MIDDLE);
+					st.giveItems(RAIN_SONG, 1);
 				}
 			}
 		}
@@ -248,6 +236,6 @@ public class Q246_PossessorOfAPreciousSoul extends Quest
 	
 	public static void main(String[] args)
 	{
-		new Q246_PossessorOfAPreciousSoul(246, qn, "Possessor of a Precious Soul - 3");
+		new Q246_PossessorOfAPreciousSoul();
 	}
 }

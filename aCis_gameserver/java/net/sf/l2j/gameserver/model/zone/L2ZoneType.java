@@ -233,19 +233,23 @@ public abstract class L2ZoneType
 		return result;
 	}
 	
-	public void addQuestEvent(QuestEventType EventType, Quest q)
+	public void addQuestEvent(QuestEventType eventType, Quest quest)
 	{
 		if (_questEvents == null)
 			_questEvents = new HashMap<>();
 		
-		List<Quest> questByEvents = _questEvents.get(EventType);
-		if (questByEvents == null)
-			questByEvents = new ArrayList<>();
-		
-		if (!questByEvents.contains(q))
-			questByEvents.add(q);
-		
-		_questEvents.put(EventType, questByEvents);
+		List<Quest> eventList = _questEvents.get(eventType);
+		if (eventList == null)
+		{
+			eventList = new ArrayList<>();
+			eventList.add(quest);
+			_questEvents.put(eventType, eventList);
+		}
+		else
+		{
+			eventList.remove(quest);
+			eventList.add(quest);
+		}
 	}
 	
 	public List<Quest> getQuestByEvent(QuestEventType EventType)

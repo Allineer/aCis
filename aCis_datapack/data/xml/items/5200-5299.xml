@@ -7,6 +7,7 @@
 		<set name="price" val="1200" />
 		<set name="is_stackable" val="true" />
 		<set name="is_oly_restricted" val="true" />
+		<set name="handler" val="Keys" />
 		<set name="item_skill" val="2065-4" />
 	</item>
 	<item id="5201" type="EtcItem" name="Chest Key - Grade 4">
@@ -16,6 +17,7 @@
 		<set name="price" val="1200" />
 		<set name="is_stackable" val="true" />
 		<set name="is_oly_restricted" val="true" />
+		<set name="handler" val="Keys" />
 		<set name="item_skill" val="2065-5" />
 	</item>
 	<item id="5202" type="EtcItem" name="Chest Key - Grade 3">
@@ -25,6 +27,7 @@
 		<set name="price" val="1200" />
 		<set name="is_stackable" val="true" />
 		<set name="is_oly_restricted" val="true" />
+		<set name="handler" val="Keys" />
 		<set name="item_skill" val="2065-6" />
 	</item>
 	<item id="5203" type="EtcItem" name="Chest Key - Grade 2">
@@ -34,6 +37,7 @@
 		<set name="price" val="1200" />
 		<set name="is_stackable" val="true" />
 		<set name="is_oly_restricted" val="true" />
+		<set name="handler" val="Keys" />
 		<set name="item_skill" val="2065-7" />
 	</item>
 	<item id="5204" type="EtcItem" name="Chest Key - Grade 1">
@@ -43,6 +47,7 @@
 		<set name="price" val="1200" />
 		<set name="is_stackable" val="true" />
 		<set name="is_oly_restricted" val="true" />
+		<set name="handler" val="Keys" />
 		<set name="item_skill" val="2065-8" />
 	</item>
 	<item id="5205" type="EtcItem" name="Mercenary Posting Ticket (Sword/Stationary)">

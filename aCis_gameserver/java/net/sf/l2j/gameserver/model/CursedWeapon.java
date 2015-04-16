@@ -68,6 +68,7 @@ public class CursedWeapon
 	
 	private ScheduledFuture<?> _overallTimerTask;
 	private ScheduledFuture<?> _dailyTimerTask;
+	private ScheduledFuture<?> _dropTimerTask;
 	
 	private int _playerKarma = 0;
 	private int _playerPkKills = 0;
@@ -174,6 +175,7 @@ public class CursedWeapon
 		// Drop tasks.
 		cancelDailyTimerTask();
 		cancelOverallTimerTask();
+		cancelDropTimerTask();
 		
 		// Delete infos from table, if any.
 		removeFromDb();
@@ -215,6 +217,15 @@ public class CursedWeapon
 		{
 			_overallTimerTask.cancel(true);
 			_overallTimerTask = null;
+		}
+	}
+	
+	private void cancelDropTimerTask()
+	{
+		if (_dropTimerTask != null)
+		{
+			_dropTimerTask.cancel(true);
+			_dropTimerTask = null;
 		}
 	}
 	
@@ -274,6 +285,20 @@ public class CursedWeapon
 		}
 	}
 	
+	private class DropTimerTask implements Runnable
+	{
+		protected DropTimerTask()
+		{
+		}
+		
+		@Override
+		public void run()
+		{
+			if (isDropped())
+				endOfLife();
+		}
+	}
+	
 	/**
 	 * This method is used to drop the CW from player.<br>
 	 * It drops the item on ground, and reset player stats.
@@ -296,6 +321,9 @@ public class CursedWeapon
 		
 		// Cancel the daily timer. It will be reactivated when someone will pickup the weapon.
 		cancelDailyTimerTask();
+		
+		// Activate the "1h dropped CW" timer.
+		_dropTimerTask = ThreadPoolManager.getInstance().scheduleGeneral(new DropTimerTask(), 3600000L);
 		
 		// Reset current stage to 1.
 		_currentStage = 1;
@@ -411,12 +439,13 @@ public class CursedWeapon
 	{
 		if (Rnd.get(1000000) < _dropRate)
 		{
-			// Drop the item
+			// Drop the item.
 			dropFromMob(attackable, player);
 			
-			// Start task
+			// Start timers.
 			_endTime = System.currentTimeMillis() + _duration * 3600000L;
 			_overallTimerTask = ThreadPoolManager.getInstance().scheduleGeneralAtFixedRate(new OverallTimerTask(), 60000L, 60000L);
+			_dropTimerTask = ThreadPoolManager.getInstance().scheduleGeneral(new DropTimerTask(), 3600000L);
 			
 			return true;
 		}
@@ -433,11 +462,6 @@ public class CursedWeapon
 			return;
 		}
 		
-		// if the player wears a Formal Wear, unequip it.
-		final L2ItemInstance chestArmor = player.getChestArmorInstance();
-		if (chestArmor != null && chestArmor.getItemId() == 6408)
-			player.useEquippableItem(chestArmor, false);
-		
 		_isActivated = true;
 		
 		// Hold player data.
@@ -448,14 +472,17 @@ public class CursedWeapon
 		
 		_item = item;
 		
-		// Generate a random number for next stage
+		// Generate a random number for next stage.
 		_numberBeforeNextStage = Rnd.get((int) Math.round(_stageKills * 0.5), (int) Math.round(_stageKills * 1.5));
 		
-		// Renew hungry time
+		// Renew hungry time.
 		_hungryTime = _durationLost * 60;
 		
-		// Activate daily task
+		// Activate the daily timer.
 		_dailyTimerTask = ThreadPoolManager.getInstance().scheduleGeneralAtFixedRate(new DailyTimerTask(), 60000L, 60000L);
+		
+		// Cancel the "1h dropped CW" timer.
+		cancelDropTimerTask();
 		
 		insertData();
 		

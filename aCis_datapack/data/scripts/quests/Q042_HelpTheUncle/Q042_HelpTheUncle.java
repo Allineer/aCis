@@ -35,9 +35,9 @@ public class Q042_HelpTheUncle extends Quest
 	private static final int MONSTER_EYE_DESTROYER = 20068;
 	private static final int MONSTER_EYE_GAZER = 20266;
 	
-	public Q042_HelpTheUncle(int questId, String name, String descr)
+	public Q042_HelpTheUncle()
 	{
-		super(questId, name, descr);
+		super(42, qn, "Help the Uncle!");
 		
 		questItemIds = new int[]
 		{
@@ -61,28 +61,28 @@ public class Q042_HelpTheUncle extends Quest
 		
 		if (event.equalsIgnoreCase("30828-01.htm"))
 		{
-			st.set("cond", "1");
 			st.setState(STATE_STARTED);
+			st.set("cond", "1");
 			st.playSound(QuestState.SOUND_ACCEPT);
 		}
 		else if (event.equalsIgnoreCase("30828-03.htm") && st.hasQuestItems(TRIDENT))
 		{
 			st.set("cond", "2");
-			st.takeItems(TRIDENT, 1);
 			st.playSound(QuestState.SOUND_MIDDLE);
+			st.takeItems(TRIDENT, 1);
 		}
 		else if (event.equalsIgnoreCase("30828-05.htm"))
 		{
-			st.takeItems(MAP_PIECE, 30);
-			st.giveItems(MAP, 1);
 			st.set("cond", "4");
 			st.playSound(QuestState.SOUND_MIDDLE);
+			st.takeItems(MAP_PIECE, 30);
+			st.giveItems(MAP, 1);
 		}
 		else if (event.equalsIgnoreCase("30735-06.htm"))
 		{
-			st.takeItems(MAP, 1);
 			st.set("cond", "5");
 			st.playSound(QuestState.SOUND_MIDDLE);
+			st.takeItems(MAP, 1);
 		}
 		else if (event.equalsIgnoreCase("30828-07.htm"))
 		{
@@ -157,6 +157,6 @@ public class Q042_HelpTheUncle extends Quest
 	
 	public static void main(String[] args)
 	{
-		new Q042_HelpTheUncle(42, qn, "Help the Uncle!");
+		new Q042_HelpTheUncle();
 	}
 }

@@ -38,9 +38,9 @@ public class Q049_TheRoadHome extends Quest
 	private static final int MARK_OF_TRAVELER = 7570;
 	private static final int SCROLL_OF_ESCAPE_SPECIAL = 7558;
 	
-	public Q049_TheRoadHome(int questId, String name, String descr)
+	public Q049_TheRoadHome()
 	{
-		super(questId, name, descr);
+		super(49, qn, "The Road Home");
 		
 		questItemIds = new int[]
 		{
@@ -66,50 +66,50 @@ public class Q049_TheRoadHome extends Quest
 		
 		if (event.equalsIgnoreCase("30097-03.htm"))
 		{
-			st.set("cond", "1");
 			st.setState(STATE_STARTED);
+			st.set("cond", "1");
 			st.playSound(QuestState.SOUND_ACCEPT);
 			st.giveItems(ORDER_DOCUMENT_1, 1);
 		}
 		else if (event.equalsIgnoreCase("30094-02.htm"))
 		{
 			st.set("cond", "2");
+			st.playSound(QuestState.SOUND_MIDDLE);
 			st.takeItems(ORDER_DOCUMENT_1, 1);
 			st.giveItems(MAGIC_SWORD_HILT, 1);
-			st.playSound(QuestState.SOUND_MIDDLE);
 		}
 		else if (event.equalsIgnoreCase("30097-06.htm"))
 		{
 			st.set("cond", "3");
+			st.playSound(QuestState.SOUND_MIDDLE);
 			st.takeItems(MAGIC_SWORD_HILT, 1);
 			st.giveItems(ORDER_DOCUMENT_2, 1);
-			st.playSound(QuestState.SOUND_MIDDLE);
 		}
 		else if (event.equalsIgnoreCase("30090-02.htm"))
 		{
 			st.set("cond", "4");
+			st.playSound(QuestState.SOUND_MIDDLE);
 			st.takeItems(ORDER_DOCUMENT_2, 1);
 			st.giveItems(GEMSTONE_POWDER, 1);
-			st.playSound(QuestState.SOUND_MIDDLE);
 		}
 		else if (event.equalsIgnoreCase("30097-09.htm"))
 		{
 			st.set("cond", "5");
+			st.playSound(QuestState.SOUND_MIDDLE);
 			st.takeItems(GEMSTONE_POWDER, 1);
 			st.giveItems(ORDER_DOCUMENT_3, 1);
-			st.playSound(QuestState.SOUND_MIDDLE);
 		}
 		else if (event.equalsIgnoreCase("30116-02.htm"))
 		{
 			st.set("cond", "6");
+			st.playSound(QuestState.SOUND_MIDDLE);
 			st.takeItems(ORDER_DOCUMENT_3, 1);
 			st.giveItems(PURIFIED_MAGIC_NECKLACE, 1);
-			st.playSound(QuestState.SOUND_MIDDLE);
 		}
 		else if (event.equalsIgnoreCase("30097-12.htm"))
 		{
-			st.takeItems(PURIFIED_MAGIC_NECKLACE, 1);
 			st.takeItems(MARK_OF_TRAVELER, -1);
+			st.takeItems(PURIFIED_MAGIC_NECKLACE, 1);
 			st.rewardItems(SCROLL_OF_ESCAPE_SPECIAL, 1);
 			st.playSound(QuestState.SOUND_FINISH);
 			st.exitQuest(false);
@@ -192,6 +192,6 @@ public class Q049_TheRoadHome extends Quest
 	
 	public static void main(String[] args)
 	{
-		new Q049_TheRoadHome(49, qn, "The Road Home");
+		new Q049_TheRoadHome();
 	}
 }

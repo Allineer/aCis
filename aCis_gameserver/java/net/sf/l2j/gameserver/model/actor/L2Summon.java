@@ -29,7 +29,6 @@ import net.sf.l2j.gameserver.model.L2Skill;
 import net.sf.l2j.gameserver.model.L2Skill.SkillTargetType;
 import net.sf.l2j.gameserver.model.L2WorldRegion;
 import net.sf.l2j.gameserver.model.ShotType;
-import net.sf.l2j.gameserver.model.actor.L2Attackable.AggroInfo;
 import net.sf.l2j.gameserver.model.actor.instance.L2DoorInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2PetInstance;
@@ -337,37 +336,17 @@ public abstract class L2Summon extends L2Playable
 		if (!super.doDie(killer))
 			return false;
 		
-		final L2PcInstance owner = getOwner();
-		if (owner != null)
+		// Disable beastshots
+		for (int itemId : getOwner().getAutoSoulShot())
 		{
-			for (L2Attackable mob : getKnownList().getKnownType(L2Attackable.class))
+			switch (ItemTable.getInstance().getTemplate(itemId).getDefaultAction())
 			{
-				// get the mobs which have aggro on the this instance
-				if (mob.isDead())
-					continue;
-				
-				final AggroInfo info = mob.getAggroList().get(this);
-				if (info != null)
-					mob.addDamageHate(owner, info.getDamage(), info.getHate());
+				case summon_soulshot:
+				case summon_spiritshot:
+					getOwner().disableAutoShot(itemId);
+					break;
 			}
-			
-			// Popup for summon if phoenix buff was on
-			if (isPhoenixBlessed())
-				owner.reviveRequest(owner, null, true);
 		}
-		
-		DecayTaskManager.getInstance().addDecayTask(this);
-		return true;
-	}
-	
-	public boolean doDie(L2Character killer, boolean decayed)
-	{
-		if (!super.doDie(killer))
-			return false;
-		
-		if (!decayed)
-			DecayTaskManager.getInstance().addDecayTask(this);
-		
 		return true;
 	}
 	
@@ -651,7 +630,7 @@ public abstract class L2Summon extends L2Playable
 		// Check if this is offensive magic skill
 		if (skill.isOffensive())
 		{
-			if (isInsidePeaceZone(this, target) && getOwner() != null && (!getOwner().getAccessLevel().allowPeaceAttack()))
+			if (isInsidePeaceZone(this, target))
 			{
 				// If summon or target is in a peace zone, send a system message TARGET_IN_PEACEZONE
 				sendPacket(SystemMessage.getSystemMessage(SystemMessageId.TARGET_IN_PEACEZONE));

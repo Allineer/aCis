@@ -32,6 +32,7 @@ import net.sf.l2j.gameserver.model.base.ClassId;
 import net.sf.l2j.gameserver.model.base.PlayerClass;
 import net.sf.l2j.gameserver.model.base.SubClass;
 import net.sf.l2j.gameserver.model.entity.Siege;
+import net.sf.l2j.gameserver.model.olympiad.OlympiadManager;
 import net.sf.l2j.gameserver.model.quest.QuestState;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.AcquireSkillList;
@@ -169,6 +170,10 @@ public class L2VillageMasterInstance extends L2NpcInstance
 				player.sendPacket(SystemMessageId.SUBCLASS_NO_CHANGE_OR_CREATE_WHILE_SKILL_IN_USE);
 				return;
 			}
+			
+			// Affecting subclasses (add/del/change) if registered in Olympiads makes you ineligible to compete.
+			if (OlympiadManager.getInstance().isRegisteredInComp(player))
+				OlympiadManager.getInstance().unRegisterNoble(player);
 			
 			NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
 			
@@ -684,7 +689,7 @@ public class L2VillageMasterInstance extends L2NpcInstance
 			clan.setDissolvingExpiryTime(System.currentTimeMillis() + Config.ALT_CLAN_DISSOLVE_DAYS * 86400000L); // 24*60*60*1000 = 86400000
 			clan.updateClanInDB();
 			
-			ClanTable.getInstance().scheduleRemoveClan(clan.getClanId());
+			ClanTable.getInstance().scheduleRemoveClan(clan);
 		}
 		else
 			ClanTable.getInstance().destroyClan(clan.getClanId());
@@ -921,10 +926,7 @@ public class L2VillageMasterInstance extends L2NpcInstance
 		}
 		
 		clan.broadcastClanStatus();
-		SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.S1_HAS_BEEN_SELECTED_AS_CAPTAIN_OF_S2);
-		sm.addString(leaderName);
-		sm.addString(clanName);
-		clan.broadcastToOnlineMembers(sm);
+		clan.broadcastToOnlineMembers(SystemMessage.getSystemMessage(SystemMessageId.S1_HAS_BEEN_SELECTED_AS_CAPTAIN_OF_S2).addString(leaderName).addString(clanName));
 	}
 	
 	/**

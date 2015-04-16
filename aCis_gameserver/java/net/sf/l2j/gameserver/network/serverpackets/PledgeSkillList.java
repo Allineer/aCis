@@ -33,7 +33,7 @@ public class PledgeSkillList extends L2GameServerPacket
 	@Override
 	protected void writeImpl()
 	{
-		L2Skill[] skills = _clan.getAllSkills();
+		L2Skill[] skills = _clan.getClanSkills();
 		
 		writeC(0xfe);
 		writeH(0x39);

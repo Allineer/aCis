@@ -249,16 +249,23 @@ public class EnterWorld extends L2GameClientPacket
 	
 	private static void notifyClanMembers(L2PcInstance activeChar)
 	{
-		L2Clan clan = activeChar.getClan();
-		clan.getClanMember(activeChar.getName()).setPlayerInstance(activeChar);
+		final L2Clan clan = activeChar.getClan();
 		
-		SystemMessage msg = SystemMessage.getSystemMessage(SystemMessageId.CLAN_MEMBER_S1_LOGGED_IN);
-		msg.addPcName(activeChar);
+		// Refresh player instance.
+		clan.getClanMember(activeChar.getObjectId()).setPlayerInstance(activeChar);
 		
-		clan.broadcastToOtherOnlineMembers(msg, activeChar);
-		clan.broadcastToOtherOnlineMembers(new PledgeShowMemberListUpdate(activeChar), activeChar);
+		final SystemMessage msg = SystemMessage.getSystemMessage(SystemMessageId.CLAN_MEMBER_S1_LOGGED_IN).addPcName(activeChar);
+		final PledgeShowMemberListUpdate update = new PledgeShowMemberListUpdate(activeChar);
 		
-		msg = null;
+		// Send packet to others members.
+		for (L2PcInstance member : clan.getOnlineMembers())
+		{
+			if (member == activeChar)
+				continue;
+			
+			member.sendPacket(msg);
+			member.sendPacket(update);
+		}
 	}
 	
 	private static void notifySponsorOrApprentice(L2PcInstance activeChar)

@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -379,7 +380,7 @@ public final class L2PcInstance extends L2Playable
 	protected int _baseClass;
 	protected int _activeClass;
 	protected int _classIndex = 0;
-	private Map<Integer, SubClass> _subClasses;
+	private final Map<Integer, SubClass> _subClasses = new LinkedHashMap<>();
 	
 	private PcAppearance _appearance;
 	private int _charId = 0x00030b7a;
@@ -602,7 +603,8 @@ public final class L2PcInstance extends L2Playable
 	
 	/** The current higher Expertise of the L2PcInstance (None=0, D=1, C=2, B=3, A=4, S=5) */
 	private int _expertiseIndex; // index in EXPERTISE_LEVELS
-	private int _expertisePenalty = 0;
+	private int _expertiseArmorPenalty = 0;
+	private boolean _expertiseWeaponPenalty = false;
 	
 	private L2ItemInstance _activeEnchantItem = null;
 	
@@ -1303,7 +1305,7 @@ public final class L2PcInstance extends L2Playable
 		{
 			for (Quest onTalk : quests)
 			{
-				if (onTalk == null || onTalk != quest)
+				if (onTalk == null || !onTalk.equals(quest))
 					continue;
 				
 				quest.notifyEvent(event, npc, this);
@@ -1739,9 +1741,14 @@ public final class L2PcInstance extends L2Playable
 		return (int) calcStat(Stats.MAX_LOAD, baseLoad * Config.ALT_WEIGHT_LIMIT, this, null);
 	}
 	
-	public int getExpertisePenalty()
+	public int getExpertiseArmorPenalty()
 	{
-		return _expertisePenalty;
+		return _expertiseArmorPenalty;
+	}
+	
+	public boolean getExpertiseWeaponPenalty()
+	{
+		return _expertiseWeaponPenalty;
 	}
 	
 	public int getWeightPenalty()
@@ -1793,32 +1800,36 @@ public final class L2PcInstance extends L2Playable
 		}
 	}
 	
+	/**
+	 * Refresh expertise level ; weapon got one rank, when armor got 4 ranks.<br>
+	 */
 	public void refreshExpertisePenalty()
 	{
-		int newPenalty = 0;
+		int armorPenalty = 0;
+		boolean weaponPenalty = false;
 		
 		for (L2ItemInstance item : getInventory().getItems())
 		{
-			if (item != null && item.isEquipped())
+			if (item != null && item.isEquipped() && item.getItemType() != L2EtcItemType.ARROW && item.getItem().getCrystalType() > getExpertiseIndex())
 			{
-				int crystaltype = item.getItem().getCrystalType();
-				
-				if (crystaltype > newPenalty)
-					newPenalty = crystaltype;
+				if (item.isWeapon())
+					weaponPenalty = true;
+				else
+					armorPenalty += (item.getItem().getBodyPart() == L2Item.SLOT_FULL_ARMOR) ? 2 : 1;
 			}
 		}
 		
-		newPenalty = newPenalty - getExpertiseIndex();
+		armorPenalty = Math.min(armorPenalty, 4);
 		
-		if (newPenalty <= 0)
-			newPenalty = 0;
-		
-		if (getExpertisePenalty() != newPenalty)
+		// Found a different state than previous ; update it.
+		if (_expertiseWeaponPenalty != weaponPenalty || _expertiseArmorPenalty != armorPenalty)
 		{
-			_expertisePenalty = newPenalty;
+			_expertiseWeaponPenalty = weaponPenalty;
+			_expertiseArmorPenalty = armorPenalty;
 			
-			if (newPenalty > 0)
-				super.addSkill(SkillTable.getInstance().getInfo(4267, 1)); // level used to be newPenalty
+			// Passive skill "Grade Penalty" is either granted or dropped.
+			if (_expertiseWeaponPenalty || _expertiseArmorPenalty > 0)
+				super.addSkill(SkillTable.getInstance().getInfo(4267, 1));
 			else
 				super.removeSkill(getKnownSkill(4267));
 			
@@ -1938,11 +1949,15 @@ public final class L2PcInstance extends L2Playable
 				
 				setLvlJoinedAcademy(0);
 				
-				// oust pledge member from the academy, cuz he has finished his 2nd class transfer
-				SystemMessage msg = SystemMessage.getSystemMessage(SystemMessageId.CLAN_MEMBER_S1_EXPELLED);
-				msg.addString(getName());
-				_clan.broadcastToOnlineMembers(msg);
-				_clan.broadcastToOnlineMembers(new PledgeShowMemberListDelete(getName()));
+				// Oust pledge member from the academy, because he has finished his 2nd class transfer.
+				final SystemMessage msg = SystemMessage.getSystemMessage(SystemMessageId.CLAN_MEMBER_S1_EXPELLED).addString(getName());
+				final PledgeShowMemberListDelete update = new PledgeShowMemberListDelete(getName());
+				
+				for (L2PcInstance member : _clan.getOnlineMembers())
+				{
+					member.sendPacket(msg);
+					member.sendPacket(update);
+				}
 				_clan.removeClanMember(getObjectId(), 0);
 				sendPacket(SystemMessageId.ACADEMY_MEMBERSHIP_TERMINATED);
 				
@@ -2136,25 +2151,23 @@ public final class L2PcInstance extends L2Playable
 	}
 	
 	/**
-	 * Regive all skills which aren't saved to database, like Noble, Hero, Clan Skills
+	 * Regive all skills which aren't saved to database, like Noble, Hero, Clan Skills.<br>
+	 * <b>Do not call this on enterworld or char load.</b>.
 	 */
 	private void regiveTemporarySkills()
 	{
-		// Do not call this on enterworld or char load
-		
-		// Add noble skills if noble
+		// Add noble skills if noble.
 		if (isNoble())
 			setNoble(true, false);
 		
-		// Add Hero skills if hero
+		// Add Hero skills if hero.
 		if (isHero())
 			setHero(true);
 		
-		// Add clan skills
+		// Add clan skills.
 		if (getClan() != null && getClan().getReputationScore() >= 0)
 		{
-			L2Skill[] skills = getClan().getAllSkills();
-			for (L2Skill sk : skills)
+			for (L2Skill sk : getClan().getClanSkills())
 			{
 				if (sk.getMinPledgeClass() <= getPledgeClass())
 					addSkill(sk, false);
@@ -4094,18 +4107,9 @@ public final class L2PcInstance extends L2Playable
 						}
 					}
 					
-					if (Config.ALT_GAME_DELEVEL)
-					{
-						// Reduce the Experience of the L2PcInstance in function of the calculated Death Penalty
-						// NOTE: deathPenalty +- Exp will update karma
-						if (getSkillLevel(L2Skill.SKILL_LUCKY) < 0 || getStat().getLevel() > 9)
-							deathPenalty(pk != null && getClan() != null && getClan().isAtWarWith(pk.getClanId()), pk != null, killer instanceof L2SiegeGuardInstance);
-					}
-					else
-					{
-						if (!(isInsideZone(ZoneId.PVP) && !isInSiege()) || pk == null)
-							onDieUpdateKarma(); // Update karma if delevel is not allowed
-					}
+					// Reduce player's xp and karma.
+					if (Config.ALT_GAME_DELEVEL && (getSkillLevel(L2Skill.SKILL_LUCKY) < 0 || getStat().getLevel() > 9))
+						deathPenalty(pk != null && getClan() != null && getClan().isAtWarWith(pk.getClanId()), pk != null, killer instanceof L2SiegeGuardInstance);
 				}
 			}
 		}
@@ -4216,23 +4220,13 @@ public final class L2PcInstance extends L2Playable
 		}
 	}
 	
-	private void onDieUpdateKarma()
+	public void updateKarmaLoss(long exp)
 	{
-		// Karma lose for server that does not allow delevel
-		if (getKarma() > 0)
+		if (!isCursedWeaponEquipped() && getKarma() > 0)
 		{
-			// this formula seems to work relatively well:
-			// baseKarma * thisLVL * (thisLVL/100)
-			// Calculate the new Karma of the attacker : newKarma = baseKarma*pkCountMulti*lvlDiffMulti
-			double karmaLost = Config.KARMA_LOST_BASE;
-			karmaLost *= getLevel(); // multiply by char lvl
-			karmaLost *= (getLevel() / 100.0); // divide by 0.charLVL
-			karmaLost = Math.round(karmaLost);
-			if (karmaLost < 0)
-				karmaLost = 1;
-			
-			// Decrease Karma of the L2PcInstance and Send it a Server->Client StatusUpdate packet with Karma and PvP Flag if necessary
-			setKarma(getKarma() - (int) karmaLost);
+			int karmaLost = Formulas.calculateKarmaLost(getLevel(), Math.round(exp));
+			if (karmaLost > 0)
+				setKarma(getKarma() - karmaLost);
 		}
 	}
 	
@@ -4262,7 +4256,7 @@ public final class L2PcInstance extends L2Playable
 		
 		// Check if it's pvp
 		if ((checkIfPvP(target) && targetPlayer.getPvpFlag() != 0) || (isInsideZone(ZoneId.PVP) && targetPlayer.isInsideZone(ZoneId.PVP)))
-			increasePvpKills();
+			increasePvpKills(target);
 		// Target player doesn't have pvp flag set
 		else
 		{
@@ -4270,7 +4264,7 @@ public final class L2PcInstance extends L2Playable
 			if (targetPlayer.getClan() != null && getClan() != null && getClan().isAtWarWith(targetPlayer.getClanId()) && targetPlayer.getClan().isAtWarWith(getClanId()) && targetPlayer.getPledgeType() != L2Clan.SUBUNIT_ACADEMY && getPledgeType() != L2Clan.SUBUNIT_ACADEMY)
 			{
 				// 'Both way war' -> 'PvP Kill'
-				increasePvpKills();
+				increasePvpKills(target);
 				return;
 			}
 			
@@ -4278,106 +4272,37 @@ public final class L2PcInstance extends L2Playable
 			if (targetPlayer.getKarma() > 0)
 			{
 				if (Config.KARMA_AWARD_PK_KILL)
-					increasePvpKills();
+					increasePvpKills(target);
 			}
 			else if (targetPlayer.getPvpFlag() == 0)
-				increasePkKillsAndKarma(targetPlayer.getLevel());
+			{
+				// PK Points are increased only if you kill a player.
+				if (target instanceof L2PcInstance)
+					setPkKills(getPkKills() + 1);
+				
+				// Calculate new karma.
+				setKarma(getKarma() + Formulas.calculateKarmaGain(getPkKills(), target instanceof L2Summon));
+				
+				// Send a Server->Client UserInfo packet to attacker with its Karma and PK Counter
+				sendPacket(new UserInfo(this));
+			}
 		}
 	}
 	
 	/**
 	 * Increase the pvp kills count and send the info to the player
+	 * @param target The victim to test.
 	 */
-	public void increasePvpKills()
+	public void increasePvpKills(L2Character target)
 	{
-		// Add karma to attacker and increase its PK counter
-		setPvpKills(getPvpKills() + 1);
-		
-		// Send a Server->Client UserInfo packet to attacker with its Karma and PK Counter
-		sendPacket(new UserInfo(this));
-	}
-	
-	/**
-	 * Increase pk count, karma and send the info to the player
-	 * @param targLVL : level of the killed player
-	 */
-	public void increasePkKillsAndKarma(int targLVL)
-	{
-		int baseKarma = Config.KARMA_MIN_KARMA;
-		int newKarma = baseKarma;
-		int karmaLimit = Config.KARMA_MAX_KARMA;
-		
-		int pkLVL = getLevel();
-		int pkPKCount = getPkKills();
-		
-		int lvlDiffMulti = 0;
-		int pkCountMulti = 0;
-		
-		// Check if the attacker has a PK counter greater than 0
-		if (pkPKCount > 0)
-			pkCountMulti = pkPKCount / 2;
-		else
-			pkCountMulti = 1;
-		
-		if (pkCountMulti < 1)
-			pkCountMulti = 1;
-		
-		// Calculate the level difference Multiplier between attacker and killed L2PcInstance
-		if (pkLVL > targLVL)
-			lvlDiffMulti = pkLVL / targLVL;
-		else
-			lvlDiffMulti = 1;
-		
-		if (lvlDiffMulti < 1)
-			lvlDiffMulti = 1;
-		
-		// Calculate the new Karma of the attacker : newKarma = baseKarma*pkCountMulti*lvlDiffMulti
-		newKarma *= pkCountMulti;
-		newKarma *= lvlDiffMulti;
-		
-		// Make sure newKarma is less than karmaLimit and higher than baseKarma
-		if (newKarma < baseKarma)
-			newKarma = baseKarma;
-		
-		if (newKarma > karmaLimit)
-			newKarma = karmaLimit;
-		
-		// Fix to prevent overflow (=> karma has a max value of 2 147 483 647)
-		if (getKarma() > (Integer.MAX_VALUE - newKarma))
-			newKarma = Integer.MAX_VALUE - getKarma();
-		
-		// Add karma to attacker and increase its PK counter
-		setPkKills(getPkKills() + 1);
-		setKarma(getKarma() + newKarma);
-		
-		// Send a Server->Client UserInfo packet to attacker with its Karma and PK Counter
-		sendPacket(new UserInfo(this));
-	}
-	
-	public int calculateKarmaLost(long exp)
-	{
-		// KARMA LOSS
-		// When a PKer gets killed by another player or a L2MonsterInstance, it loses a certain amount of Karma based on their level.
-		// this (with defaults) results in a level 1 losing about ~2 karma per death, and a lvl 70 loses about 11760 karma per death...
-		// You lose karma as long as you were not in a pvp zone and you did not kill urself.
-		// NOTE: exp for death (if delevel is allowed) is based on the players level
-		
-		long expGained = Math.abs(exp);
-		expGained /= Config.KARMA_XP_DIVIDER;
-		
-		// FIXME Micht : Maybe this code should be fixed and karma set to a long value
-		int karmaLost = 0;
-		if (expGained > Integer.MAX_VALUE)
-			karmaLost = Integer.MAX_VALUE;
-		else
-			karmaLost = (int) expGained;
-		
-		if (karmaLost < Config.KARMA_LOST_BASE)
-			karmaLost = Config.KARMA_LOST_BASE;
-		if (karmaLost > getKarma())
-			karmaLost = getKarma();
-		
-		return karmaLost;
+		if (target instanceof L2PcInstance)
+		{
+			// Add PvP point to attacker.
+			setPvpKills(getPvpKills() + 1);
+			
+			// Send a Server->Client UserInfo packet to attacker with its Karma and PK Counter
+			sendPacket(new UserInfo(this));
+		}
 	}
 	
 	public void updatePvPStatus()
@@ -4481,6 +4406,9 @@ public final class L2PcInstance extends L2Playable
 		
 		if (Config.DEBUG)
 			_log.fine(getName() + " died and lost " + lostExp + " experience.");
+		
+		// Set new karma
+		updateKarmaLoss(lostExp);
 		
 		// Set the new Experience value of the L2PcInstance
 		getStat().addExp(-lostExp);
@@ -5328,22 +5256,16 @@ public final class L2PcInstance extends L2Playable
 	}
 	
 	/**
-	 * Return True if the L2PcInstance use a dual weapon.<BR>
-	 * <BR>
+	 * @return the type of attack, depending of the worn weapon.
 	 */
 	@Override
-	public boolean isUsingDualWeapon()
+	public L2WeaponType getAttackType()
 	{
-		L2Weapon weaponItem = getActiveWeaponItem();
-		if (weaponItem == null)
-			return false;
+		final L2Weapon weapon = getActiveWeaponItem();
+		if (weapon != null)
+			return weapon.getItemType();
 		
-		if (weaponItem.getItemType() == L2WeaponType.DUAL)
-			return true;
-		else if (weaponItem.getItemType() == L2WeaponType.DUALFIST)
-			return true;
-		else
-			return false;
+		return L2WeaponType.FIST;
 	}
 	
 	public void setUptime(long time)
@@ -6913,6 +6835,13 @@ public final class L2PcInstance extends L2Playable
 	@Override
 	public boolean useMagic(L2Skill skill, boolean forceUse, boolean dontMove)
 	{
+		// Check if the skill is active
+		if (skill.isPassive())
+		{
+			sendPacket(ActionFailed.STATIC_PACKET);
+			return false;
+		}
+		
 		// Cancels the use of skills when player uses a cursed weapon or is flying.
 		if ((isCursedWeaponEquipped() && !skill.isDemonicSkill()) // If CW, allow ONLY demonic skills.
 			|| (getMountType() == 1 && !skill.isStriderSkill()) // If mounted, allow ONLY Strider skills.
@@ -6922,9 +6851,11 @@ public final class L2PcInstance extends L2Playable
 			return false;
 		}
 		
-		// Check if the skill is active
-		if (skill.isPassive())
+		// Players wearing Formal Wear cannot use skills.
+		final L2ItemInstance formal = getInventory().getPaperdollItem(Inventory.PAPERDOLL_CHEST);
+		if (formal != null && formal.getItem().getBodyPart() == L2Item.SLOT_ALLDRESS)
 		{
+			sendPacket(SystemMessageId.CANNOT_USE_ITEMS_SKILLS_WITH_FORMALWEAR);
 			sendPacket(ActionFailed.STATIC_PACKET);
 			return false;
 		}
@@ -7176,7 +7107,7 @@ public final class L2PcInstance extends L2Playable
 		// Check if this is offensive magic skill
 		if (skill.isOffensive())
 		{
-			if ((isInsidePeaceZone(this, target)) && !getAccessLevel().allowPeaceAttack())
+			if (isInsidePeaceZone(this, target))
 			{
 				// If L2Character or target is in a peace zone, send a system message TARGET_IN_PEACEZONE ActionFailed
 				sendPacket(SystemMessageId.TARGET_IN_PEACEZONE);
@@ -8007,8 +7938,12 @@ public final class L2PcInstance extends L2Playable
 		_lastZ = getZ();
 	}
 	
-	public void enterOlympiadObserverMode(Location loc, int id)
+	public void enterOlympiadObserverMode(int id)
 	{
+		final OlympiadGameTask task = OlympiadGameManager.getInstance().getOlympiadTask(id);
+		if (task == null)
+			return;
+		
 		dropAllSummons();
 		
 		if (getParty() != null)
@@ -8030,7 +7965,7 @@ public final class L2PcInstance extends L2Playable
 		setTarget(null);
 		setIsInvul(true);
 		getAppearance().setInvisible();
-		teleToLocation(loc, 0);
+		teleToLocation(task.getZone().getSpawns().get(2), 0);
 		sendPacket(new ExOlympiadMode(3));
 		broadcastUserInfo();
 	}
@@ -8419,6 +8354,9 @@ public final class L2PcInstance extends L2Playable
 	
 	public void sendSkillList()
 	{
+		final L2ItemInstance formal = getInventory().getPaperdollItem(Inventory.PAPERDOLL_CHEST);
+		final boolean isWearingFormalWear = formal != null && formal.getItem().getBodyPart() == L2Item.SLOT_ALLDRESS;
+		
 		boolean isDisabled = false;
 		SkillList sl = new SkillList();
 		for (L2Skill s : getAllSkills())
@@ -8441,6 +8379,9 @@ public final class L2PcInstance extends L2Playable
 				else if (getMountType() == 2) // Only Wyvern skills are available
 					isDisabled = !s.isFlyingSkill();
 			}
+			
+			if (isWearingFormalWear)
+				isDisabled = true;
 			
 			sl.addSkill(s.getId(), s.getLevel(), s.isPassive(), isDisabled);
 		}
@@ -8504,7 +8445,7 @@ public final class L2PcInstance extends L2Playable
 			if (skillTree == null)
 				return true;
 			
-			Map<Integer, L2Skill> prevSkillList = new HashMap<>();
+			final Map<Integer, L2Skill> prevSkillList = new LinkedHashMap<>();
 			
 			for (L2SkillLearn skillInfo : skillTree)
 			{
@@ -8615,9 +8556,6 @@ public final class L2PcInstance extends L2Playable
 	
 	public Map<Integer, SubClass> getSubClasses()
 	{
-		if (_subClasses == null)
-			_subClasses = new HashMap<>();
-		
 		return _subClasses;
 	}
 	
@@ -9085,6 +9023,10 @@ public final class L2PcInstance extends L2Playable
 		if (Config.PLAYER_SPAWN_PROTECTION > 0)
 			setProtection(true);
 		
+		// Stop toggles upon teleport.
+		if (!isGM())
+			stopAllToggles();
+		
 		// Modify the position of the tamed beast if necessary
 		if (getTrainedBeast() != null)
 		{
@@ -9411,7 +9353,7 @@ public final class L2PcInstance extends L2Playable
 			// set the status for pledge member list to OFFLINE
 			if (getClan() != null)
 			{
-				L2ClanMember clanMember = getClan().getClanMember(getName());
+				L2ClanMember clanMember = getClan().getClanMember(getObjectId());
 				if (clanMember != null)
 					clanMember.setPlayerInstance(null);
 			}

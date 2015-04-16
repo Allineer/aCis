@@ -29,7 +29,7 @@ public class NpcLocationInfo extends Quest
 {
 	private static final String qn = "NpcLocationInfo";
 	
-	private static final int[] NPCRADAR =
+	private static final int[] RADARS =
 	{
 		// Talking Island
 		30006, // Gatekeeper Roxxy
@@ -204,6 +204,14 @@ public class NpcLocationInfo extends Quest
 		30587, // Gantaki Zu Urutu
 	};
 	
+	public NpcLocationInfo()
+	{
+		super(-1, qn, "custom");
+		
+		addStartNpc(30598, 30599, 30600, 30601, 30602);
+		addTalkId(30598, 30599, 30600, 30601, 30602);
+	}
+	
 	@Override
 	public String onAdvEvent(String event, L2Npc npc, L2PcInstance player)
 	{
@@ -217,7 +225,7 @@ public class NpcLocationInfo extends Quest
 			htmltext = null;
 			int npcId = Integer.parseInt(event);
 			
-			if (Util.contains(NPCRADAR, npcId))
+			if (Util.contains(RADARS, npcId))
 			{
 				int x = 0, y = 0, z = 0;
 				for (L2Spawn spawn : SpawnTable.getInstance().getSpawnTable())
@@ -241,19 +249,11 @@ public class NpcLocationInfo extends Quest
 	@Override
 	public String onTalk(L2Npc npc, L2PcInstance player)
 	{
-		return String.valueOf(npc.getNpcId()) + ".htm";
-	}
-	
-	public NpcLocationInfo(int id, String name, String descr)
-	{
-		super(id, name, descr);
-		
-		addStartNpc(30598, 30599, 30600, 30601, 30602);
-		addTalkId(30598, 30599, 30600, 30601, 30602);
+		return npc.getNpcId() + ".htm";
 	}
 	
 	public static void main(String args[])
 	{
-		new NpcLocationInfo(-1, qn, "custom");
+		new NpcLocationInfo();
 	}
 }

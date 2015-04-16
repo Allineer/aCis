@@ -23,7 +23,6 @@ import net.sf.l2j.Config;
 import net.sf.l2j.gameserver.SevenSigns;
 import net.sf.l2j.gameserver.instancemanager.CastleManager;
 import net.sf.l2j.gameserver.instancemanager.ClanHallManager;
-import net.sf.l2j.gameserver.instancemanager.TownManager;
 import net.sf.l2j.gameserver.instancemanager.ZoneManager;
 import net.sf.l2j.gameserver.model.Location;
 import net.sf.l2j.gameserver.model.actor.L2Character;
@@ -31,19 +30,48 @@ import net.sf.l2j.gameserver.model.actor.L2Npc;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.entity.Castle;
 import net.sf.l2j.gameserver.model.entity.ClanHall;
+import net.sf.l2j.gameserver.model.zone.L2ZoneType;
 import net.sf.l2j.gameserver.model.zone.ZoneId;
 import net.sf.l2j.gameserver.model.zone.type.L2ArenaZone;
 import net.sf.l2j.gameserver.model.zone.type.L2ClanHallZone;
+import net.sf.l2j.gameserver.model.zone.type.L2TownZone;
 import net.sf.l2j.gameserver.xmlfactory.XMLDocumentFactory;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 public class MapRegionTable
 {
 	private static Logger _log = Logger.getLogger(MapRegionTable.class.getName());
 	
-	private final int[][] _regions = new int[19][21];
+	private static final int REGIONS_X = 11;
+	private static final int REGIONS_Y = 16;
+	
+	private static final int[][] _regions = new int[REGIONS_X][REGIONS_Y];
+	
+	private static final int[] _castleIdArray =
+	{
+		0,
+		0,
+		0,
+		0,
+		0,
+		1,
+		0,
+		2,
+		3,
+		4,
+		5,
+		0,
+		0,
+		6,
+		8,
+		7,
+		9,
+		0,
+		0
+	};
 	
 	public static enum TeleportWhereType
 	{
@@ -72,22 +100,24 @@ public class MapRegionTable
 			{
 				if (d.getNodeName().equalsIgnoreCase("map"))
 				{
-					int region = Integer.valueOf(d.getAttributes().getNamedItem("region").getNodeValue());
-					for (int j = 0; j < 10; j++)
-						_regions[j][region] = Integer.valueOf(d.getAttributes().getNamedItem("sec" + j).getNodeValue());
-					
-					count++;
+					NamedNodeMap attrs = d.getAttributes();
+					int rY = Integer.valueOf(attrs.getNamedItem("geoY").getNodeValue()) - 10;
+					for (int rX = 0; rX < REGIONS_X; rX++)
+					{
+						_regions[rX][rY] = Integer.valueOf(attrs.getNamedItem("geoX_" + (rX + 16)).getNodeValue());
+						count++;
+					}
 				}
 			}
 		}
 		catch (Exception e)
 		{
-			_log.log(Level.SEVERE, "Error loading Map Region Table.", e);
+			_log.log(Level.WARNING, "MapRegionTable: Error while loading \"map_region.xml\".", e);
 		}
 		_log.info("MapRegionTable: Loaded " + count + " regions.");
 	}
 	
-	public final int getMapRegion(int posX, int posY)
+	public final static int getMapRegion(int posX, int posY)
 	{
 		try
 		{
@@ -98,169 +128,146 @@ public class MapRegionTable
 			// Position sent is outside MapRegionTable area.
 			if (Config.DEBUG)
 				_log.log(Level.WARNING, "MapRegionTable: Player outside map regions at X,Y=" + posX + "," + posY, e);
+			
 			return 0;
 		}
 	}
 	
 	public final static int getMapRegionX(int posX)
 	{
-		return (posX >> 15) + 4;// + centerTileX;
+		// +4 to shift coords center
+		return (posX >> 15) + 4;
 	}
 	
 	public final static int getMapRegionY(int posY)
 	{
-		return (posY >> 15) + 10;// + centerTileX;
-	}
-	
-	public int getAreaCastle(L2Character activeChar)
-	{
-		int area = getClosestTownNumber(activeChar);
-		int castle;
-		switch (area)
-		{
-			case 0:
-				castle = 1;
-				break;// Talking Island Village
-			case 1:
-				castle = 4;
-				break; // Elven Village
-			case 2:
-				castle = 4;
-				break; // Dark Elven Village
-			case 3:
-				castle = 9;
-				break; // Orc Village
-			case 4:
-				castle = 9;
-				break; // Dwarven Village
-			case 5:
-				castle = 1;
-				break; // Town of Gludio
-			case 6:
-				castle = 1;
-				break; // Gludin Village
-			case 7:
-				castle = 2;
-				break; // Town of Dion
-			case 8:
-				castle = 3;
-				break; // Town of Giran
-			case 9:
-				castle = 4;
-				break; // Town of Oren
-			case 10:
-				castle = 5;
-				break; // Town of Aden
-			case 11:
-				castle = 5;
-				break; // Hunters Village
-			case 12:
-				castle = 3;
-				break; // Giran Harbor
-			case 13:
-				castle = 6;
-				break; // Heine
-			case 14:
-				castle = 8;
-				break; // Rune Township
-			case 15:
-				castle = 7;
-				break; // Town of Goddard
-			case 16:
-				castle = 9;
-				break; // Town of Schuttgart
-			case 17:
-				castle = 4;
-				break; // Ivory Tower
-			case 18:
-				castle = 8;
-				break; // Primeval Isle Wharf
-			default:
-				castle = 5;
-				break; // Town of Aden
-		}
-		return castle;
-	}
-	
-	public int getClosestTownNumber(L2Character activeChar)
-	{
-		return getMapRegion(activeChar.getX(), activeChar.getY());
+		// +8 to shift coords center
+		return (posY >> 15) + 8;
 	}
 	
 	/**
-	 * Get town name by character position
-	 * @param activeChar
-	 * @return String
+	 * @param x
+	 * @param y
+	 * @return the castle id associated to the town, based on X/Y points.
 	 */
-	public String getClosestTownName(L2Character activeChar)
+	public final static int getAreaCastle(int x, int y)
 	{
-		return getClosestTownName(getMapRegion(activeChar.getX(), activeChar.getY()));
+		switch (getMapRegion(x, y))
+		{
+			case 0: // Talking Island Village
+			case 5: // Town of Gludio
+			case 6: // Gludin Village
+				return 1;
+				
+			case 7: // Town of Dion
+				return 2;
+				
+			case 8: // Town of Giran
+			case 12: // Giran Harbor
+				return 3;
+				
+			case 1: // Elven Village
+			case 2: // Dark Elven Village
+			case 9: // Town of Oren
+			case 17: // Floran Village
+				return 4;
+				
+			case 10: // Town of Aden
+			case 11: // Hunters Village
+			default: // Town of Aden
+				return 5;
+				
+			case 13: // Heine
+				return 6;
+				
+			case 15: // Town of Goddard
+				return 7;
+				
+			case 14: // Rune Township
+			case 18: // Primeval Isle Wharf
+				return 8;
+				
+			case 3: // Orc Village
+			case 4: // Dwarven Village
+			case 16: // Town of Schuttgart
+				return 9;
+		}
+	}
+	
+	/**
+	 * @param x
+	 * @param y
+	 * @return a String consisting of town name, based on X/Y points.
+	 */
+	public String getClosestTownName(int x, int y)
+	{
+		return getClosestTownName(getMapRegion(x, y));
 	}
 	
 	public String getClosestTownName(int townId)
 	{
-		String nearestTown = null;
 		switch (townId)
 		{
 			case 0:
-				nearestTown = "Talking Island Village";
-				break;
+				return "Talking Island Village";
+				
 			case 1:
-				nearestTown = "Elven Village";
-				break;
+				return "Elven Village";
+				
 			case 2:
-				nearestTown = "Dark Elven Village";
-				break;
+				return "Dark Elven Village";
+				
 			case 3:
-				nearestTown = "Orc Village";
-				break;
+				return "Orc Village";
+				
 			case 4:
-				nearestTown = "Dwarven Village";
-				break;
+				return "Dwarven Village";
+				
 			case 5:
-				nearestTown = "Town of Gludio";
-				break;
+				return "Town of Gludio";
+				
 			case 6:
-				nearestTown = "Gludin Village";
-				break;
+				return "Gludin Village";
+				
 			case 7:
-				nearestTown = "Town of Dion";
-				break;
+				return "Town of Dion";
+				
 			case 8:
-				nearestTown = "Town of Giran";
-				break;
+				return "Town of Giran";
+				
 			case 9:
-				nearestTown = "Town of Oren";
-				break;
+				return "Town of Oren";
+				
 			case 10:
-				nearestTown = "Town of Aden";
-				break;
+				return "Town of Aden";
+				
 			case 11:
-				nearestTown = "Hunters Village";
-				break;
+				return "Hunters Village";
+				
 			case 12:
-				nearestTown = "Giran Harbor";
-				break;
+				return "Giran Harbor";
+				
 			case 13:
-				nearestTown = "Heine";
-				break;
+				return "Heine";
+				
 			case 14:
-				nearestTown = "Rune Township";
-				break;
+				return "Rune Township";
+				
 			case 15:
-				nearestTown = "Town of Goddard";
-				break;
+				return "Town of Goddard";
+				
 			case 16:
-				nearestTown = "Town of Schuttgart";
-				break;
+				return "Town of Schuttgart";
+				
+			case 17:
+				return "Floran Village";
+				
 			case 18:
-				nearestTown = "Primeval Isle";
-				break;
+				return "Primeval Isle";
+				
 			default:
-				nearestTown = "Town of Aden";
-				break;
+				return "Town of Aden";
 		}
-		return nearestTown;
 	}
 	
 	public Location getTeleToLocation(L2Character activeChar, TeleportWhereType teleportWhere)
@@ -328,7 +335,7 @@ public class MapRegionTable
 			
 			// Karma player land out of city
 			if (player.getKarma() > 0)
-				return TownManager.getClosestTown(activeChar).getChaoticSpawnLoc();
+				return getClosestTown(activeChar.getX(), activeChar.getY()).getChaoticSpawnLoc();
 			
 			// Checking if in arena
 			L2ArenaZone arena = ZoneManager.getArena(player);
@@ -343,13 +350,232 @@ public class MapRegionTable
 				{
 					// Check if player's clan is participating
 					if ((castle.getSiege().checkIsDefender(player.getClan()) || castle.getSiege().checkIsAttacker(player.getClan())) && SevenSigns.getInstance().getSealOwner(SevenSigns.SEAL_STRIFE) == SevenSigns.CABAL_DAWN)
-						return TownManager.getSecondClosestTown(activeChar).getSpawnLoc();
+						return getSecondClosestTown(activeChar.getX(), activeChar.getY()).getSpawnLoc();
 				}
 			}
 		}
 		
 		// Get the nearest town
-		return TownManager.getClosestTown(activeChar).getSpawnLoc();
+		return getClosestTown(activeChar.getX(), activeChar.getY()).getSpawnLoc();
+	}
+	
+	/**
+	 * @param x
+	 * @param y
+	 * @return the closest L2TownZone based on a X/Y location.
+	 */
+	public final static L2TownZone getClosestTown(int x, int y)
+	{
+		switch (getMapRegion(x, y))
+		{
+			case 0: // TI
+				return getTown(2);
+				
+			case 1:// Elven
+				return getTown(3);
+				
+			case 2:// DE
+				return getTown(1);
+				
+			case 3: // Orc
+				return getTown(4);
+				
+			case 4:// Dwarven
+				return getTown(6);
+				
+			case 5:// Gludio
+				return getTown(7);
+				
+			case 6:// Gludin
+				return getTown(5);
+				
+			case 7: // Dion
+				return getTown(8);
+				
+			case 8: // Giran
+			case 12: // Giran Harbor
+				return getTown(9);
+				
+			case 9: // Oren
+				return getTown(10);
+				
+			case 10: // Aden
+				return getTown(12);
+				
+			case 11: // HV
+				return getTown(11);
+				
+			case 13: // Heine
+				return getTown(15);
+				
+			case 14: // Rune
+				return getTown(14);
+				
+			case 15: // Goddard
+				return getTown(13);
+				
+			case 16: // Schuttgart
+				return getTown(17);
+				
+			case 17:// Floran
+				return getTown(16);
+				
+			case 18:// Primeval Isle
+				return getTown(19);
+		}
+		return getTown(16); // Default to floran
+	}
+	
+	/**
+	 * @param x
+	 * @param y
+	 * @return the second closest L2TownZone based on a X/Y location.
+	 */
+	public final static L2TownZone getSecondClosestTown(int x, int y)
+	{
+		switch (getMapRegion(x, y))
+		{
+			case 0: // TI
+			case 1: // Elven
+			case 2: // DE
+			case 5: // Gludio
+			case 6: // Gludin
+				return getTown(5);
+				
+			case 3: // Orc
+				return getTown(4);
+				
+			case 4: // Dwarven
+			case 16: // Schuttgart
+				return getTown(6);
+				
+			case 7: // Dion
+				return getTown(7);
+				
+			case 8: // Giran
+			case 9: // Oren
+			case 10:// Aden
+			case 11: // HV
+				return getTown(11);
+				
+			case 12: // Giran Harbour
+			case 13: // Heine
+			case 17:// Floran
+				return getTown(16);
+				
+			case 14: // Rune
+				return getTown(13);
+				
+			case 15: // Goddard
+				return getTown(12);
+				
+			case 18: // Primeval Isle
+				return getTown(19);
+		}
+		return getTown(16); // Default to floran
+	}
+	
+	/**
+	 * @param x
+	 * @param y
+	 * @return the closest region based on a X/Y location.
+	 */
+	public final static int getClosestLocation(int x, int y)
+	{
+		switch (getMapRegion(x, y))
+		{
+			case 0: // TI
+				return 1;
+				
+			case 1: // Elven
+				return 4;
+				
+			case 2: // DE
+				return 3;
+				
+			case 3: // Orc
+			case 4: // Dwarven
+			case 16:// Schuttgart
+				return 9;
+				
+			case 5: // Gludio
+			case 6: // Gludin
+				return 2;
+				
+			case 7: // Dion
+				return 5;
+				
+			case 8: // Giran
+			case 12: // Giran Harbor
+				return 6;
+				
+			case 9: // Oren
+				return 10;
+				
+			case 10: // Aden
+				return 13;
+				
+			case 11: // HV
+				return 11;
+				
+			case 13: // Heine
+				return 12;
+				
+			case 14: // Rune
+				return 14;
+				
+			case 15: // Goddard
+				return 15;
+		}
+		return 0;
+	}
+	
+	/**
+	 * Retrieves town's siege statut.
+	 * @param x coords to check.
+	 * @param y coords to check.
+	 * @return true if a siege is currently in progress in that town.
+	 */
+	public final static boolean townHasCastleInSiege(int x, int y)
+	{
+		final int castleIndex = _castleIdArray[getMapRegion(x, y)];
+		if (castleIndex > 0)
+		{
+			final Castle castle = CastleManager.getInstance().getCastles().get(CastleManager.getInstance().getCastleIndex(castleIndex));
+			if (castle != null)
+				return castle.getSiege().getIsInProgress();
+		}
+		return false;
+	}
+	
+	/**
+	 * @param townId the townId to match.
+	 * @return a L2TownZone based on the overall list of L2TownZone, matching the townId.
+	 */
+	public final static L2TownZone getTown(int townId)
+	{
+		for (L2TownZone temp : ZoneManager.getInstance().getAllZones(L2TownZone.class))
+		{
+			if (temp.getTownId() == townId)
+				return temp;
+		}
+		return null;
+	}
+	
+	/**
+	 * @param x coords to check.
+	 * @param y coords to check.
+	 * @param z coords to check.
+	 * @return a L2TownZone based on the overall list of zones, matching a 3D location.
+	 */
+	public final static L2TownZone getTown(int x, int y, int z)
+	{
+		for (L2ZoneType temp : ZoneManager.getInstance().getZones(x, y, z))
+		{
+			if (temp instanceof L2TownZone)
+				return (L2TownZone) temp;
+		}
+		return null;
 	}
 	
 	private static class SingletonHolder

@@ -94,20 +94,33 @@ abstract public class OlympiadGameNormal extends AbstractOlympiadGame
 	}
 	
 	@Override
+	/**
+	 * Sends olympiad info to the new spectator.
+	 */
 	public final void sendOlympiadInfo(L2Character player)
 	{
-		player.sendPacket(new ExOlympiadUserInfo(_playerOne));
-		player.sendPacket(new ExOlympiadUserInfo(_playerTwo));
+		player.sendPacket(new ExOlympiadUserInfo(_playerOne.player));
+		_playerOne.player.updateEffectIcons();
+		player.sendPacket(new ExOlympiadUserInfo(_playerTwo.player));
+		_playerTwo.player.updateEffectIcons();
 	}
 	
 	@Override
+	/**
+	 * Broadcasts olympiad info to participants and spectators on battle start.
+	 */
 	public final void broadcastOlympiadInfo(L2OlympiadStadiumZone stadium)
 	{
-		stadium.broadcastPacket(new ExOlympiadUserInfo(_playerOne));
-		stadium.broadcastPacket(new ExOlympiadUserInfo(_playerTwo));
+		stadium.broadcastPacket(new ExOlympiadUserInfo(_playerOne.player));
+		_playerOne.player.updateEffectIcons();
+		stadium.broadcastPacket(new ExOlympiadUserInfo(_playerTwo.player));
+		_playerTwo.player.updateEffectIcons();
 	}
 	
 	@Override
+	/**
+	 * Broadcasts packet to participants only.
+	 */
 	protected final void broadcastPacket(L2GameServerPacket packet)
 	{
 		_playerOne.updatePlayer();
@@ -126,7 +139,7 @@ abstract public class OlympiadGameNormal extends AbstractOlympiadGame
 		try
 		{
 			result &= portPlayerToArena(_playerOne, spawns.get(0), _stadiumID);
-			result &= portPlayerToArena(_playerTwo, spawns.get(spawns.size() / 2), _stadiumID);
+			result &= portPlayerToArena(_playerTwo, spawns.get(1), _stadiumID);
 		}
 		catch (Exception e)
 		{
@@ -165,9 +178,7 @@ abstract public class OlympiadGameNormal extends AbstractOlympiadGame
 			return false;
 		
 		_playerOne.player.setIsOlympiadStart(true);
-		_playerOne.player.updateEffectIcons();
 		_playerTwo.player.setIsOlympiadStart(true);
-		_playerTwo.player.updateEffectIcons();
 		return true;
 	}
 	
@@ -283,7 +294,6 @@ abstract public class OlympiadGameNormal extends AbstractOlympiadGame
 			pointDiff = Config.ALT_OLY_MAX_POINTS;
 		
 		int points;
-		SystemMessage sm;
 		
 		// Check for if a player defaulted before battle started
 		if (_playerOne.defaulted || _playerTwo.defaulted)
@@ -331,9 +341,7 @@ abstract public class OlympiadGameNormal extends AbstractOlympiadGame
 			{
 				if (_pTwoCrash && !_pOneCrash)
 				{
-					sm = SystemMessage.getSystemMessage(SystemMessageId.S1_HAS_WON_THE_GAME);
-					sm.addString(_playerOne.name);
-					_playerOne.player.sendPacket(sm);
+					stadium.broadcastPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_HAS_WON_THE_GAME).addString(_playerOne.name));
 					
 					_playerOne.updateStat(COMP_WON, 1);
 					addPointsToParticipant(_playerOne, pointDiff);
@@ -345,9 +353,7 @@ abstract public class OlympiadGameNormal extends AbstractOlympiadGame
 				}
 				else if (_pOneCrash && !_pTwoCrash)
 				{
-					sm = SystemMessage.getSystemMessage(SystemMessageId.S1_HAS_WON_THE_GAME);
-					sm.addString(_playerTwo.name);
-					_playerTwo.player.sendPacket(sm);
+					stadium.broadcastPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_HAS_WON_THE_GAME).addString(_playerTwo.name));
 					
 					_playerTwo.updateStat(COMP_WON, 1);
 					addPointsToParticipant(_playerTwo, pointDiff);
@@ -409,14 +415,11 @@ abstract public class OlympiadGameNormal extends AbstractOlympiadGame
 			{
 				_playerOne.updateStat(COMP_DRAWN, 1);
 				_playerTwo.updateStat(COMP_DRAWN, 1);
-				sm = SystemMessage.getSystemMessage(SystemMessageId.THE_GAME_ENDED_IN_A_TIE);
-				stadium.broadcastPacket(sm);
+				stadium.broadcastPacket(SystemMessage.getSystemMessage(SystemMessageId.THE_GAME_ENDED_IN_A_TIE));
 			}
 			else if (_playerTwo.player == null || !_playerTwo.player.isOnline() || (playerTwoHp == 0 && playerOneHp != 0) || (_damageP1 > _damageP2 && playerTwoHp != 0 && playerOneHp != 0))
 			{
-				sm = SystemMessage.getSystemMessage(SystemMessageId.S1_HAS_WON_THE_GAME);
-				sm.addString(_playerOne.name);
-				_playerOne.player.sendPacket(sm);
+				stadium.broadcastPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_HAS_WON_THE_GAME).addString(_playerOne.name));
 				
 				_playerOne.updateStat(COMP_WON, 1);
 				_playerTwo.updateStat(COMP_LOST, 1);
@@ -430,9 +433,7 @@ abstract public class OlympiadGameNormal extends AbstractOlympiadGame
 			}
 			else if (_playerOne.player == null || !_playerOne.player.isOnline() || (playerOneHp == 0 && playerTwoHp != 0) || (_damageP2 > _damageP1 && playerOneHp != 0 && playerTwoHp != 0))
 			{
-				sm = SystemMessage.getSystemMessage(SystemMessageId.S1_HAS_WON_THE_GAME);
-				sm.addString(_playerTwo.name);
-				_playerTwo.player.sendPacket(sm);
+				stadium.broadcastPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_HAS_WON_THE_GAME).addString(_playerTwo.name));
 				
 				_playerTwo.updateStat(COMP_WON, 1);
 				_playerOne.updateStat(COMP_LOST, 1);
@@ -449,8 +450,7 @@ abstract public class OlympiadGameNormal extends AbstractOlympiadGame
 				// Save Fight Result
 				saveResults(_playerOne, _playerTwo, 0, _startTime, _fightTime, getType());
 				
-				sm = SystemMessage.getSystemMessage(SystemMessageId.THE_GAME_ENDED_IN_A_TIE);
-				stadium.broadcastPacket(sm);
+				stadium.broadcastPacket(SystemMessage.getSystemMessage(SystemMessageId.THE_GAME_ENDED_IN_A_TIE));
 				
 				removePointsFromParticipant(_playerOne, Math.min(playerOnePoints / getDivider(), Config.ALT_OLY_MAX_POINTS));
 				removePointsFromParticipant(_playerTwo, Math.min(playerTwoPoints / getDivider(), Config.ALT_OLY_MAX_POINTS));

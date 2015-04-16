@@ -22,25 +22,25 @@ public class Q030_ChestCaughtWithABaitOfFire extends Quest
 	private static final String qn = "Q030_ChestCaughtWithABaitOfFire";
 	
 	// NPCs
-	private static final int Linnaeus = 31577;
-	private static final int Rukal = 30629;
+	private static final int LINNAEUS = 31577;
+	private static final int RUKAL = 30629;
 	
 	// Items
-	private static final int RedTreasureBox = 6511;
-	private static final int MusicalScore = 7628;
-	private static final int NecklaceOfProtection = 916;
+	private static final int RED_TREASURE_BOX = 6511;
+	private static final int MUSICAL_SCORE = 7628;
+	private static final int NECKLACE_OF_PROTECTION = 916;
 	
-	public Q030_ChestCaughtWithABaitOfFire(int questId, String name, String descr)
+	public Q030_ChestCaughtWithABaitOfFire()
 	{
-		super(questId, name, descr);
+		super(30, qn, "Chest caught with a bait of fire");
 		
 		questItemIds = new int[]
 		{
-			MusicalScore
+			MUSICAL_SCORE
 		};
 		
-		addStartNpc(Linnaeus);
-		addTalkId(Linnaeus, Rukal);
+		addStartNpc(LINNAEUS);
+		addTalkId(LINNAEUS, RUKAL);
 	}
 	
 	@Override
@@ -53,28 +53,28 @@ public class Q030_ChestCaughtWithABaitOfFire extends Quest
 		
 		if (event.equalsIgnoreCase("31577-04.htm"))
 		{
-			st.set("cond", "1");
 			st.setState(STATE_STARTED);
+			st.set("cond", "1");
 			st.playSound(QuestState.SOUND_ACCEPT);
 		}
 		else if (event.equalsIgnoreCase("31577-07.htm"))
 		{
-			if (st.hasQuestItems(RedTreasureBox))
+			if (st.hasQuestItems(RED_TREASURE_BOX))
 			{
 				st.set("cond", "2");
-				st.takeItems(RedTreasureBox, 1);
-				st.giveItems(MusicalScore, 1);
+				st.takeItems(RED_TREASURE_BOX, 1);
+				st.giveItems(MUSICAL_SCORE, 1);
 			}
 			else
 				htmltext = "31577-08.htm";
 		}
 		else if (event.equalsIgnoreCase("30629-02.htm"))
 		{
-			if (st.hasQuestItems(MusicalScore))
+			if (st.hasQuestItems(MUSICAL_SCORE))
 			{
 				htmltext = "30629-02.htm";
-				st.takeItems(MusicalScore, 1);
-				st.giveItems(NecklaceOfProtection, 1);
+				st.takeItems(MUSICAL_SCORE, 1);
+				st.giveItems(NECKLACE_OF_PROTECTION, 1);
 				st.playSound(QuestState.SOUND_FINISH);
 				st.exitQuest(false);
 			}
@@ -112,14 +112,14 @@ public class Q030_ChestCaughtWithABaitOfFire extends Quest
 				int cond = st.getInt("cond");
 				switch (npc.getNpcId())
 				{
-					case Linnaeus:
+					case LINNAEUS:
 						if (cond == 1)
-							htmltext = (!st.hasQuestItems(RedTreasureBox)) ? "31577-06.htm" : "31577-05.htm";
+							htmltext = (!st.hasQuestItems(RED_TREASURE_BOX)) ? "31577-06.htm" : "31577-05.htm";
 						else if (cond == 2)
 							htmltext = "31577-09.htm";
 						break;
 					
-					case Rukal:
+					case RUKAL:
 						if (cond == 2)
 							htmltext = "30629-01.htm";
 						break;
@@ -136,6 +136,6 @@ public class Q030_ChestCaughtWithABaitOfFire extends Quest
 	
 	public static void main(String[] args)
 	{
-		new Q030_ChestCaughtWithABaitOfFire(30, qn, "Chest caught with a bait of fire");
+		new Q030_ChestCaughtWithABaitOfFire();
 	}
 }

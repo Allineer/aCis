@@ -63,6 +63,7 @@
 	<!-- CREATE ITEM -->
 	<aCar name="admin_itemcreate" accessLevel="1" />
 	<aCar name="admin_create_item" accessLevel="1" />
+	<aCar name="admin_create_set" accessLevel="1" />
 	<aCar name="admin_create_coin" accessLevel="1" />
 	<aCar name="admin_reward_all" accessLevel="1" />
 

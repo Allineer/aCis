@@ -31,12 +31,12 @@ public class Q008_AnAdventureBegins extends Quest
 	private static final int ROSELYN_NOTE = 7573;
 	
 	// Rewards
-	private static final int SCROLL_ESCAPE = 7559;
+	private static final int SOE_GIRAN = 7559;
 	private static final int MARK_TRAVELER = 7570;
 	
-	public Q008_AnAdventureBegins(int questId, String name, String descr)
+	public Q008_AnAdventureBegins()
 	{
-		super(questId, name, descr);
+		super(8, qn, "An Adventure Begins");
 		
 		questItemIds = new int[]
 		{
@@ -57,26 +57,26 @@ public class Q008_AnAdventureBegins extends Quest
 		
 		if (event.equalsIgnoreCase("30134-03.htm"))
 		{
-			st.set("cond", "1");
 			st.setState(STATE_STARTED);
+			st.set("cond", "1");
 			st.playSound(QuestState.SOUND_ACCEPT);
 		}
 		else if (event.equalsIgnoreCase("30355-02.htm"))
 		{
 			st.set("cond", "2");
-			st.giveItems(ROSELYN_NOTE, 1);
 			st.playSound(QuestState.SOUND_MIDDLE);
+			st.giveItems(ROSELYN_NOTE, 1);
 		}
 		else if (event.equalsIgnoreCase("30144-02.htm"))
 		{
 			st.set("cond", "3");
-			st.takeItems(ROSELYN_NOTE, 1);
 			st.playSound(QuestState.SOUND_MIDDLE);
+			st.takeItems(ROSELYN_NOTE, 1);
 		}
 		else if (event.equalsIgnoreCase("30134-06.htm"))
 		{
 			st.giveItems(MARK_TRAVELER, 1);
-			st.rewardItems(SCROLL_ESCAPE, 1);
+			st.rewardItems(SOE_GIRAN, 1);
 			st.playSound(QuestState.SOUND_FINISH);
 			st.exitQuest(false);
 		}
@@ -138,6 +138,6 @@ public class Q008_AnAdventureBegins extends Quest
 	
 	public static void main(String[] args)
 	{
-		new Q008_AnAdventureBegins(8, qn, "An Adventure Begins");
+		new Q008_AnAdventureBegins();
 	}
 }

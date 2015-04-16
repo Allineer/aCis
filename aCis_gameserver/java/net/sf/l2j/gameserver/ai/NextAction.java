@@ -17,7 +17,8 @@ package net.sf.l2j.gameserver.ai;
 import java.util.ArrayList;
 
 /**
- * @author Yaroslav Class for AI action after some event. Has 2 array list for "work" and "break".
+ * Class for AI action after some event. Has 2 array list for "work" and "break".
+ * @author Yaroslav
  */
 public class NextAction
 {
@@ -170,7 +171,6 @@ public class NextAction
 			_intentions = new ArrayList<>();
 		
 		if (intention != null)
-			
 			_intentions.add(intention);
 	}
 	

@@ -89,7 +89,7 @@ public class ClanHallManager
 					if (owner != null)
 					{
 						_clanHall.put(id, ch);
-						owner.setHasHideout(id);
+						owner.setHideout(id);
 						continue;
 					}
 					ch.free();
@@ -143,7 +143,7 @@ public class ClanHallManager
 	public final synchronized void setFree(int chId)
 	{
 		_freeClanHall.put(chId, _clanHall.get(chId));
-		ClanTable.getInstance().getClan(_freeClanHall.get(chId).getOwnerId()).setHasHideout(0);
+		ClanTable.getInstance().getClan(_freeClanHall.get(chId).getOwnerId()).setHideout(0);
 		_freeClanHall.get(chId).free();
 		_clanHall.remove(chId);
 	}
@@ -163,7 +163,7 @@ public class ClanHallManager
 		else
 			_clanHall.get(chId).free();
 		
-		ClanTable.getInstance().getClan(clan.getClanId()).setHasHideout(chId);
+		ClanTable.getInstance().getClan(clan.getClanId()).setHideout(chId);
 		_clanHall.get(chId).setOwner(clan);
 	}
 	

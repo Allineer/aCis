@@ -310,38 +310,13 @@ public class L2SignsPriestInstance extends L2NpcInstance
 					}
 					
 					if (redContrib > 0)
-					{
-						if (player.destroyItemByItemId("SevenSigns", SevenSigns.SEAL_STONE_RED_ID, redContrib, this, false))
-						{
-							contribStonesFound = true;
-							SystemMessage msg = SystemMessage.getSystemMessage(SystemMessageId.S2_S1_DISAPPEARED);
-							msg.addItemName(SevenSigns.SEAL_STONE_RED_ID);
-							msg.addItemNumber(redContrib);
-							player.sendPacket(msg);
-						}
-					}
+						contribStonesFound |= player.destroyItemByItemId("SevenSigns", SevenSigns.SEAL_STONE_RED_ID, redContrib, this, true);
+					
 					if (greenContrib > 0)
-					{
-						if (player.destroyItemByItemId("SevenSigns", SevenSigns.SEAL_STONE_GREEN_ID, greenContrib, this, false))
-						{
-							contribStonesFound = true;
-							SystemMessage msg = SystemMessage.getSystemMessage(SystemMessageId.S2_S1_DISAPPEARED);
-							msg.addItemName(SevenSigns.SEAL_STONE_GREEN_ID);
-							msg.addItemNumber(greenContrib);
-							player.sendPacket(msg);
-						}
-					}
+						contribStonesFound |= player.destroyItemByItemId("SevenSigns", SevenSigns.SEAL_STONE_GREEN_ID, greenContrib, this, true);
+					
 					if (blueContrib > 0)
-					{
-						if (player.destroyItemByItemId("SevenSigns", SevenSigns.SEAL_STONE_BLUE_ID, blueContrib, this, false))
-						{
-							contribStonesFound = true;
-							SystemMessage msg = SystemMessage.getSystemMessage(SystemMessageId.S2_S1_DISAPPEARED);
-							msg.addItemName(SevenSigns.SEAL_STONE_BLUE_ID);
-							msg.addItemNumber(blueContrib);
-							player.sendPacket(msg);
-						}
-					}
+						contribStonesFound |= player.destroyItemByItemId("SevenSigns", SevenSigns.SEAL_STONE_BLUE_ID, blueContrib, this, true);
 					
 					if (!contribStonesFound)
 					{
@@ -434,40 +409,13 @@ public class L2SignsPriestInstance extends L2NpcInstance
 									blueContribCount = blueStoneCount;
 								
 								if (redContribCount > 0)
-								{
-									if (player.destroyItemByItemId("SevenSigns", SevenSigns.SEAL_STONE_RED_ID, redContribCount, this, false))
-									{
-										stonesFound = true;
-										SystemMessage msg = SystemMessage.getSystemMessage(SystemMessageId.S2_S1_DISAPPEARED);
-										msg.addItemName(SevenSigns.SEAL_STONE_RED_ID);
-										msg.addItemNumber(redContribCount);
-										player.sendPacket(msg);
-									}
-								}
+									stonesFound |= player.destroyItemByItemId("SevenSigns", SevenSigns.SEAL_STONE_RED_ID, redContribCount, this, true);
 								
 								if (greenContribCount > 0)
-								{
-									if (player.destroyItemByItemId("SevenSigns", SevenSigns.SEAL_STONE_GREEN_ID, greenContribCount, this, false))
-									{
-										stonesFound = true;
-										SystemMessage msg = SystemMessage.getSystemMessage(SystemMessageId.S2_S1_DISAPPEARED);
-										msg.addItemName(SevenSigns.SEAL_STONE_GREEN_ID);
-										msg.addItemNumber(greenContribCount);
-										player.sendPacket(msg);
-									}
-								}
+									stonesFound |= player.destroyItemByItemId("SevenSigns", SevenSigns.SEAL_STONE_GREEN_ID, greenContribCount, this, true);
 								
 								if (blueContribCount > 0)
-								{
-									if (player.destroyItemByItemId("SevenSigns", SevenSigns.SEAL_STONE_BLUE_ID, blueContribCount, this, false))
-									{
-										stonesFound = true;
-										SystemMessage msg = SystemMessage.getSystemMessage(SystemMessageId.S2_S1_DISAPPEARED);
-										msg.addItemName(SevenSigns.SEAL_STONE_BLUE_ID);
-										msg.addItemNumber(blueContribCount);
-										player.sendPacket(msg);
-									}
-								}
+									stonesFound |= player.destroyItemByItemId("SevenSigns", SevenSigns.SEAL_STONE_BLUE_ID, blueContribCount, this, true);
 								
 								if (!stonesFound)
 								{

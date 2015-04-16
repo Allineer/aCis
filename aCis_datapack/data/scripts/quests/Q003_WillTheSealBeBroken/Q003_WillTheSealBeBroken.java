@@ -22,16 +22,17 @@ public class Q003_WillTheSealBeBroken extends Quest
 {
 	private static final String qn = "Q003_WillTheSealBeBroken";
 	
-	private static final int TALLOTH = 30141;
-	
+	// Items
 	private static final int ONYX_BEAST_EYE = 1081;
 	private static final int TAINT_STONE = 1082;
 	private static final int SUCCUBUS_BLOOD = 1083;
+	
+	// Reward
 	private static final int SCROLL_ENCHANT_ARMOR_D = 956;
 	
-	public Q003_WillTheSealBeBroken(int questId, String name, String descr)
+	public Q003_WillTheSealBeBroken()
 	{
-		super(questId, name, descr);
+		super(3, qn, "Will the Seal be Broken?");
 		
 		questItemIds = new int[]
 		{
@@ -40,8 +41,8 @@ public class Q003_WillTheSealBeBroken extends Quest
 			SUCCUBUS_BLOOD
 		};
 		
-		addStartNpc(TALLOTH);
-		addTalkId(TALLOTH);
+		addStartNpc(30141); // Talloth
+		addTalkId(30141);
 		
 		addKillId(20031, 20041, 20046, 20048, 20052, 20057);
 	}
@@ -56,8 +57,8 @@ public class Q003_WillTheSealBeBroken extends Quest
 		
 		if (event.equalsIgnoreCase("30141-03.htm"))
 		{
-			st.set("cond", "1");
 			st.setState(STATE_STARTED);
+			st.set("cond", "1");
 			st.playSound(QuestState.SOUND_ACCEPT);
 		}
 		
@@ -91,8 +92,8 @@ public class Q003_WillTheSealBeBroken extends Quest
 				{
 					htmltext = "30141-06.htm";
 					st.takeItems(ONYX_BEAST_EYE, 1);
-					st.takeItems(TAINT_STONE, 1);
 					st.takeItems(SUCCUBUS_BLOOD, 1);
+					st.takeItems(TAINT_STONE, 1);
 					st.giveItems(SCROLL_ENCHANT_ARMOR_D, 1);
 					st.playSound(QuestState.SOUND_FINISH);
 					st.exitQuest(false);
@@ -143,6 +144,6 @@ public class Q003_WillTheSealBeBroken extends Quest
 	
 	public static void main(String[] args)
 	{
-		new Q003_WillTheSealBeBroken(3, qn, "Will the Seal be Broken?");
+		new Q003_WillTheSealBeBroken();
 	}
 }

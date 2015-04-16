@@ -103,9 +103,9 @@ public class Q039_RedEyedInvaders extends Quest
 	private static final int BABY_DUCK_RODE = 6529;
 	private static final int FISHING_SHOT_NG = 6535;
 	
-	public Q039_RedEyedInvaders(int questId, String name, String descr)
+	public Q039_RedEyedInvaders()
 	{
-		super(questId, name, descr);
+		super(39, qn, "Red-Eyed Invaders");
 		
 		questItemIds = new int[]
 		{
@@ -131,8 +131,8 @@ public class Q039_RedEyedInvaders extends Quest
 		
 		if (event.equalsIgnoreCase("30334-1.htm"))
 		{
-			st.set("cond", "1");
 			st.setState(STATE_STARTED);
+			st.set("cond", "1");
 			st.playSound(QuestState.SOUND_ACCEPT);
 		}
 		else if (event.equalsIgnoreCase("30332-1.htm"))
@@ -180,8 +180,7 @@ public class Q039_RedEyedInvaders extends Quest
 				switch (npc.getNpcId())
 				{
 					case BABENCO:
-						if (cond >= 1)
-							htmltext = "30334-3.htm";
+						htmltext = "30334-3.htm";
 						break;
 					
 					case BATHIS:
@@ -244,6 +243,6 @@ public class Q039_RedEyedInvaders extends Quest
 	
 	public static void main(String[] args)
 	{
-		new Q039_RedEyedInvaders(39, qn, "Red-Eyed Invaders");
+		new Q039_RedEyedInvaders();
 	}
 }

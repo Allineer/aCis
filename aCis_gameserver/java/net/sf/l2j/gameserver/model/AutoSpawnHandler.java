@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.sf.l2j.Config;
@@ -452,26 +453,17 @@ public class AutoSpawnHandler
 					}
 				}
 				
-				String nearestTown = MapRegionTable.getInstance().getClosestTownName(npcInst);
-				
 				// Announce to all players that the spawn has taken place, with the nearest town location.
-				if (spawnInst.isBroadcasting() && npcInst != null)
-					Announcements.announceToAll("The " + npcInst.getName() + " has spawned near " + nearestTown + "!");
-				
-				if (Config.DEBUG)
-					_log.info("AutoSpawnHandler: Spawned NPC ID " + spawnInst.getNpcId() + " at " + x + ", " + y + ", " + z + " (Near " + nearestTown + ") for " + (spawnInst.getRespawnDelay() / 60000) + " minute(s).");
+				if (npcInst != null && spawnInst.isBroadcasting())
+					Announcements.announceToAll("The " + npcInst.getName() + " has spawned near " + MapRegionTable.getInstance().getClosestTownName(npcInst.getX(), npcInst.getY()) + "!");
 				
 				// If there is no despawn time, do not create a despawn task.
 				if (spawnInst.getDespawnDelay() > 0)
-				{
-					AutoDespawner rd = new AutoDespawner(_objectId);
-					ThreadPoolManager.getInstance().scheduleAi(rd, spawnInst.getDespawnDelay() - 1000);
-				}
+					ThreadPoolManager.getInstance().scheduleAi(new AutoDespawner(_objectId), spawnInst.getDespawnDelay() - 1000);
 			}
 			catch (Exception e)
 			{
-				_log.warning("AutoSpawnHandler: An error occurred while initializing spawn instance (Object ID = " + _objectId + "): " + e);
-				e.printStackTrace();
+				_log.log(Level.WARNING, "AutoSpawnHandler: An error occurred while initializing spawn instance (Object ID = " + _objectId + "): " + e.getMessage(), e);
 			}
 		}
 	}

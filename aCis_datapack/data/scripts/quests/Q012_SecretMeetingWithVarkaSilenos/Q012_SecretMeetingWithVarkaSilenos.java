@@ -29,9 +29,9 @@ public class Q012_SecretMeetingWithVarkaSilenos extends Quest
 	// Items
 	private static final int MUNITIONS_BOX = 7232;
 	
-	public Q012_SecretMeetingWithVarkaSilenos(int questId, String name, String descr)
+	public Q012_SecretMeetingWithVarkaSilenos()
 	{
-		super(questId, name, descr);
+		super(12, qn, "Secret Meeting With Varka Silenos");
 		
 		questItemIds = new int[]
 		{
@@ -52,8 +52,8 @@ public class Q012_SecretMeetingWithVarkaSilenos extends Quest
 		
 		if (event.equalsIgnoreCase("31296-03.htm"))
 		{
-			st.set("cond", "1");
 			st.setState(STATE_STARTED);
+			st.set("cond", "1");
 			st.playSound(QuestState.SOUND_ACCEPT);
 		}
 		else if (event.equalsIgnoreCase("31258-02.htm"))
@@ -120,6 +120,6 @@ public class Q012_SecretMeetingWithVarkaSilenos extends Quest
 	
 	public static void main(String[] args)
 	{
-		new Q012_SecretMeetingWithVarkaSilenos(12, qn, "Secret Meeting With Varka Silenos");
+		new Q012_SecretMeetingWithVarkaSilenos();
 	}
 }

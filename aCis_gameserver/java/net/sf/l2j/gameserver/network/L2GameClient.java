@@ -420,14 +420,10 @@ public final class L2GameClient extends MMOClient<MMOConnection<L2GameClient>> i
 			character.setRunning(); // running is default
 			character.standUp(); // standing is default
 			
-			character.refreshOverloaded();
-			character.refreshExpertisePenalty();
 			character.setOnlineStatus(true, false);
 		}
 		else
-		{
-			_log.severe("could not restore in slot: " + charslot);
-		}
+			_log.severe("L2GameClient: could not restore in slot: " + charslot);
 		
 		return character;
 	}

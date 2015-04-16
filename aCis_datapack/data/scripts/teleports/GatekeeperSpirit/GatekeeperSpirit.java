@@ -47,12 +47,12 @@ public class GatekeeperSpirit extends Quest
 		if (event.equalsIgnoreCase("spawn_exitgk_lilith"))
 		{
 			// exit_necropolis_boss_lilith
-			addSpawn(ExitGk, 184410, -10111, -5488, 0, false, 900000, false);
+			addSpawn(ExitGk, 184446, -10112, -5488, 0, false, 900000, false);
 		}
 		else if (event.equalsIgnoreCase("spawn_exitgk_anakim"))
 		{
 			// exit_necropolis_boss_anakim
-			addSpawn(ExitGk, 184410, -13102, -5488, 0, false, 900000, false);
+			addSpawn(ExitGk, 184466, -13106, -5488, 0, false, 900000, false);
 		}
 		return super.onAdvEvent(event, npc, player);
 	}

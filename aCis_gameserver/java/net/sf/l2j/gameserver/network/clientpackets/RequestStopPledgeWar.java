@@ -57,12 +57,12 @@ public final class RequestStopPledgeWar extends L2GameClientPacket
 			return;
 		}
 		
-		ClanTable.getInstance().deleteclanswars(playerClan.getClanId(), clan.getClanId());
+		ClanTable.getInstance().deleteClansWars(playerClan.getClanId(), clan.getClanId());
 		
-		for (L2PcInstance member : clan.getOnlineMembers(0))
+		for (L2PcInstance member : clan.getOnlineMembers())
 			member.broadcastUserInfo();
 		
-		for (L2PcInstance member : playerClan.getOnlineMembers(0))
+		for (L2PcInstance member : playerClan.getOnlineMembers())
 			member.broadcastUserInfo();
 	}
 }

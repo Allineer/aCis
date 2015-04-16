@@ -41,8 +41,8 @@ public class Q241_PossessorOfAPreciousSoul extends Quest
 	private static final int SPLINTER_STAKATO = 21508;
 	private static final int SPLINTER_STAKATO_WALKER = 21509;
 	private static final int SPLINTER_STAKATO_SOLDIER = 21510;
-	private static final int SPLINTER_STAKATO_DRONE1 = 21511;
-	private static final int SPLINTER_STAKATO_DRONE2 = 21512;
+	private static final int SPLINTER_STAKATO_DRONE_1 = 21511;
+	private static final int SPLINTER_STAKATO_DRONE_2 = 21512;
 	
 	// Items
 	private static final int LEGEND_OF_SEVENTEEN = 7587;
@@ -50,14 +50,14 @@ public class Q241_PossessorOfAPreciousSoul extends Quest
 	private static final int ECHO_CRYSTAL = 7589;
 	private static final int POETRY_BOOK = 7588;
 	private static final int CRIMSON_MOSS = 7598;
-	private static final int RAHORAKTIS_MEDICINE = 7599;
+	private static final int RAHORAKTI_MEDICINE = 7599;
 	private static final int LUNARGENT = 6029;
 	private static final int HELLFIRE_OIL = 6033;
-	private static final int VIRGILS_LETTER = 7677;
+	private static final int VIRGIL_LETTER = 7677;
 	
-	public Q241_PossessorOfAPreciousSoul(int questId, String name, String descr)
+	public Q241_PossessorOfAPreciousSoul()
 	{
-		super(questId, name, descr);
+		super(241, qn, "Possessor of a Precious Soul - 1");
 		
 		questItemIds = new int[]
 		{
@@ -66,13 +66,13 @@ public class Q241_PossessorOfAPreciousSoul extends Quest
 			ECHO_CRYSTAL,
 			POETRY_BOOK,
 			CRIMSON_MOSS,
-			RAHORAKTIS_MEDICINE
+			RAHORAKTI_MEDICINE
 		};
 		
 		addStartNpc(TALIEN);
 		addTalkId(TALIEN, GABRIELLE, GILMORE, KANTABILON, STEDMIEL, VIRGIL, OGMAR, RAHORAKTI, KASSANDRA, CARADINE, NOEL);
 		
-		addKillId(BARAHAM, MALRUK_SUCCUBUS, MALRUK_SUCCUBUS_TUREN, SPLINTER_STAKATO, SPLINTER_STAKATO_WALKER, SPLINTER_STAKATO_SOLDIER, SPLINTER_STAKATO_DRONE1, SPLINTER_STAKATO_DRONE2);
+		addKillId(BARAHAM, MALRUK_SUCCUBUS, MALRUK_SUCCUBUS_TUREN, SPLINTER_STAKATO, SPLINTER_STAKATO_WALKER, SPLINTER_STAKATO_SOLDIER, SPLINTER_STAKATO_DRONE_1, SPLINTER_STAKATO_DRONE_2);
 	}
 	
 	@Override
@@ -86,27 +86,27 @@ public class Q241_PossessorOfAPreciousSoul extends Quest
 		// Talien
 		if (event.equalsIgnoreCase("31739-03.htm"))
 		{
-			st.set("cond", "1");
 			st.setState(STATE_STARTED);
+			st.set("cond", "1");
 			st.playSound(QuestState.SOUND_ACCEPT);
 		}
 		else if (event.equalsIgnoreCase("31739-07.htm"))
 		{
 			st.set("cond", "5");
-			st.takeItems(LEGEND_OF_SEVENTEEN, 1);
 			st.playSound(QuestState.SOUND_MIDDLE);
+			st.takeItems(LEGEND_OF_SEVENTEEN, 1);
 		}
 		else if (event.equalsIgnoreCase("31739-10.htm"))
 		{
 			st.set("cond", "9");
-			st.takeItems(ECHO_CRYSTAL, 1);
 			st.playSound(QuestState.SOUND_MIDDLE);
+			st.takeItems(ECHO_CRYSTAL, 1);
 		}
 		else if (event.equalsIgnoreCase("31739-13.htm"))
 		{
 			st.set("cond", "11");
-			st.takeItems(POETRY_BOOK, 1);
 			st.playSound(QuestState.SOUND_MIDDLE);
+			st.takeItems(POETRY_BOOK, 1);
 		}
 		// Gabrielle
 		else if (event.equalsIgnoreCase("30753-02.htm"))
@@ -129,16 +129,16 @@ public class Q241_PossessorOfAPreciousSoul extends Quest
 		else if (event.equalsIgnoreCase("31042-05.htm"))
 		{
 			st.set("cond", "8");
-			st.takeItems(MALRUK_SUCCUBUS_CLAW, 10);
-			st.giveItems(ECHO_CRYSTAL, 1);
 			st.playSound(QuestState.SOUND_MIDDLE);
+			st.takeItems(MALRUK_SUCCUBUS_CLAW, -1);
+			st.giveItems(ECHO_CRYSTAL, 1);
 		}
 		// Stedmiel
 		else if (event.equalsIgnoreCase("30692-02.htm"))
 		{
 			st.set("cond", "10");
-			st.giveItems(POETRY_BOOK, 1);
 			st.playSound(QuestState.SOUND_MIDDLE);
+			st.giveItems(POETRY_BOOK, 1);
 		}
 		// Virgil
 		else if (event.equalsIgnoreCase("31742-02.htm"))
@@ -166,16 +166,16 @@ public class Q241_PossessorOfAPreciousSoul extends Quest
 		else if (event.equalsIgnoreCase("31336-05.htm"))
 		{
 			st.set("cond", "16");
-			st.takeItems(CRIMSON_MOSS, 5);
-			st.giveItems(RAHORAKTIS_MEDICINE, 1);
 			st.playSound(QuestState.SOUND_MIDDLE);
+			st.takeItems(CRIMSON_MOSS, -1);
+			st.giveItems(RAHORAKTI_MEDICINE, 1);
 		}
 		// Kassandra
 		else if (event.equalsIgnoreCase("31743-02.htm"))
 		{
 			st.set("cond", "17");
-			st.takeItems(RAHORAKTIS_MEDICINE, 1);
 			st.playSound(QuestState.SOUND_MIDDLE);
+			st.takeItems(RAHORAKTI_MEDICINE, 1);
 		}
 		// Caradine
 		else if (event.equalsIgnoreCase("31740-02.htm"))
@@ -185,7 +185,7 @@ public class Q241_PossessorOfAPreciousSoul extends Quest
 		}
 		else if (event.equalsIgnoreCase("31740-05.htm"))
 		{
-			st.giveItems(VIRGILS_LETTER, 1);
+			st.giveItems(VIRGIL_LETTER, 1);
 			st.rewardExpAndSp(263043, 0);
 			st.playSound(QuestState.SOUND_FINISH);
 			st.exitQuest(false);
@@ -200,10 +200,10 @@ public class Q241_PossessorOfAPreciousSoul extends Quest
 		{
 			if (st.hasQuestItems(HELLFIRE_OIL) && st.getQuestItemsCount(LUNARGENT) >= 5)
 			{
-				st.takeItems(LUNARGENT, 5);
-				st.takeItems(HELLFIRE_OIL, 1);
 				st.set("cond", "21");
 				st.playSound(QuestState.SOUND_MIDDLE);
+				st.takeItems(LUNARGENT, 5);
+				st.takeItems(HELLFIRE_OIL, 1);
 			}
 			else
 				htmltext = "31272-07.htm";
@@ -222,13 +222,7 @@ public class Q241_PossessorOfAPreciousSoul extends Quest
 		switch (st.getState())
 		{
 			case STATE_CREATED:
-				if (!player.isSubClassActive() || player.getLevel() < 50)
-				{
-					htmltext = "31739-02.htm";
-					st.exitQuest(true);
-				}
-				else
-					htmltext = "31739-01.htm";
+				htmltext = (!player.isSubClassActive() || player.getLevel() < 50) ? "31739-02.htm" : "31739-01.htm";
 				break;
 			
 			case STATE_STARTED:
@@ -360,42 +354,33 @@ public class Q241_PossessorOfAPreciousSoul extends Quest
 	@Override
 	public String onKill(L2Npc npc, L2PcInstance player, boolean isPet)
 	{
-		if (!player.isSubClassActive())
+		QuestState st = checkPlayerState(player, npc, STATE_STARTED);
+		if (st == null || !player.isSubClassActive())
 			return null;
 		
-		QuestState st;
 		switch (npc.getNpcId())
 		{
 			case BARAHAM:
-				st = checkPlayerCondition(player, npc, "cond", "3");
-				if (st == null)
-					return null;
-				
-				st.set("cond", "4");
-				st.giveItems(LEGEND_OF_SEVENTEEN, 1);
-				st.playSound(QuestState.SOUND_MIDDLE);
+				if (st.getInt("cond") == 3)
+				{
+					st.set("cond", "4");
+					st.giveItems(LEGEND_OF_SEVENTEEN, 1);
+					st.playSound(QuestState.SOUND_MIDDLE);
+				}
 				break;
 			
 			case MALRUK_SUCCUBUS:
 			case MALRUK_SUCCUBUS_TUREN:
-				st = checkPlayerCondition(player, npc, "cond", "6");
-				if (st == null)
-					return null;
-				
-				if (st.dropItems(MALRUK_SUCCUBUS_CLAW, 1, 10, 200000, QuestState.DROP_FIXED_COUNT))
+				if (st.getInt("cond") == 6 && st.dropItems(MALRUK_SUCCUBUS_CLAW, 1, 10, 200000))
 					st.set("cond", "7");
 				break;
 			
 			case SPLINTER_STAKATO:
 			case SPLINTER_STAKATO_WALKER:
 			case SPLINTER_STAKATO_SOLDIER:
-			case SPLINTER_STAKATO_DRONE1:
-			case SPLINTER_STAKATO_DRONE2:
-				st = checkPlayerCondition(player, npc, "cond", "14");
-				if (st == null)
-					return null;
-				
-				if (st.dropItems(CRIMSON_MOSS, 1, 5, 25000, QuestState.DROP_FIXED_COUNT))
+			case SPLINTER_STAKATO_DRONE_1:
+			case SPLINTER_STAKATO_DRONE_2:
+				if (st.getInt("cond") == 14 && st.dropItems(CRIMSON_MOSS, 1, 5, 25000))
 					st.set("cond", "15");
 				break;
 		}
@@ -404,6 +389,6 @@ public class Q241_PossessorOfAPreciousSoul extends Quest
 	
 	public static void main(String[] args)
 	{
-		new Q241_PossessorOfAPreciousSoul(241, qn, "Possessor of a Precious Soul - 1");
+		new Q241_PossessorOfAPreciousSoul();
 	}
 }

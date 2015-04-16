@@ -107,7 +107,7 @@ public class StatsSet extends HashMap<String, Object>
 		if (val instanceof Boolean)
 			return (Boolean) val;
 		
-		throw new IllegalArgumentException("Boolean value required, but found: " + val + '!');
+		throw new IllegalArgumentException("StatsSet : Boolean value required, but found: " + val + " for key: " + key + ".");
 	}
 	
 	public boolean getBool(final String key, final boolean defaultValue)
@@ -133,7 +133,7 @@ public class StatsSet extends HashMap<String, Object>
 		if (val instanceof String)
 			return Byte.parseByte((String) val);
 		
-		throw new IllegalArgumentException("Byte value required, but found: " + val + '!');
+		throw new IllegalArgumentException("StatsSet : Byte value required, but found: " + val + " for key: " + key + ".");
 	}
 	
 	public byte getByte(final String key, final byte defaultValue)
@@ -159,7 +159,7 @@ public class StatsSet extends HashMap<String, Object>
 		if (val instanceof Boolean)
 			return (Boolean) val ? 1 : 0;
 		
-		throw new IllegalArgumentException("Float value required, but found: " + val + '!');
+		throw new IllegalArgumentException("StatsSet : Float value required, but found: " + val + " for key: " + key + ".");
 	}
 	
 	public float getFloat(final String key, final float defaultValue)
@@ -187,7 +187,7 @@ public class StatsSet extends HashMap<String, Object>
 		if (val instanceof Boolean)
 			return (Boolean) val ? 1 : 0;
 		
-		throw new IllegalArgumentException("Integer value required, but found: " + val + '!');
+		throw new IllegalArgumentException("StatsSet : Integer value required, but found: " + val + " for key: " + key + ".");
 	}
 	
 	public int getInteger(final String key, final int defaultValue)
@@ -228,7 +228,7 @@ public class StatsSet extends HashMap<String, Object>
 			return result;
 		}
 		
-		throw new IllegalArgumentException("Integer array required, but found: " + val + '!');
+		throw new IllegalArgumentException("StatsSet : Integer array required, but found: " + val + " for key: " + key + ".");
 	}
 	
 	public int[] getIntegerArray(final String key, final int[] defaultArray)
@@ -254,7 +254,7 @@ public class StatsSet extends HashMap<String, Object>
 		if (val instanceof Boolean)
 			return (Boolean) val ? 1L : 0L;
 		
-		throw new IllegalArgumentException("Long value required, but found: " + val + '!');
+		throw new IllegalArgumentException("StatsSet : Long value required, but found: " + val + " for key: " + key + ".");
 	}
 	
 	public long getLong(final String key, final long defaultValue)
@@ -295,7 +295,7 @@ public class StatsSet extends HashMap<String, Object>
 			return result;
 		}
 		
-		throw new IllegalArgumentException("Integer array required, but found: " + val + '!');
+		throw new IllegalArgumentException("StatsSet : Long array required, but found: " + val + " for key: " + key + ".");
 	}
 	
 	public double getDouble(final String key)
@@ -309,7 +309,7 @@ public class StatsSet extends HashMap<String, Object>
 		if (val instanceof Boolean)
 			return (Boolean) val ? 1. : 0.;
 		
-		throw new IllegalArgumentException("Double value required, but found: " + val + '!');
+		throw new IllegalArgumentException("StatsSet : Double value required, but found: " + val + " for key: " + key + ".");
 	}
 	
 	public double getDouble(final String key, final double defaultValue)
@@ -333,7 +333,7 @@ public class StatsSet extends HashMap<String, Object>
 		if (val != null)
 			return String.valueOf(val);
 		
-		throw new IllegalArgumentException("String value required, but not specified!");
+		throw new IllegalArgumentException("StatsSet : String value required, but unspecified for key: " + key + ".");
 	}
 	
 	public String getString(final String key, final String defaultValue)
@@ -371,7 +371,7 @@ public class StatsSet extends HashMap<String, Object>
 		if (val instanceof String)
 			return Enum.valueOf(enumClass, (String) val);
 		
-		throw new IllegalArgumentException("Enum value of type " + enumClass.getName() + "required, but found: " + val + '!');
+		throw new IllegalArgumentException("Enum value of type " + enumClass.getName() + "required, but found: " + val + ".");
 	}
 	
 	@SuppressWarnings("unchecked")

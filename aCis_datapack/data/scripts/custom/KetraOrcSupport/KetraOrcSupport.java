@@ -53,7 +53,7 @@ public class KetraOrcSupport extends Quest
 	
 	private static final int HORN = 7186;
 	
-	private static final int[] _ketras =
+	private static final int[] KETRAS =
 	{
 		21324,
 		21325,
@@ -136,19 +136,19 @@ public class KetraOrcSupport extends Quest
 		"Q610_MagicalPowerOfWater_Part2"
 	};
 	
-	public KetraOrcSupport(int id, String name, String descr)
+	public KetraOrcSupport()
 	{
-		super(id, name, descr);
+		super(-1, qn, "custom");
 		
 		addFirstTalkId(KADUN, WAHKAN, ASEFA, ATAN, JAFF, JUMARA, KURFA);
 		addTalkId(ASEFA, JAFF, KURFA);
 		addStartNpc(JAFF, KURFA);
 		
 		// Verify if the killer didn't kill an allied mob. Test his party aswell.
-		addKillId(_ketras);
+		addKillId(KETRAS);
 		
 		// Verify if an allied is healing/buff an enemy. Petrify him if it's the case.
-		addSkillSeeId(_ketras);
+		addSkillSeeId(KETRAS);
 	}
 	
 	@Override
@@ -422,6 +422,6 @@ public class KetraOrcSupport extends Quest
 	
 	public static void main(String[] args)
 	{
-		new KetraOrcSupport(-1, qn, "custom");
+		new KetraOrcSupport();
 	}
 }

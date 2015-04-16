@@ -200,10 +200,10 @@ public class BoatGiranTalking implements Runnable
 						ThreadPoolManager.getInstance().scheduleGeneral(this, 5000);
 						return;
 					}
+					BoatManager.getInstance().dockShip(BoatManager.TALKING_ISLAND, true);
 					_boat.executePath(TALKING_DOCK);
 					break;
 				case 8:
-					BoatManager.getInstance().dockShip(BoatManager.TALKING_ISLAND, true);
 					BoatManager.getInstance().broadcastPackets(TALKING_DOCK[0], GIRAN_DOCK, ARRIVED_AT_TALKING, ARRIVED_AT_TALKING_2);
 					_boat.broadcastPacket(TALKING_SOUND);
 					ThreadPoolManager.getInstance().scheduleGeneral(this, 300000);

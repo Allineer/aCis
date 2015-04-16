@@ -38,7 +38,7 @@ public class EtcStatusUpdate extends L2GameServerPacket
 		writeD(_activeChar.getWeightPenalty());
 		writeD((_activeChar.isInRefusalMode() || _activeChar.isChatBanned()) ? 1 : 0);
 		writeD(_activeChar.isInsideZone(ZoneId.DANGER_AREA) ? 1 : 0);
-		writeD(_activeChar.getExpertisePenalty());
+		writeD((_activeChar.getExpertiseWeaponPenalty() || _activeChar.getExpertiseArmorPenalty() > 0) ? 1 : 0);
 		writeD(_activeChar.isAffected(L2EffectFlag.CHARM_OF_COURAGE) ? 1 : 0);
 		writeD(_activeChar.getDeathPenaltyBuffLevel());
 	}

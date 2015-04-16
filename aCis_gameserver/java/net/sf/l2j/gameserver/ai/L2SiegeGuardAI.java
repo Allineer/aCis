@@ -209,7 +209,7 @@ public class L2SiegeGuardAI extends L2AttackableAI
 				actor.stopHating(attackTarget);
 			
 			// Search the nearest target. If a target is found, continue regular process, else drop angry behavior.
-			attackTarget = targetReconsider(actor.getClanRange());
+			attackTarget = targetReconsider(actor.getClanRange(), false);
 			if (attackTarget == null)
 			{
 				setIntention(CtrlIntention.ACTIVE);
@@ -377,7 +377,7 @@ public class L2SiegeGuardAI extends L2AttackableAI
 		{
 			// If distance is too big, choose another target.
 			if (dist > range)
-				attackTarget = targetReconsider(range);
+				attackTarget = targetReconsider(range, true);
 			
 			// Any AI type, even healer or mage, will try to melee attack if it can't do anything else (desesperate situation).
 			if (attackTarget != null)
@@ -520,10 +520,11 @@ public class L2SiegeGuardAI extends L2AttackableAI
 	 * <li>If the selected target is a defenser, drop from the list and pickup another.</li>
 	 * </ul>
 	 * @param range The range to check (skill range for skill ; physical range for melee).
+	 * @param rangeCheck That boolean is used to see if a check based on the distance must be made (skill check).
 	 * @return The new L2Character victim.
 	 */
 	@Override
-	protected L2Character targetReconsider(int range)
+	protected L2Character targetReconsider(int range, boolean rangeCheck)
 	{
 		final L2Attackable actor = getActiveChar();
 		
@@ -536,33 +537,29 @@ public class L2SiegeGuardAI extends L2AttackableAI
 			
 			for (L2Character obj : actor.getHateList())
 			{
-				if (obj == actor || obj == getTarget() || obj.isAlikeDead() || !GeoData.getInstance().canSeeTarget(actor, obj))
+				if (!autoAttackCondition(obj))
 					continue;
 				
-				if (obj instanceof L2PcInstance && actor.getCastle().getSiege().checkIsDefender(((L2PcInstance) obj).getClan()))
-					continue;
-				
-				// Verify if the actor is confused.
-				if (obj instanceof L2Attackable && !actor.isConfused())
-					continue;
-				
-				// Verify the distance, -15 if the victim is moving, -15 if the npc is moving.
-				double dist = Math.sqrt(actor.getPlanDistanceSq(obj.getX(), obj.getY())) - obj.getTemplate().getCollisionRadius();
-				if (actor.isMoving())
-					dist -= 15;
-				
-				if (obj.isMoving())
-					dist -= 15;
-				
-				if (dist <= range)
+				if (rangeCheck)
 				{
-					// Stop to hate the most hated.
-					actor.stopHating(previousMostHated);
+					// Verify the distance, -15 if the victim is moving, -15 if the npc is moving.
+					double dist = Math.sqrt(actor.getPlanDistanceSq(obj.getX(), obj.getY())) - obj.getTemplate().getCollisionRadius();
+					if (actor.isMoving())
+						dist -= 15;
 					
-					// Add previous most hated aggro to that new victim.
-					actor.addDamageHate(obj, 0, (aggroMostHated > 0) ? aggroMostHated : 2000);
-					return obj;
+					if (obj.isMoving())
+						dist -= 15;
+					
+					if (dist > range)
+						continue;
 				}
+				
+				// Stop to hate the most hated.
+				actor.stopHating(previousMostHated);
+				
+				// Add previous most hated aggro to that new victim.
+				actor.addDamageHate(obj, 0, (aggroMostHated > 0) ? aggroMostHated : 2000);
+				return obj;
 			}
 		}
 		return null;

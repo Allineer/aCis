@@ -56,7 +56,7 @@ public class Seed implements IItemHandler
 		}
 		
 		final int seedId = item.getItemId();
-		if (areaValid(seedId, MapRegionTable.getInstance().getAreaCastle(playable)))
+		if (areaValid(seedId, MapRegionTable.getAreaCastle(playable.getX(), playable.getY())))
 		{
 			target.setSeeded(seedId, (L2PcInstance) playable);
 			final SkillHolder[] skills = item.getEtcItem().getSkills();

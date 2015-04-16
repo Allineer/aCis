@@ -35,9 +35,9 @@ public class Q001_LettersOfLove extends Quest
 	// Reward
 	private static final int NECKLACE = 906;
 	
-	public Q001_LettersOfLove(int questId, String name, String descr)
+	public Q001_LettersOfLove()
 	{
-		super(questId, name, descr);
+		super(1, qn, "Letters of Love");
 		
 		questItemIds = new int[]
 		{
@@ -61,10 +61,10 @@ public class Q001_LettersOfLove extends Quest
 		
 		if (event.equalsIgnoreCase("30048-06.htm"))
 		{
-			st.set("cond", "1");
 			st.setState(STATE_STARTED);
-			st.giveItems(DARINGS_LETTER, 1);
+			st.set("cond", "1");
 			st.playSound(QuestState.SOUND_ACCEPT);
+			st.giveItems(DARINGS_LETTER, 1);
 		}
 		
 		return htmltext;
@@ -151,6 +151,6 @@ public class Q001_LettersOfLove extends Quest
 	
 	public static void main(String[] args)
 	{
-		new Q001_LettersOfLove(1, qn, "Letters of Love");
+		new Q001_LettersOfLove();
 	}
 }

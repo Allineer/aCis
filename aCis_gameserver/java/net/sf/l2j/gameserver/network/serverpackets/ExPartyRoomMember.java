@@ -14,7 +14,7 @@
  */
 package net.sf.l2j.gameserver.network.serverpackets;
 
-import net.sf.l2j.gameserver.instancemanager.TownManager;
+import net.sf.l2j.gameserver.datatables.MapRegionTable;
 import net.sf.l2j.gameserver.model.PartyMatchRoom;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 
@@ -45,7 +45,7 @@ public class ExPartyRoomMember extends L2GameServerPacket
 			writeS(_member.getName());
 			writeD(_member.getActiveClass());
 			writeD(_member.getLevel());
-			writeD(TownManager.getClosestLocation(_member));
+			writeD(MapRegionTable.getClosestLocation(_member.getX(), _member.getY()));
 			if (_room.getOwner().equals(_member))
 				writeD(1);
 			else

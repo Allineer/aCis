@@ -29,9 +29,9 @@ public class Q011_SecretMeetingWithKetraOrcs extends Quest
 	// Items
 	private static final int MUNITIONS_BOX = 7231;
 	
-	public Q011_SecretMeetingWithKetraOrcs(int questId, String name, String descr)
+	public Q011_SecretMeetingWithKetraOrcs()
 	{
-		super(questId, name, descr);
+		super(11, qn, "Secret Meeting With Ketra Orcs");
 		
 		questItemIds = new int[]
 		{
@@ -52,8 +52,8 @@ public class Q011_SecretMeetingWithKetraOrcs extends Quest
 		
 		if (event.equalsIgnoreCase("31296-03.htm"))
 		{
-			st.set("cond", "1");
 			st.setState(STATE_STARTED);
+			st.set("cond", "1");
 			st.playSound(QuestState.SOUND_ACCEPT);
 		}
 		else if (event.equalsIgnoreCase("31256-02.htm"))
@@ -120,6 +120,6 @@ public class Q011_SecretMeetingWithKetraOrcs extends Quest
 	
 	public static void main(String[] args)
 	{
-		new Q011_SecretMeetingWithKetraOrcs(11, qn, "Secret Meeting With Ketra Orcs");
+		new Q011_SecretMeetingWithKetraOrcs();
 	}
 }

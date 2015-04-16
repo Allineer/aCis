@@ -164,12 +164,6 @@ public final class RequestActionUse extends L2GameClientPacket
 						return;
 					}
 					
-					if (!activeChar.getAccessLevel().allowPeaceAttack() && L2Character.isInsidePeaceZone(pet, target))
-					{
-						activeChar.sendPacket(SystemMessageId.TARGET_IN_PEACEZONE);
-						return;
-					}
-					
 					pet.setTarget(target);
 					if (target.isAutoAttackable(activeChar) || _ctrlPressed)
 					{
@@ -180,7 +174,15 @@ public final class RequestActionUse extends L2GameClientPacket
 						}
 						// siege golem AI doesn't support attacking other than doors at the moment
 						else if (pet.getNpcId() != L2SiegeSummonInstance.SIEGE_GOLEM_ID)
-							pet.getAI().setIntention(CtrlIntention.ATTACK, target);
+						{
+							if (L2Character.isInsidePeaceZone(pet, target))
+							{
+								pet.setFollowStatus(false);
+								pet.getAI().setIntention(CtrlIntention.FOLLOW, target);
+							}
+							else
+								pet.getAI().setIntention(CtrlIntention.ATTACK, target);
+						}
 					}
 					else
 					{

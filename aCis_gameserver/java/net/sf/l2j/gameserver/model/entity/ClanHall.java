@@ -636,9 +636,7 @@ public class ClanHall
 					else
 					{
 						updateDb();
-						SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.PAYMENT_FOR_YOUR_CLAN_HALL_HAS_NOT_BEEN_MADE_PLEASE_MAKE_PAYMENT_TO_YOUR_CLAN_WAREHOUSE_BY_S1_TOMORROW);
-						sm.addNumber(getLease());
-						Clan.broadcastToOnlineMembers(sm);
+						Clan.broadcastToOnlineMembers(SystemMessage.getSystemMessage(SystemMessageId.PAYMENT_FOR_YOUR_CLAN_HALL_HAS_NOT_BEEN_MADE_PLEASE_MAKE_PAYMENT_TO_YOUR_CLAN_WAREHOUSE_BY_S1_TOMORROW).addNumber(getLease()));
 						
 						if (_time + 86400000 <= _paidUntil + _chRate)
 							ThreadPoolManager.getInstance().scheduleGeneral(new FeeTask(), _time + 86400000);

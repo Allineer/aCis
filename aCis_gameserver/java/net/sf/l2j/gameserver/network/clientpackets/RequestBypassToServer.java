@@ -28,8 +28,6 @@ import net.sf.l2j.gameserver.model.actor.L2Npc;
 import net.sf.l2j.gameserver.model.actor.instance.L2OlympiadManagerInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.entity.Hero;
-import net.sf.l2j.gameserver.model.olympiad.OlympiadGameManager;
-import net.sf.l2j.gameserver.model.olympiad.OlympiadGameTask;
 import net.sf.l2j.gameserver.model.olympiad.OlympiadManager;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.ActionFailed;
@@ -179,12 +177,7 @@ public final class RequestBypassToServer extends L2GameClientPacket
 				}
 				
 				final int arenaId = Integer.parseInt(_command.substring(12).trim());
-				final OlympiadGameTask nextArena = OlympiadGameManager.getInstance().getOlympiadTask(arenaId);
-				if (nextArena != null)
-				{
-					activeChar.enterOlympiadObserverMode(nextArena.getZone().getSpawns().get(0), arenaId);
-					return;
-				}
+				activeChar.enterOlympiadObserverMode(arenaId);
 			}
 		}
 		catch (Exception e)

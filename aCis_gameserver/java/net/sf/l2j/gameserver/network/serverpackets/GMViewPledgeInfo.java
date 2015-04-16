@@ -54,7 +54,7 @@ public class GMViewPledgeInfo extends L2GameServerPacket
 		writeS(_clan.getAllyName()); // c2
 		writeD(_clan.getAllyCrestId()); // c2
 		writeD(_clan.isAtWar() ? 1 : 0); // c3
-		writeD(_clan.getMembers().length);
+		writeD(_clan.getMembersCount());
 		
 		for (L2ClanMember member : _clan.getMembers())
 		{

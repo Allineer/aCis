@@ -336,7 +336,7 @@ public class Castle
 				}
 				
 				// Unset castle flag for old owner clan.
-				oldOwner.setHasCastle(0);
+				oldOwner.setCastle(0);
 			}
 		}
 		
@@ -363,7 +363,7 @@ public class Castle
 		{
 			_formerOwner = clan;
 			
-			clan.setHasCastle(0);
+			clan.setCastle(0);
 			clan.broadcastToOnlineMembers(new PledgeShowInfoUpdate(clan));
 		}
 		
@@ -638,7 +638,7 @@ public class Castle
 			// Announce to clan memebers
 			if (clan != null)
 			{
-				clan.setHasCastle(_castleId); // Set has castle flag for new owner
+				clan.setCastle(_castleId); // Set castle flag for new owner
 				clan.broadcastToOnlineMembers(new PledgeShowInfoUpdate(clan));
 				clan.broadcastToOnlineMembers(new PlaySound(1, "Siege_Victory", 0, 0, 0, 0, 0));
 				ThreadPoolManager.getInstance().scheduleGeneral(new CastleUpdater(clan, 1), 3600000); // Schedule owner tasks to start running

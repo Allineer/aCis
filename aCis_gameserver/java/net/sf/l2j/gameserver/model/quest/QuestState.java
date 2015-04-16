@@ -54,6 +54,7 @@ public final class QuestState
 	public static final String SOUND_GIVEUP = "ItemSound.quest_giveup";
 	public static final String SOUND_JACKPOT = "ItemSound.quest_jackpot";
 	public static final String SOUND_FANFARE = "ItemSound.quest_fanfare_2";
+	public static final String SOUND_BEFORE_BATTLE = "Itemsound.quest_before_battle";
 	
 	private static final String QUEST_SET_VAR = "REPLACE INTO character_quests (charId,name,var,value) VALUES (?,?,?,?)";
 	private static final String QUEST_DEL_VAR = "DELETE FROM character_quests WHERE charId=? AND name=? AND var=?";

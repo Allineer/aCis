@@ -35,7 +35,6 @@ public class SpawnTable
 	private static Logger _log = Logger.getLogger(SpawnTable.class.getName());
 	
 	private final Set<L2Spawn> _spawntable = new CopyOnWriteArraySet<>();
-	private int _npcSpawnCount;
 	
 	public static SpawnTable getInstance()
 	{
@@ -93,20 +92,20 @@ public class SpawnTable
 						spawnDat.setLocz(rset.getInt("locz"));
 						spawnDat.setHeading(rset.getInt("heading"));
 						spawnDat.setRespawnDelay(rset.getInt("respawn_delay"));
+						spawnDat.setRandomRespawnDelay(rset.getInt("respawn_rand"));
 						
 						switch (rset.getInt("periodOfDay"))
 						{
 							case 0: // default
 								spawnDat.init();
-								_npcSpawnCount++;
 								break;
+							
 							case 1: // Day
 								DayNightSpawnManager.getInstance().addDayCreature(spawnDat);
-								_npcSpawnCount++;
 								break;
+							
 							case 2: // Night
 								DayNightSpawnManager.getInstance().addNightCreature(spawnDat);
-								_npcSpawnCount++;
 								break;
 						}
 						
@@ -128,9 +127,6 @@ public class SpawnTable
 		}
 		
 		_log.config("SpawnTable: Loaded " + _spawntable.size() + " Npc Spawn Locations.");
-		
-		if (Config.DEBUG)
-			_log.fine("SpawnTable: Spawning completed, total number of NPCs in the world: " + _npcSpawnCount);
 	}
 	
 	public void addNewSpawn(L2Spawn spawn, boolean storeInDb)

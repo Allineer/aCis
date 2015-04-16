@@ -28,12 +28,9 @@ public class Q110_ToThePrimevalIsle extends Quest
 	// Item
 	private static final int ANCIENT_BOOK = 8777;
 	
-	// Reward
-	private static final int ADENA = 57;
-	
-	public Q110_ToThePrimevalIsle(int questId, String name, String descr)
+	public Q110_ToThePrimevalIsle()
 	{
-		super(questId, name, descr);
+		super(110, qn, "To the Primeval Isle");
 		
 		questItemIds = new int[]
 		{
@@ -54,16 +51,16 @@ public class Q110_ToThePrimevalIsle extends Quest
 		
 		if (event.equalsIgnoreCase("31338-02.htm"))
 		{
-			st.set("cond", "1");
 			st.setState(STATE_STARTED);
-			st.giveItems(ANCIENT_BOOK, 1);
+			st.set("cond", "1");
 			st.playSound(QuestState.SOUND_ACCEPT);
+			st.giveItems(ANCIENT_BOOK, 1);
 		}
-		else if (event.equalsIgnoreCase("32113-03.htm") && st.getQuestItemsCount(ANCIENT_BOOK) == 1)
+		else if (event.equalsIgnoreCase("32113-03.htm") && st.hasQuestItems(ANCIENT_BOOK))
 		{
-			st.playSound(QuestState.SOUND_FINISH);
-			st.rewardItems(ADENA, 169380);
 			st.takeItems(ANCIENT_BOOK, 1);
+			st.rewardItems(57, 169380);
+			st.playSound(QuestState.SOUND_FINISH);
 			st.exitQuest(false);
 		}
 		
@@ -107,6 +104,6 @@ public class Q110_ToThePrimevalIsle extends Quest
 	
 	public static void main(String[] args)
 	{
-		new Q110_ToThePrimevalIsle(110, qn, "To the Primeval Isle");
+		new Q110_ToThePrimevalIsle();
 	}
 }

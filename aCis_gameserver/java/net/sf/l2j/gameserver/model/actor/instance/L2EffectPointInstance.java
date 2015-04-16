@@ -15,10 +15,11 @@
 package net.sf.l2j.gameserver.model.actor.instance;
 
 import net.sf.l2j.gameserver.model.actor.L2Character;
+import net.sf.l2j.gameserver.model.actor.L2Npc;
 import net.sf.l2j.gameserver.network.serverpackets.ActionFailed;
 import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
 
-public class L2EffectPointInstance extends L2NpcInstance
+public class L2EffectPointInstance extends L2Npc
 {
 	private final L2PcInstance _owner;
 	
@@ -34,14 +35,15 @@ public class L2EffectPointInstance extends L2NpcInstance
 		return _owner;
 	}
 	
-	/**
-	 * this is called when a player interacts with this NPC
-	 * @param player
-	 */
 	@Override
 	public void onAction(L2PcInstance player)
 	{
-		// Send ActionFailed to the player in order to avoid he stucks
+		player.sendPacket(ActionFailed.STATIC_PACKET);
+	}
+	
+	@Override
+	public void onActionShift(L2PcInstance player)
+	{
 		player.sendPacket(ActionFailed.STATIC_PACKET);
 	}
 }

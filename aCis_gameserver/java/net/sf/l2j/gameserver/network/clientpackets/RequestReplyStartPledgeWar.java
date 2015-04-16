@@ -40,7 +40,7 @@ public final class RequestReplyStartPledgeWar extends L2GameClientPacket
 			return;
 		
 		if (_answer == 1)
-			ClanTable.getInstance().storeclanswars(requestor.getClanId(), activeChar.getClanId());
+			ClanTable.getInstance().storeClansWars(requestor.getClanId(), activeChar.getClanId());
 		else
 			requestor.sendPacket(SystemMessageId.WAR_PROCLAMATION_HAS_BEEN_REFUSED);
 		

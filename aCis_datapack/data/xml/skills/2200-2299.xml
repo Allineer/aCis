@@ -475,6 +475,7 @@
 		</cond>
 	</skill>
 	<skill id="2229" levels="8" name="Treasure Chest Key">
+		<table name="#skillId"> 6665 6666 6667 6668 6669 6670 6671 6672 </table>
 		<set name="target" val="TARGET_ONE" />
 		<set name="hitTime" val="500" />
 		<set name="staticHitTime" val="true" />
@@ -483,6 +484,8 @@
 		<set name="operateType" val="OP_ACTIVE" />
 		<set name="castRange" val="40" />
 		<set name="effectRange" val="400" />
+		<set name="itemConsumeId" val="#skillId"/>
+		<set name="itemConsumeCount" val="1"/>
 	</skill>
 	<skill id="2230" levels="1" name="Item - Theme Sound Crystal">
 		<set name="isPotion" val="true" />

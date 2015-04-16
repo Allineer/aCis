@@ -27,74 +27,77 @@ public class Q223_TestOfTheChampion extends Quest
 	private static final String qn = "Q223_TestOfTheChampion";
 	
 	// Items
-	private static final int MARK_OF_CHAMPION = 3276;
-	private static final int ASCALONS_LETTER1 = 3277;
-	private static final int MASONS_LETTER = 3278;
+	private static final int ASCALON_LETTER_1 = 3277;
+	private static final int MASON_LETTER = 3278;
 	private static final int IRON_ROSE_RING = 3279;
-	private static final int ASCALONS_LETTER2 = 3280;
+	private static final int ASCALON_LETTER_2 = 3280;
 	private static final int WHITE_ROSE_INSIGNIA = 3281;
-	private static final int GROOTS_LETTER = 3282;
-	private static final int ASCALONS_LETTER3 = 3283;
-	private static final int MOUENS_ORDER1 = 3284;
-	private static final int MOUENS_ORDER2 = 3285;
-	private static final int MOUENS_LETTER = 3286;
-	private static final int HARPYS_EGG = 3287;
+	private static final int GROOT_LETTER = 3282;
+	private static final int ASCALON_LETTER_3 = 3283;
+	private static final int MOUEN_ORDER_1 = 3284;
+	private static final int MOUEN_ORDER_2 = 3285;
+	private static final int MOUEN_LETTER = 3286;
+	private static final int HARPY_EGG = 3287;
 	private static final int MEDUSA_VENOM = 3288;
 	private static final int WINDSUS_BILE = 3289;
 	private static final int BLOODY_AXE_HEAD = 3290;
 	private static final int ROAD_RATMAN_HEAD = 3291;
 	private static final int LETO_LIZARDMAN_FANG = 3292;
 	
+	// Rewards
+	private static final int MARK_OF_CHAMPION = 3276;
+	private static final int DIMENSIONAL_DIAMOND = 7562;
+	
 	// NPCs
-	private static final int Ascalon = 30624;
-	private static final int Groot = 30093;
-	private static final int Mouen = 30196;
-	private static final int Mason = 30625;
+	private static final int ASCALON = 30624;
+	private static final int GROOT = 30093;
+	private static final int MOUEN = 30196;
+	private static final int MASON = 30625;
 	
 	// Monsters
-	private static final int Harpy = 20145;
-	private static final int HarpyMatriarch = 27088;
-	private static final int Medusa = 20158;
-	private static final int Windsus = 20553;
-	private static final int RoadCollector = 27089;
-	private static final int RoadScavenger = 20551;
-	private static final int LetoLizardman = 20577;
-	private static final int LetoLizardmanArcher = 20578;
-	private static final int LetoLizardmanSoldier = 20579;
-	private static final int LetoLizardmanWarrior = 20580;
-	private static final int LetoLizardmanShaman = 20581;
-	private static final int LetoLizardmanOverlord = 20582;
-	private static final int BloodyAxeElite = 20780;
+	private static final int HARPY = 20145;
+	private static final int HARPY_MATRIARCH = 27088;
+	private static final int MEDUSA = 20158;
+	private static final int WINDSUS = 20553;
+	private static final int ROAD_COLLECTOR = 27089;
+	private static final int ROAD_SCAVENGER = 20551;
+	private static final int LETO_LIZARDMAN = 20577;
+	private static final int LETO_LIZARDMAN_ARCHER = 20578;
+	private static final int LETO_LIZARDMAN_SOLDIER = 20579;
+	private static final int LETO_LIZARDMAN_WARRIOR = 20580;
+	private static final int LETO_LIZARDMAN_SHAMAN = 20581;
+	private static final int LETO_LIZARDMAN_OVERLORD = 20582;
+	private static final int BLOODY_AXE_ELITE = 20780;
 	
-	public Q223_TestOfTheChampion(int questId, String name, String descr)
+	public Q223_TestOfTheChampion()
 	{
-		super(questId, name, descr);
+		super(223, qn, "Test of the Champion");
 		
 		questItemIds = new int[]
 		{
-			MASONS_LETTER,
+			MASON_LETTER,
 			MEDUSA_VENOM,
 			WINDSUS_BILE,
 			WHITE_ROSE_INSIGNIA,
-			HARPYS_EGG,
-			GROOTS_LETTER,
-			MOUENS_LETTER,
-			ASCALONS_LETTER1,
+			HARPY_EGG,
+			GROOT_LETTER,
+			MOUEN_LETTER,
+			ASCALON_LETTER_1,
 			IRON_ROSE_RING,
 			BLOODY_AXE_HEAD,
-			ASCALONS_LETTER2,
-			ASCALONS_LETTER3,
-			MOUENS_ORDER1,
+			ASCALON_LETTER_2,
+			ASCALON_LETTER_3,
+			MOUEN_ORDER_1,
 			ROAD_RATMAN_HEAD,
-			MOUENS_ORDER2,
+			MOUEN_ORDER_2,
 			LETO_LIZARDMAN_FANG
 		};
 		
-		addStartNpc(Ascalon);
-		addTalkId(Ascalon, Groot, Mouen, Mason);
+		addStartNpc(ASCALON);
+		addTalkId(ASCALON, GROOT, MOUEN, MASON);
 		
-		addAttackId(Harpy, RoadScavenger);
-		addKillId(Harpy, Medusa, HarpyMatriarch, RoadCollector, RoadScavenger, Windsus, LetoLizardman, LetoLizardmanArcher, LetoLizardmanSoldier, LetoLizardmanWarrior, LetoLizardmanShaman, LetoLizardmanOverlord, BloodyAxeElite);
+		addAttackId(HARPY, ROAD_SCAVENGER);
+		addKillId(HARPY, MEDUSA, HARPY_MATRIARCH, ROAD_COLLECTOR, ROAD_SCAVENGER, WINDSUS, LETO_LIZARDMAN, LETO_LIZARDMAN_ARCHER, LETO_LIZARDMAN_SOLDIER, LETO_LIZARDMAN_WARRIOR, LETO_LIZARDMAN_SHAMAN, LETO_LIZARDMAN_OVERLORD, BLOODY_AXE_ELITE);
 	}
 	
 	@Override
@@ -107,54 +110,54 @@ public class Q223_TestOfTheChampion extends Quest
 		
 		if (event.equals("30624-06.htm"))
 		{
-			st.set("cond", "1");
 			st.setState(STATE_STARTED);
+			st.set("cond", "1");
 			st.playSound(QuestState.SOUND_ACCEPT);
-			st.giveItems(ASCALONS_LETTER1, 1);
-			st.giveItems(7562, 64);
+			st.giveItems(ASCALON_LETTER_1, 1);
+			st.giveItems(DIMENSIONAL_DIAMOND, 64);
 		}
 		else if (event.equals("30624-10.htm"))
 		{
 			st.set("cond", "5");
 			st.playSound(QuestState.SOUND_MIDDLE);
-			st.takeItems(MASONS_LETTER, -1);
-			st.giveItems(ASCALONS_LETTER2, 1);
+			st.takeItems(MASON_LETTER, 1);
+			st.giveItems(ASCALON_LETTER_2, 1);
 		}
 		else if (event.equals("30624-14.htm"))
 		{
 			st.set("cond", "9");
 			st.playSound(QuestState.SOUND_MIDDLE);
-			st.takeItems(GROOTS_LETTER, -1);
-			st.giveItems(ASCALONS_LETTER3, 1);
+			st.takeItems(GROOT_LETTER, 1);
+			st.giveItems(ASCALON_LETTER_3, 1);
 		}
 		else if (event.equals("30625-03.htm"))
 		{
 			st.set("cond", "2");
 			st.playSound(QuestState.SOUND_MIDDLE);
-			st.takeItems(ASCALONS_LETTER1, -1);
+			st.takeItems(ASCALON_LETTER_1, 1);
 			st.giveItems(IRON_ROSE_RING, 1);
 		}
 		else if (event.equals("30093-02.htm"))
 		{
 			st.set("cond", "6");
 			st.playSound(QuestState.SOUND_MIDDLE);
-			st.takeItems(ASCALONS_LETTER2, -1);
+			st.takeItems(ASCALON_LETTER_2, 1);
 			st.giveItems(WHITE_ROSE_INSIGNIA, 1);
 		}
 		else if (event.equals("30196-03.htm"))
 		{
 			st.set("cond", "10");
 			st.playSound(QuestState.SOUND_MIDDLE);
-			st.takeItems(ASCALONS_LETTER3, -1);
-			st.giveItems(MOUENS_ORDER1, 1);
+			st.takeItems(ASCALON_LETTER_3, 1);
+			st.giveItems(MOUEN_ORDER_1, 1);
 		}
 		else if (event.equals("30196-06.htm"))
 		{
 			st.set("cond", "12");
 			st.playSound(QuestState.SOUND_MIDDLE);
-			st.takeItems(MOUENS_ORDER1, -1);
-			st.takeItems(ROAD_RATMAN_HEAD, -1);
-			st.giveItems(MOUENS_ORDER2, 1);
+			st.takeItems(MOUEN_ORDER_1, 1);
+			st.takeItems(ROAD_RATMAN_HEAD, 1);
+			st.giveItems(MOUEN_ORDER_2, 1);
 		}
 		
 		return htmltext;
@@ -173,15 +176,9 @@ public class Q223_TestOfTheChampion extends Quest
 			case STATE_CREATED:
 				final ClassId classId = player.getClassId();
 				if ((classId != ClassId.warrior && classId != ClassId.orcRaider) || st.hasQuestItems(MARK_OF_CHAMPION))
-				{
 					htmltext = "30624-01.htm";
-					st.exitQuest(true);
-				}
 				else if (player.getLevel() < 39)
-				{
-					st.exitQuest(true);
 					htmltext = "30624-02.htm";
-				}
 				else
 					htmltext = (classId == ClassId.warrior) ? "30624-03.htm" : "30624-04.htm";
 				break;
@@ -190,10 +187,10 @@ public class Q223_TestOfTheChampion extends Quest
 				int cond = st.getInt("cond");
 				switch (npc.getNpcId())
 				{
-					case Ascalon:
+					case ASCALON:
 						if (cond == 1)
 							htmltext = "30624-07.htm";
-						else if (cond > 1 && cond < 4)
+						else if (cond < 4)
 							htmltext = "30624-08.htm";
 						else if (cond == 4)
 							htmltext = "30624-09.htm";
@@ -210,7 +207,7 @@ public class Q223_TestOfTheChampion extends Quest
 						else if (cond == 14)
 						{
 							htmltext = "30624-17.htm";
-							st.takeItems(MOUENS_LETTER, -1);
+							st.takeItems(MOUEN_LETTER, 1);
 							st.giveItems(MARK_OF_CHAMPION, 1);
 							st.rewardExpAndSp(117454, 25000);
 							st.playSound(QuestState.SOUND_FINISH);
@@ -218,7 +215,7 @@ public class Q223_TestOfTheChampion extends Quest
 						}
 						break;
 					
-					case Mason:
+					case MASON:
 						if (cond == 1)
 							htmltext = "30625-01.htm";
 						else if (cond == 2)
@@ -229,8 +226,8 @@ public class Q223_TestOfTheChampion extends Quest
 							st.set("cond", "4");
 							st.playSound(QuestState.SOUND_MIDDLE);
 							st.takeItems(BLOODY_AXE_HEAD, -1);
-							st.takeItems(IRON_ROSE_RING, -1);
-							st.giveItems(MASONS_LETTER, 1);
+							st.takeItems(IRON_ROSE_RING, 1);
+							st.giveItems(MASON_LETTER, 1);
 						}
 						else if (cond == 4)
 							htmltext = "30625-06.htm";
@@ -238,7 +235,7 @@ public class Q223_TestOfTheChampion extends Quest
 							htmltext = "30625-07.htm";
 						break;
 					
-					case Groot:
+					case GROOT:
 						if (cond == 5)
 							htmltext = "30093-01.htm";
 						else if (cond == 6)
@@ -248,11 +245,11 @@ public class Q223_TestOfTheChampion extends Quest
 							htmltext = "30093-04.htm";
 							st.set("cond", "8");
 							st.playSound(QuestState.SOUND_MIDDLE);
-							st.takeItems(WHITE_ROSE_INSIGNIA, -1);
-							st.takeItems(HARPYS_EGG, -1);
+							st.takeItems(WHITE_ROSE_INSIGNIA, 1);
+							st.takeItems(HARPY_EGG, -1);
 							st.takeItems(MEDUSA_VENOM, -1);
 							st.takeItems(WINDSUS_BILE, -1);
-							st.giveItems(GROOTS_LETTER, 1);
+							st.giveItems(GROOT_LETTER, 1);
 						}
 						else if (cond == 8)
 							htmltext = "30093-05.htm";
@@ -260,7 +257,7 @@ public class Q223_TestOfTheChampion extends Quest
 							htmltext = "30093-06.htm";
 						break;
 					
-					case Mouen:
+					case MOUEN:
 						if (cond == 9)
 							htmltext = "30196-01.htm";
 						else if (cond == 10)
@@ -275,8 +272,8 @@ public class Q223_TestOfTheChampion extends Quest
 							st.set("cond", "14");
 							st.playSound(QuestState.SOUND_MIDDLE);
 							st.takeItems(LETO_LIZARDMAN_FANG, -1);
-							st.takeItems(MOUENS_ORDER2, -1);
-							st.giveItems(MOUENS_LETTER, 1);
+							st.takeItems(MOUEN_ORDER_2, 1);
+							st.giveItems(MOUEN_LETTER, 1);
 						}
 						else if (cond > 13)
 							htmltext = "30196-09.htm";
@@ -297,7 +294,7 @@ public class Q223_TestOfTheChampion extends Quest
 		
 		switch (npc.getNpcId())
 		{
-			case Harpy: // Possibility to spawn an Harpy Matriarch.
+			case HARPY: // Possibility to spawn an HARPY _MATRIARCH.
 				if (st.getInt("cond") == 6 && Rnd.nextBoolean() && !npc.isScriptValue(1))
 				{
 					final L2Character originalKiller = isPet ? attacker.getPet() : attacker;
@@ -305,7 +302,7 @@ public class Q223_TestOfTheChampion extends Quest
 					// Spawn one or two matriarchs.
 					for (int i = 1; i < ((Rnd.get(10) < 7) ? 2 : 3); i++)
 					{
-						final L2Attackable collector = (L2Attackable) addSpawn(HarpyMatriarch, npc, true, 0, false);
+						final L2Attackable collector = (L2Attackable) addSpawn(HARPY_MATRIARCH, npc, true, 0, false);
 						
 						collector.setRunning();
 						collector.addDamageHate(originalKiller, 0, 999);
@@ -315,7 +312,7 @@ public class Q223_TestOfTheChampion extends Quest
 				}
 				break;
 			
-			case RoadScavenger: // Possibility to spawn a Road Collector.
+			case ROAD_SCAVENGER: // Possibility to spawn a Road Collector.
 				if (st.getInt("cond") == 10 && Rnd.nextBoolean() && !npc.isScriptValue(1))
 				{
 					final L2Character originalKiller = isPet ? attacker.getPet() : attacker;
@@ -323,7 +320,7 @@ public class Q223_TestOfTheChampion extends Quest
 					// Spawn one or two collectors.
 					for (int i = 1; i < ((Rnd.get(10) < 7) ? 2 : 3); i++)
 					{
-						final L2Attackable collector = (L2Attackable) addSpawn(RoadCollector, npc, true, 0, false);
+						final L2Attackable collector = (L2Attackable) addSpawn(ROAD_COLLECTOR, npc, true, 0, false);
 						
 						collector.setRunning();
 						collector.addDamageHate(originalKiller, 0, 999);
@@ -346,47 +343,47 @@ public class Q223_TestOfTheChampion extends Quest
 		
 		switch (npc.getNpcId())
 		{
-			case BloodyAxeElite:
+			case BLOODY_AXE_ELITE:
 				if (st.getInt("cond") == 2)
 					if (st.dropItemsAlways(BLOODY_AXE_HEAD, 1, 100))
 						st.set("cond", "3");
 				break;
 			
-			case Harpy:
-			case HarpyMatriarch:
+			case HARPY:
+			case HARPY_MATRIARCH:
 				if (st.getInt("cond") == 6)
-					if (st.dropItems(HARPYS_EGG, Rnd.get(2, 3), 30, 500000))
+					if (st.dropItems(HARPY_EGG, Rnd.get(2, 3), 30, 500000))
 						if (st.getQuestItemsCount(MEDUSA_VENOM) == 30 && st.getQuestItemsCount(WINDSUS_BILE) == 30)
 							st.set("cond", "7");
 				break;
 			
-			case Medusa:
+			case MEDUSA:
 				if (st.getInt("cond") == 6)
 					if (st.dropItems(MEDUSA_VENOM, Rnd.get(2, 3), 30, 500000))
-						if (st.getQuestItemsCount(HARPYS_EGG) == 30 && st.getQuestItemsCount(WINDSUS_BILE) == 30)
+						if (st.getQuestItemsCount(HARPY_EGG) == 30 && st.getQuestItemsCount(WINDSUS_BILE) == 30)
 							st.set("cond", "7");
 				break;
 			
-			case Windsus:
+			case WINDSUS:
 				if (st.getInt("cond") == 6)
 					if (st.dropItems(WINDSUS_BILE, Rnd.get(2, 3), 30, 500000))
-						if (st.getQuestItemsCount(HARPYS_EGG) == 30 && st.getQuestItemsCount(MEDUSA_VENOM) == 30)
+						if (st.getQuestItemsCount(HARPY_EGG) == 30 && st.getQuestItemsCount(MEDUSA_VENOM) == 30)
 							st.set("cond", "7");
 				break;
 			
-			case RoadCollector:
-			case RoadScavenger:
+			case ROAD_COLLECTOR:
+			case ROAD_SCAVENGER:
 				if (st.getInt("cond") == 10)
 					if (st.dropItemsAlways(ROAD_RATMAN_HEAD, 1, 100))
 						st.set("cond", "11");
 				break;
 			
-			case LetoLizardman:
-			case LetoLizardmanArcher:
-			case LetoLizardmanSoldier:
-			case LetoLizardmanWarrior:
-			case LetoLizardmanShaman:
-			case LetoLizardmanOverlord:
+			case LETO_LIZARDMAN:
+			case LETO_LIZARDMAN_ARCHER:
+			case LETO_LIZARDMAN_SOLDIER:
+			case LETO_LIZARDMAN_WARRIOR:
+			case LETO_LIZARDMAN_SHAMAN:
+			case LETO_LIZARDMAN_OVERLORD:
 				if (st.getInt("cond") == 12)
 					if (st.dropItems(LETO_LIZARDMAN_FANG, 1, 100, 500000 + (50000 * (npc.getNpcId() - 20577))))
 						st.set("cond", "13");
@@ -398,6 +395,6 @@ public class Q223_TestOfTheChampion extends Quest
 	
 	public static void main(String[] args)
 	{
-		new Q223_TestOfTheChampion(223, qn, "Test of the Champion");
+		new Q223_TestOfTheChampion();
 	}
 }

@@ -18,6 +18,7 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -176,18 +177,10 @@ public class DoorTable
 								collisionRadius = rangeXMax - rangeXMin;
 							
 							// Template initialization
-							StatsSet npcDat = new StatsSet();
+							final StatsSet npcDat = new StatsSet();
 							
 							npcDat.set("id", id);
 							npcDat.set("name", name);
-							npcDat.set("level", 0);
-							
-							npcDat.set("str", 0);
-							npcDat.set("con", 0);
-							npcDat.set("dex", 0);
-							npcDat.set("int", 0);
-							npcDat.set("wit", 0);
-							npcDat.set("men", 0);
 							
 							npcDat.set("hp", hp);
 							npcDat.set("mp", 0);
@@ -197,29 +190,19 @@ public class DoorTable
 							
 							npcDat.set("radius", collisionRadius);
 							npcDat.set("height", rangeZMax - rangeZMin);
-							npcDat.set("type", "");
-							
-							npcDat.set("exp", 0);
-							npcDat.set("sp", 0);
 							
 							npcDat.set("pAtk", 0);
 							npcDat.set("mAtk", 0);
 							npcDat.set("pDef", pdef);
 							npcDat.set("mDef", mdef);
 							
-							npcDat.set("rHand", 0);
-							npcDat.set("lHand", 0);
+							npcDat.set("runSpd", 0); // Have to keep this, static object MUST BE 0 (critical error otherwise).
 							
-							npcDat.set("walkSpd", 0);
-							npcDat.set("runSpd", 0);
-							
-							L2CharTemplate template = new L2CharTemplate(npcDat);
-							L2DoorInstance door = new L2DoorInstance(IdFactory.getInstance().getNextId(), template, id, name, unlockable);
-							
+							final L2DoorInstance door = new L2DoorInstance(IdFactory.getInstance().getNextId(), new L2CharTemplate(npcDat), id, name, unlockable);
 							door.setRange(rangeXMin, rangeYMin, rangeZMin, rangeXMax, rangeYMax, rangeZMax);
 							door.setCurrentHpMp(door.getMaxHp(), door.getMaxMp());
 							door.setXYZInvisible(x, y, z);
-							door.setMapRegion(MapRegionTable.getInstance().getMapRegion(x, y));
+							door.setMapRegion(MapRegionTable.getMapRegion(x, y));
 							door.setOpen(false);
 							
 							// Attach door to a castle if a castleId is found
@@ -313,9 +296,7 @@ public class DoorTable
 	
 	public boolean checkIfDoorsBetween(int x, int y, int z, int tx, int ty, int tz)
 	{
-		ArrayList<L2DoorInstance> allDoors;
-		
-		allDoors = _regions.get(MapRegionTable.getInstance().getMapRegion(x, y));
+		List<L2DoorInstance> allDoors = _regions.get(MapRegionTable.getMapRegion(x, y));
 		if (allDoors == null)
 			return false;
 		

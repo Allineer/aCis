@@ -32,9 +32,14 @@ public class Q016_TheComingDarkness extends Quest
 	// Item
 	private static final int CRYSTAL_OF_SEAL = 7167;
 	
-	public Q016_TheComingDarkness(int questId, String name, String descr)
+	public Q016_TheComingDarkness()
 	{
-		super(questId, name, descr);
+		super(16, qn, "The Coming Darkness");
+		
+		questItemIds = new int[]
+		{
+			CRYSTAL_OF_SEAL
+		};
 		
 		addStartNpc(HIERARCH);
 		addTalkId(HIERARCH, EVIL_ALTAR_1, EVIL_ALTAR_2, EVIL_ALTAR_3, EVIL_ALTAR_4, EVIL_ALTAR_5);
@@ -50,40 +55,40 @@ public class Q016_TheComingDarkness extends Quest
 		
 		if (event.equalsIgnoreCase("31517-2.htm"))
 		{
-			st.set("cond", "1");
 			st.setState(STATE_STARTED);
-			st.giveItems(CRYSTAL_OF_SEAL, 5);
+			st.set("cond", "1");
 			st.playSound(QuestState.SOUND_ACCEPT);
+			st.giveItems(CRYSTAL_OF_SEAL, 5);
 		}
 		else if (event.equalsIgnoreCase("31512-1.htm"))
 		{
 			st.set("cond", "2");
-			st.takeItems(CRYSTAL_OF_SEAL, 1);
 			st.playSound(QuestState.SOUND_MIDDLE);
+			st.takeItems(CRYSTAL_OF_SEAL, 1);
 		}
 		else if (event.equalsIgnoreCase("31513-1.htm"))
 		{
 			st.set("cond", "3");
-			st.takeItems(CRYSTAL_OF_SEAL, 1);
 			st.playSound(QuestState.SOUND_MIDDLE);
+			st.takeItems(CRYSTAL_OF_SEAL, 1);
 		}
 		else if (event.equalsIgnoreCase("31514-1.htm"))
 		{
 			st.set("cond", "4");
-			st.takeItems(CRYSTAL_OF_SEAL, 1);
 			st.playSound(QuestState.SOUND_MIDDLE);
+			st.takeItems(CRYSTAL_OF_SEAL, 1);
 		}
 		else if (event.equalsIgnoreCase("31515-1.htm"))
 		{
 			st.set("cond", "5");
-			st.takeItems(CRYSTAL_OF_SEAL, 1);
 			st.playSound(QuestState.SOUND_MIDDLE);
+			st.takeItems(CRYSTAL_OF_SEAL, 1);
 		}
 		else if (event.equalsIgnoreCase("31516-1.htm"))
 		{
 			st.set("cond", "6");
-			st.takeItems(CRYSTAL_OF_SEAL, 1);
 			st.playSound(QuestState.SOUND_MIDDLE);
+			st.takeItems(CRYSTAL_OF_SEAL, 1);
 		}
 		
 		return htmltext;
@@ -159,6 +164,6 @@ public class Q016_TheComingDarkness extends Quest
 	
 	public static void main(String[] args)
 	{
-		new Q016_TheComingDarkness(16, qn, "The Coming Darkness");
+		new Q016_TheComingDarkness();
 	}
 }

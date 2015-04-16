@@ -18,30 +18,33 @@ import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.sf.l2j.Config;
 import net.sf.l2j.gameserver.ThreadPoolManager;
 import net.sf.l2j.gameserver.model.L2Object;
 import net.sf.l2j.gameserver.model.L2Skill;
+import net.sf.l2j.gameserver.model.actor.L2Attackable;
+import net.sf.l2j.gameserver.model.actor.L2Attackable.AggroInfo;
 import net.sf.l2j.gameserver.model.actor.L2Character;
 import net.sf.l2j.gameserver.model.actor.L2Summon;
 import net.sf.l2j.gameserver.network.serverpackets.SetSummonRemainTime;
 import net.sf.l2j.gameserver.skills.l2skills.L2SkillSummon;
+import net.sf.l2j.gameserver.taskmanager.DecayTaskManager;
 import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
 
 public class L2SummonInstance extends L2Summon
 {
 	protected static final Logger log = Logger.getLogger(L2SummonInstance.class.getName());
 	
-	private float _expPenalty = 0; // exp decrease multiplier (i.e. 0.3 (= 30%) for shadow)
-	private int _itemConsumeId;
-	private int _itemConsumeCount;
-	private int _itemConsumeSteps;
-	private final int _totalLifeTime;
-	private final int _timeLostIdle;
-	private final int _timeLostActive;
+	private float _expPenalty = 0;
+	private int _itemConsumeId = 0;
+	private int _itemConsumeCount = 0;
+	private int _itemConsumeSteps = 0;
+	private int _totalLifeTime = 1200000;
+	private int _timeLostIdle = 1000;
+	private int _timeLostActive = 1000;
 	private int _timeRemaining;
 	private int _nextItemConsumeTime;
-	public int lastShowntimeRemaining; // Following FbiAgent's example to avoid sending useless packets
+	
+	public int lastShowntimeRemaining;
 	
 	private Future<?> _summonLifeTask;
 	
@@ -60,36 +63,15 @@ public class L2SummonInstance extends L2Summon
 			_timeLostIdle = summonSkill.getTimeLostIdle();
 			_timeLostActive = summonSkill.getTimeLostActive();
 		}
-		else
-		{
-			// defaults
-			_itemConsumeId = 0;
-			_itemConsumeCount = 0;
-			_itemConsumeSteps = 0;
-			_totalLifeTime = 1200000; // 20 minutes
-			_timeLostIdle = 1000;
-			_timeLostActive = 1000;
-		}
 		_timeRemaining = _totalLifeTime;
 		lastShowntimeRemaining = _totalLifeTime;
 		
-		if (_itemConsumeId == 0)
-			_nextItemConsumeTime = -1; // do not consume
-		else if (_itemConsumeSteps == 0)
+		if (_itemConsumeId == 0 || _itemConsumeSteps == 0)
 			_nextItemConsumeTime = -1; // do not consume
 		else
 			_nextItemConsumeTime = _totalLifeTime - _totalLifeTime / (_itemConsumeSteps + 1);
 		
-		// When no item consume is defined task only need to check when summon life time has ended.
-		// Otherwise have to destroy items from owner's inventory in order to let summon live.
-		int delay = 1000;
-		
-		if (Config.DEBUG && (_itemConsumeCount != 0))
-			_log.warning("L2SummonInstance: Item Consume ID: " + _itemConsumeId + ", Count: " + _itemConsumeCount + ", Rate: " + _itemConsumeSteps + " times.");
-		if (Config.DEBUG)
-			_log.warning("L2SummonInstance: Task Delay " + (delay / 1000) + " seconds.");
-		
-		_summonLifeTask = ThreadPoolManager.getInstance().scheduleGeneralAtFixedRate(new SummonLifetime(getOwner(), this), delay, delay);
+		_summonLifeTask = ThreadPoolManager.getInstance().scheduleGeneralAtFixedRate(new SummonLifetime(getOwner(), this), 1000, 1000);
 	}
 	
 	@Override
@@ -180,8 +162,22 @@ public class L2SummonInstance extends L2Summon
 		if (!super.doDie(killer))
 			return false;
 		
-		if (Config.DEBUG)
-			_log.warning("L2SummonInstance: " + getTemplate().getName() + " (" + getOwner().getName() + ") has been killed.");
+		// Send aggro of mobs to summoner.
+		for (L2Attackable mob : getKnownList().getKnownType(L2Attackable.class))
+		{
+			if (mob.isDead())
+				continue;
+			
+			final AggroInfo info = mob.getAggroList().get(this);
+			if (info != null)
+				mob.addDamageHate(getOwner(), info.getDamage(), info.getHate());
+		}
+		
+		// Popup for summon if phoenix buff was on
+		if (isPhoenixBlessed())
+			getOwner().reviveRequest(getOwner(), null, true);
+		
+		DecayTaskManager.getInstance().addDecayTask(this);
 		
 		if (_summonLifeTask != null)
 		{
@@ -206,9 +202,6 @@ public class L2SummonInstance extends L2Summon
 		@Override
 		public void run()
 		{
-			if (Config.DEBUG)
-				log.warning("L2SummonInstance: " + _summon.getTemplate().getName() + " (" + _activeChar.getName() + ") run task.");
-			
 			try
 			{
 				double oldTimeRemaining = _summon.getTimeRemaining();
@@ -253,15 +246,11 @@ public class L2SummonInstance extends L2Summon
 	@Override
 	public void unSummon(L2PcInstance owner)
 	{
-		if (Config.DEBUG)
-			_log.warning("L2SummonInstance: " + getTemplate().getName() + " (" + owner.getName() + ") unsummoned.");
-		
 		if (_summonLifeTask != null)
 		{
 			_summonLifeTask.cancel(false);
 			_summonLifeTask = null;
 		}
-		
 		super.unSummon(owner);
 	}
 	
@@ -274,9 +263,6 @@ public class L2SummonInstance extends L2Summon
 	@Override
 	public boolean destroyItemByItemId(String process, int itemId, int count, L2Object reference, boolean sendMessage)
 	{
-		if (Config.DEBUG)
-			_log.warning("L2SummonInstance: " + getTemplate().getName() + " (" + getOwner().getName() + ") consume.");
-		
 		return getOwner().destroyItemByItemId(process, itemId, count, reference, sendMessage);
 	}
 }

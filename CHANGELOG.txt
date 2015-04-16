@@ -1,4 +1,253 @@
 ====================================================================================================
+Changeset 310 @ 2013.08.28
+
+Quests, Misc.
+
+Quests
+    - Cleanup quests up to q250. Fix also few bugs/typos/logic on existing quests.
+    - Addition of Q214, Q219, Q231.
+
+Misc
+    - Random respawn should be -+, not only +. Ty fernandopm for reminder.
+    - Cleanup AdminCreateItem handler, and add create_set command (integrated in itemcreation panel). Open the inventory window. Ty KaL.
+    - The champion reward system is now bound to regular level restriction (deepblue drop).
+    - Add few missing teleporters spawns (catacombs related), ty dEvilKinG.
+    - Fix two issues regarding boats (deviant boat walking in the mountain, "merging" boats in Rune docks), and messages/timers. Ty KaL.
+
+PS: that revision has been delayed because I played a lot and I'm not sorry about it!
+
+====================================================================================================
+Changeset 309 @ 2013.08.09
+
+Quests / scripts, Spawnlist, Misc.
+
+Quests / scripts
+    - Cleanup numerous quests (up to q170; rework edited quests from previous rev again).
+    - Fix a NPE occuring in Q232 (ty roko91).
+    - Addition of MissQueen script + 4 multisells. Spawns are also handled by the script.
+
+Spawnlist - ty dEvilKinG
+    - Addition of missing spawns for 2 catacombs (Heretic / Apostate).
+    - Drop of Miss Queen spawns (handled by script).
+    - Refresh fixed respawn time for L2OFF ones.
+    - New feature: random spawn time (random + fixed = real respawn time). Edit npcinfo.htm.
+
+Misc
+    - Added the missing "1h cleanup task" for ground-dropped CW, ty KaL.
+    - [L2J 6136] Drop _attacking implementation and associated condition.
+    - [L2J 6131 / 6137] Fists are considered as a dual attack weapon (players only). Drop the "dual" boolean parameter on calcPhysDam() && isUsingDualWeapon() method.
+    - "Characters donning Formal Wear cannot use skills and magic. If they equip weapons or shields, the Formal Wear will automatically be unequipped.", ty KaL. Drop the check from CW which was unequipping FW to avoid double checks.
+
+====================================================================================================
+Changeset 308 @ 2013.08.01
+
+Quests, Spawnlist, Misc.
+
+Quests
+    - Rework Q005 (failed HTMs and quest logic; one of the first quest we commited ?)
+    - Fix Q016 (qItem wasn't cleaned up on quest abort).
+    - Proper qItem checks on q038.
+    - Cleanup numerous quests (up to q050) to match aCis current standards (naming conventions and other misc). For info, scripts are WIP since 1,5y and since that time, my standards changed. I will cleanup them 50 by 50, or so.
+
+Spawnlist
+    - Refresh the spawnlist logging spawns from L2OFF; it notably will fix following issues:
+        - Add monsters than L2J IL never had (20+ new species added).
+        - Fixes any spawn which was under ground (Ant Nest for example), and fill empty locations (Orc Territory for example)
+    - Credits to mcbigmac for loggerExt.dll, dEvilKinG for the SQLization.
+
+Misc
+    - Add numerous missing minions, using L2OFF spawnlist, ty dEvilKinG.
+    - If you try to edit subclasses being registered on Olys, you become ineligible to fight, ty KaL.
+    - Refresh overload penalty for //setclass command, ty KaL.
+    - Addition of the clans ladder feature (schedule task + loading), ordering clans by their reputation score, ty KaL.
+    - Fix typo on loginserver, when you drop GS more than one time, ty KaL.
+    - Basic cleanup of GameServerThread. isBannedGameserverIP() now works using banned_ip.cfg (eventual workbench to split servers/client IPs + XMLization of the .cfg ?).
+    - Arrows are correctly dropped/deleted (current equipped pack stays equipped), ty Erlandys.
+    - Added missing HTM dialog for Metheus, ty KaL for report.
+
+PS: Spawnlist *system* isn't retail-like, but L2J system will be kept as data doesn't suck anymore.
+PS2: Some issues can happen with that new spawnlist, as it edits ALL existing spawns. Report on forums if any problem.
+
+====================================================================================================
+Changeset 307 @ 2013.07.21
+
+Quests, Misc
+
+Quests
+    - Addition of Q215, Q216, Q217 (ty Erlandys * 3)
+    - Fix //reload for quests; ty Hasha
+
+Misc
+    - Fix symbols, ty Hasha. Sidenote: the issue came from rev 189. Before that rev, it was working correctly.
+    - Augmented weapons aren't shown anymore on NPCs sell shop.
+    - Toggles are desactivated upon teleport, ty djdiablo. ONLY REGULAR PLAYERS ARE AFFECTED, NOT GMS.
+
+====================================================================================================
+Changeset 306 @ 2013.07.17
+
+Quests, MapRegionTable, Misc (known in future generations as "Hasha commit" or "fuck you Bingo quests")
+
+Quests
+    - Addition of Q381, Q382, Q384 (ty Tommy, roko91, Hasha for sexy help)
+
+MapRegionTable (ty Hasha)
+    - Merge TownManager and MapRegionTable.
+    - Fix an issue with regions, where dying from Valakas's Lair would lead to teleport back to TI Island (out of region array).
+    - Multiple code improvements and data update.
+
+Misc
+    - Cleanup items consumption messages (destroyItemByItemId() got it embedded), ty Hasha.
+    - Addition of scrambleString(string).
+
+====================================================================================================
+Changeset 305 @ 2013.07.14
+
+Skills, Misc
+
+Skills
+    - Fix Polearm Accuracy (422), ty djdiablo for the fix.
+    - Fix treasure keys, based on previous SoR rework. You will stop to harass me with this at least, for Elmoreden's love.
+        - Drop DeluxeKeys skillhandler, add Keys itemhandler. DELUXE_KEY_UNLOCK is considered as a Dummy skill.
+        - You can't consume a key on dead chests nor mimics ones (invalid target message).
+        - Regular keys are debugged: can't use on doors, and it uses the deluxe handler. Add the 60% luck on Chests.java script.
+        - ONLY regular/deluxe keys for treasure chests are debugged. Others (pagan keys ?) would eventually be fixed when I will know their uses.
+
+Misc
+    - Summons don't intention-stuck anymore if they're broken during a skill cast (they will either follow you back or continue attack).
+    - Fix Anakim/Lilith "out" teleporters. Fix teleporters spawns, and players spawns to be centered on the "tile".
+    - Avoid to refresh twice overload and penalty checks at character restore.
+    - Fix package sell mode (must stay checked if previously checked), ty sahar for report.
+    - Added retail penalty system, ty devilking for patch.
+    - Edit config NoQuests for NoScripts, and make a use of it, ty Root for the idea.
+    - Peace zone stuff:
+        - Drop the different implementations of isInsidePeaceZone(), keeping one. As that method includes allowPeaceAttack() check, drop external checks.
+        - Summons can't force attack anymore players on peace zone. Instead, it will follow target. Drop also the message, as there isn't on L2OFF.
+
+TODO
+    - Missing SAs / dual passive skills drop/add on refreshExpertisePenalty().
+
+====================================================================================================
+Changeset 304 @ 2013.07.08
+
+Karma, Misc
+
+Karma
+    - [L2J 6074] added retail karma drop/gain system.
+    - KARMA_PLAYER_CAN_BE_KILLED_IN_PZ does only what the name suggests. Drop redundant checks on isInsidePeaceZone().
+    - Don't clean karma on death if ALT_GAME_DELEVEL is setted to False (as karma drop is related to xp loss upon death).
+    - Don't earn a PK point on summons/pets kills (but still earn karma).
+    - Drop 4 configs related to Karma calculation method.
+    - Restoring exp (via BSoR / res skills / GM commands add_xp) don't clean karma. Ty Zerador for report.
+
+Misc
+    - L2CastleTeleporterInstance cleanup, also fix an HTM typo. Ty sahar.
+    - [L2J 6070] cleanup calculateRewards(). Multiple fixes and performances tweaks.
+        - Doesn't create an empty map if aggrolist was empty.
+        - Avoid to calculate xp/sp gain if attacker is dead.
+        - Limit the list of rewarders to L2PcInstance (avoid all checks regarding summons).
+        - Fix issue regarding summons/summoner damages (one was overwriting the other, now it cumulates).
+        - Calculations are based on total damage made, not on maxHP of the monster.
+    - Don't earn a PvP point on summons/pets kills.
+    - Cleanup L2Party (internal vars uses rather than getters/setters, party broadcast setted to 12s instead of 10sec).
+    - Drop useless itemhandler ChristmasTree.
+    - Beast ss/sps are desactivated on summon death + cleanup poor overidden use on doDie() (L2Summon, L2PetInstance, L2SummonInstance).
+
+====================================================================================================
+Changeset 303 @ 2013.07.01
+
+Headquarters, Four sepulchers, Misc
+
+Headquarters
+    - HPs are now properly setted, but during flag spawn (as we refactored npcs.xml, the NPC got 40HPs following L2OFF).
+    - HPs is currently doubled when Noblesse HQ version is used (and not, as regular L2J, damages mitigation).
+    - L2SiegeFlagInstance cleanup.
+    - Drop of SiegeFlagStatus.
+    - Show skill cast error message even out of castle area.
+
+Four sepulchers
+    - Q620 rework (HTMs renamed, simplified structure).
+    - Wigoth doesn't burn a Used Grave Pass anymore.
+    - You can choose your recipe correctly.
+
+Misc
+    - [301] Fix an Integer > int issue: if parameter is an int, .remove( method of ArrayList removes by index, not by given object.
+    - [301] Revert an experimental code for ss/bss effect, which has been commited by negligeance (and was buggy).
+    - Fix a log warning related to a SystemMessage.
+    - Slight edit in targetReconsider() method in order mobs don't attack doors or invisible GMs (+ a lot more checks). Don't make anymore movement checks for "regular" targetReconsider (reserved for skills checks).
+    - Edit StatsSet logs, in order it gives info related to the missing stat.
+    - L2CharTemplate/L2NpcTemplate got more values setted by default (if you have to create a custom template, you got minimum infos to care about).
+    - Drop unrelated/inheritated stats from doors templates (as it inherits from L2CharTemplate, not L2NpcTemplate, no need of exp/sp/rHand/lHand/etc).
+    - Add pdef/mdef of doors on admin shift click panel (more fashion).
+    - Fix an error in calcSiegeRegenModifer() formula (wasn't taking custom in consideration). Move method from double to boolean.
+    - Fix a concurrent issue on L2CommandChannel + basic cleanup.
+
+====================================================================================================
+Changeset 302 @ 2013.04.18
+
+Quests, Misc
+
+Quests
+    - Addition of Q212, Q365, Q383
+
+Misc
+    - Fix a double animation on custom L2ClassMaster. Ty Kingzor.
+    - Revert changes made on ExHeroList (not buggy anymore, but still not retail).
+    - L2Clan (again)
+        - Drop addSkill(L2Skill) method - unused.
+        - addNewSkill(L2Skill)
+            - Manages to regroup 3 others packet sending in an existing getOnlineMembers() loop (avoid creation of 3 clan members lists per skill addition).
+            - Avoid to send skill refresh packet if the clan skill doesn't match your rights.
+            - The message saying you earned a clan skill is now broadcasted to all clan members, rather than only clan leader (create some stuff to clan chat about...)
+        - setReputation
+            - Refresh members skill list (when an update is needed).
+            - Fixes an error introduced in previous rev (rep points update has to be made even if an update isn't needed).
+
+====================================================================================================
+Changeset 301 @ 2013.04.15
+
+Olympiads, Quests, Misc
+
+Olympiads - ty Hasha.
+    - Fix visual bug regarding participant HP bars.
+    - Fix visual bug regarding participants buffs bar refresh (for spectators).
+    - Wait time setted by default to 30sec.
+    - Rework spectators system.
+    - Drop ExOlympiadUserInfoSpectator packet (not used).
+    - Add 2 configs (AltOlyWaitBattle && AltOlyWaitEnd).
+    - Random cleanup.
+
+Quests
+    - Cleanup numerous quests (notably Q163, Q166, Q171, Q294, Q296).
+
+Misc
+    - Cleanup ClanTable - ty Hasha.
+        - Avoid to use getter/setter inside the file.
+        - scheduleRemoveClan parameter is changed for L2Clan not int (avoid to read 4 times the Map to find the L2Clan).
+    - Cleanup L2Clan
+        - Avoid to use getter/setter inside the file.
+        - Integer parameter > int.
+        - Drop of L2Clan version for setEnemyClan / setAttackerClan. Integer survivor > int.
+        - Edit deleteEnemyClan(L2Clan) / deleteAttackerClan(L2Clan) parameters from L2Clan to int (clanId).
+        - Simplify few methods (notably ".contains" which implicitely returns a boolean).
+        - getAllSkills() is edited for getClanSkills().
+        - Drop of _skillList, 2 removeSkill(int/L2Skill) and getSkills() methods (L2JIL unused) - ty Hasha.
+        - Drop of addClanMember(L2ClanMember) method (private, 3 uses, 1 line method).
+        - getOnlineMembers(int) loses his parameter.
+        - addSkillEffects(), updateClanScoreInDB() methods are dropped.
+        - Rework setReputationScore(int) method in order to avoid to create 3 times (!) clan members list, and regenerate getClanSkills() for every member. Use of Math.min/max.
+        - setHasHideout() / setHasCastle() renamed for setHideout() / setCastle(). Variables are also renamed.
+    - L2PcInstance
+        - The Map storing subclasses is initialized with instance itself, and final.
+    - Sorted maps for subclasses, macros and skill lists - ty xblx, Trance.
+    - Fix beginner shortcuts (self heal was overidden sit icon) - ty Kingzor.
+    - Fix one systemMessage, and 3 others (not used yet, so not visible) - ty Hasha.
+    - Drop of L2TIntObjectHashMap (only one use before, not used anymore).
+    - Fix an issue regarding clan skills give back once Olympiads are done, if clan reputation is <= 0.
+    - Fix top/bottom; getting one OR the other doesn't mean you got both anymore (1 && 0 || 0 && 1 = 0, not 1). Ty Hasha.
+    - Skills (need to do a lot more about skills...)
+        - Fix Focus Attack (set to 1, not add 1).
+
+====================================================================================================
 Changeset 300 @ 2013.04.08
 
 Scripts, Misc

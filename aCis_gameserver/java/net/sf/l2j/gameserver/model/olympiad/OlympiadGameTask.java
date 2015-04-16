@@ -45,18 +45,13 @@ public final class OlympiadGameTask implements Runnable
 		1,
 		0
 	};
-	public static final int[] BATTLE_START_TIME_FIRST =
+	public static final int[] BATTLE_START_TIME =
 	{
 		60,
 		50,
 		40,
 		30,
 		20,
-		10,
-		0
-	};
-	public static final int[] BATTLE_START_TIME_SECOND =
-	{
 		10,
 		5,
 		4,
@@ -90,8 +85,7 @@ public final class OlympiadGameTask implements Runnable
 		BEGIN,
 		TELE_TO_ARENA,
 		GAME_STARTED,
-		BATTLE_COUNTDOWN_FIRST,
-		BATTLE_COUNTDOWN_SECOND,
+		BATTLE_COUNTDOWN,
 		BATTLE_STARTED,
 		BATTLE_IN_PROGRESS,
 		GAME_STOPPED,
@@ -118,7 +112,7 @@ public final class OlympiadGameTask implements Runnable
 	
 	public final boolean isInTimerTime()
 	{
-		return _state == GameState.BATTLE_COUNTDOWN_FIRST || _state == GameState.BATTLE_COUNTDOWN_SECOND;
+		return _state == GameState.BATTLE_COUNTDOWN;
 	}
 	
 	public final boolean isBattleStarted()
@@ -183,12 +177,7 @@ public final class OlympiadGameTask implements Runnable
 				// Teleport to arena countdown
 				case TELE_TO_ARENA:
 				{
-					if (_countDown > 0)
-					{
-						SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.YOU_WILL_ENTER_THE_OLYMPIAD_STADIUM_IN_S1_SECOND_S);
-						sm.addNumber(_countDown);
-						_game.broadcastPacket(sm);
-					}
+					_game.broadcastPacket(SystemMessage.getSystemMessage(SystemMessageId.YOU_WILL_ENTER_THE_OLYMPIAD_STADIUM_IN_S1_SECOND_S).addNumber(_countDown));
 					
 					delay = getDelay(TELEPORT_TO_ARENA);
 					if (_countDown <= 0)
@@ -204,47 +193,20 @@ public final class OlympiadGameTask implements Runnable
 						break;
 					}
 					
-					_state = GameState.BATTLE_COUNTDOWN_FIRST;
-					_countDown = BATTLE_START_TIME_FIRST[0];
-					delay = 5;
+					_state = GameState.BATTLE_COUNTDOWN;
+					_countDown = Config.ALT_OLY_WAIT_BATTLE;
+					delay = getDelay(BATTLE_START_TIME);
 					break;
 				}
 				// Battle start countdown, first part (60-10)
-				case BATTLE_COUNTDOWN_FIRST:
+				case BATTLE_COUNTDOWN:
 				{
-					if (_countDown > 0)
-					{
-						SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.THE_GAME_WILL_START_IN_S1_SECOND_S);
-						sm.addNumber(_countDown);
-						_zone.broadcastPacket(sm);
-						
-						if (_countDown == 20)
-							_game.buffAndHealPlayers();
-					}
+					_zone.broadcastPacket(SystemMessage.getSystemMessage(SystemMessageId.THE_GAME_WILL_START_IN_S1_SECOND_S).addNumber(_countDown));
 					
-					delay = getDelay(BATTLE_START_TIME_FIRST);
-					if (_countDown <= 0)
-					{
-						_game.resetDamage();
-						
-						_state = GameState.BATTLE_COUNTDOWN_SECOND;
-						_countDown = BATTLE_START_TIME_SECOND[0];
-						delay = getDelay(BATTLE_START_TIME_SECOND);
-					}
+					if (_countDown == 20)
+						_game.buffAndHealPlayers();
 					
-					break;
-				}
-				// Battle start countdown, second part (10-0)
-				case BATTLE_COUNTDOWN_SECOND:
-				{
-					if (_countDown > 0)
-					{
-						SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.THE_GAME_WILL_START_IN_S1_SECOND_S);
-						sm.addNumber(_countDown);
-						_zone.broadcastPacket(sm);
-					}
-					
-					delay = getDelay(BATTLE_START_TIME_SECOND);
+					delay = getDelay(BATTLE_START_TIME);
 					if (_countDown <= 0)
 						_state = GameState.BATTLE_STARTED;
 					
@@ -254,6 +216,7 @@ public final class OlympiadGameTask implements Runnable
 				case BATTLE_STARTED:
 				{
 					_countDown = 0;
+					_game.resetDamage();
 					_state = GameState.BATTLE_IN_PROGRESS; // set state first, used in zone update
 					if (!startBattle())
 						_state = GameState.GAME_STOPPED;
@@ -273,7 +236,7 @@ public final class OlympiadGameTask implements Runnable
 				case GAME_STOPPED:
 				{
 					_state = GameState.TELE_TO_TOWN;
-					_countDown = TELEPORT_TO_TOWN[0];
+					_countDown = Config.ALT_OLY_WAIT_END;
 					stopGame();
 					delay = getDelay(TELEPORT_TO_TOWN);
 					break;
@@ -281,12 +244,7 @@ public final class OlympiadGameTask implements Runnable
 				// Teleport to town countdown
 				case TELE_TO_TOWN:
 				{
-					if (_countDown > 0)
-					{
-						SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.YOU_WILL_BE_MOVED_TO_TOWN_IN_S1_SECONDS);
-						sm.addNumber(_countDown);
-						_game.broadcastPacket(sm);
-					}
+					_game.broadcastPacket(SystemMessage.getSystemMessage(SystemMessageId.YOU_WILL_BE_MOVED_TO_TOWN_IN_S1_SECONDS).addNumber(_countDown));
 					
 					delay = getDelay(TELEPORT_TO_TOWN);
 					if (_countDown <= 0)

@@ -33,9 +33,9 @@ public class BoatManager
 	private final Map<Integer, L2BoatInstance> _boats = new HashMap<>();
 	private final boolean[] _docksBusy = new boolean[3];
 	
-	public static final int TALKING_ISLAND = 1;
-	public static final int GLUDIN_HARBOR = 2;
-	public static final int RUNE_HARBOR = 3;
+	public static final int TALKING_ISLAND = 0;
+	public static final int GLUDIN_HARBOR = 1;
+	public static final int RUNE_HARBOR = 2;
 	
 	public static final int BOAT_BROADCAST_RADIUS = 20000;
 	

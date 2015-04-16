@@ -1411,4 +1411,18 @@ public class Quest extends ManagedScript
 		
 		return true;
 	}
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		Quest q = (Quest) o;
+		
+		if (_id != q._id)
+			return false;
+		
+		if (!_name.equals(q._name))
+			return false;
+		
+		return true;
+	}
 }

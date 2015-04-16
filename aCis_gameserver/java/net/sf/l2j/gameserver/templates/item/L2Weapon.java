@@ -397,8 +397,9 @@ public final class L2Weapon extends L2Item
 			// Mobs in range 1000 see spell
 			for (L2Npc npcMob : caster.getKnownList().getKnownTypeInRadius(L2Npc.class, 1000))
 			{
-				if (npcMob.getTemplate().getEventQuests(QuestEventType.ON_SKILL_SEE) != null)
-					for (Quest quest : npcMob.getTemplate().getEventQuests(QuestEventType.ON_SKILL_SEE))
+				List<Quest> quests = npcMob.getTemplate().getEventQuests(QuestEventType.ON_SKILL_SEE); 
+				if (quests != null)
+					for (Quest quest : quests)
 						quest.notifySkillSee(npcMob, (L2PcInstance) caster, _skillsOnCast.getSkill(), targets, false);
 			}
 		}

@@ -570,14 +570,15 @@
 	<skill id="422" levels="3" name="Polearm Accuracy">
 		<table name="#mpConsume"> 11 13 14 </table>
 		<table name="#accCombat"> 2 3 4 </table>
-		<set name="weaponsAllowed" val="Pole"/>
 		<set name="mpConsume" val="#mpConsume"/>
 		<set name="target" val="TARGET_SELF"/>
 		<set name="skillType" val="CONT"/>
 		<set name="operateType" val="OP_TOGGLE"/>
 		<for>
 			<effect count="0x7fffffff" name="ManaDamOverTime" time="2" val="#mpConsume">
-				<add order="0x40" stat="accCombat" val="#accCombat"/>
+				<add order="0x40" stat="accCombat" val="#accCombat">
+					<using kind="Pole"/>
+				</add>
 			</effect>
 		</for>
 	</skill>

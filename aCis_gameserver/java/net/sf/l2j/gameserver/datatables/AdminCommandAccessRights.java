@@ -79,7 +79,7 @@ public class AdminCommandAccessRights
 			_log.log(Level.WARNING, "AdminCommandAccessRights: Error loading from database:" + e.getMessage(), e);
 		}
 		
-		_log.info("AdminCommandAccessRights: Loaded " + _adminCommandAccessRights.size() + " commands accesses' rights.");
+		_log.info("AdminCommandAccessRights: Loaded " + _adminCommandAccessRights.size() + " rights.");
 	}
 	
 	public boolean hasAccess(String adminCommand, L2AccessLevel accessLevel)

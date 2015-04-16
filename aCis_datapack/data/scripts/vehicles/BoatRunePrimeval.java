@@ -136,10 +136,10 @@ public class BoatRunePrimeval implements Runnable
 						ThreadPoolManager.getInstance().scheduleGeneral(this, 5000);
 						return;
 					}
+					BoatManager.getInstance().dockShip(BoatManager.RUNE_HARBOR, true);
 					_boat.executePath(RUNE_DOCK);
 					break;
 				case 4:
-					BoatManager.getInstance().dockShip(BoatManager.RUNE_HARBOR, true);
 					BoatManager.getInstance().broadcastPackets(RUNE_DOCK[0], PRIMEVAL_DOCK, ARRIVED_AT_RUNE, ARRIVED_AT_RUNE_2, RUNE_SOUND);
 					ThreadPoolManager.getInstance().scheduleGeneral(this, 180000);
 					break;

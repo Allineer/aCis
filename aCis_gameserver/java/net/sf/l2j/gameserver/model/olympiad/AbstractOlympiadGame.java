@@ -153,7 +153,7 @@ public abstract class AbstractOlympiadGame
 			player.setIsOlympiadStart(false);
 			player.setOlympiadSide(par.side);
 			player.teleToLocation(loc, 0);
-			player.sendPacket(new ExOlympiadMode(2));
+			player.sendPacket(new ExOlympiadMode(par.side));
 		}
 		catch (Exception e)
 		{
@@ -176,7 +176,7 @@ public abstract class AbstractOlympiadGame
 			// Remove Clan Skills
 			if (player.getClan() != null)
 			{
-				for (L2Skill skill : player.getClan().getAllSkills())
+				for (L2Skill skill : player.getClan().getClanSkills())
 					player.removeSkill(skill, false);
 			}
 			

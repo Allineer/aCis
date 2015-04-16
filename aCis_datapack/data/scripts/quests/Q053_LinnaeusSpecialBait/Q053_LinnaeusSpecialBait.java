@@ -21,31 +21,25 @@ public class Q053_LinnaeusSpecialBait extends Quest
 {
 	private static final String qn = "Q053_LinnaeusSpecialBait";
 	
-	// NPC
-	private static final int LINNAEUS = 31577;
-	
 	// Item
 	private static final int CRIMSON_DRAKE_HEART = 7624;
 	
 	// Reward
 	private static final int FLAMING_FISHING_LURE = 7613;
 	
-	// Monster
-	private static final int CRIMSON_DRAKE = 20670;
-	
-	public Q053_LinnaeusSpecialBait(int questId, String name, String descr)
+	public Q053_LinnaeusSpecialBait()
 	{
-		super(questId, name, descr);
+		super(53, qn, "Linnaues' Special Bait");
 		
 		questItemIds = new int[]
 		{
 			CRIMSON_DRAKE_HEART
 		};
 		
-		addStartNpc(LINNAEUS);
-		addTalkId(LINNAEUS);
+		addStartNpc(31577); // Linnaeus
+		addTalkId(31577);
 		
-		addKillId(CRIMSON_DRAKE);
+		addKillId(20670); // Crimson Drake
 	}
 	
 	@Override
@@ -58,8 +52,8 @@ public class Q053_LinnaeusSpecialBait extends Quest
 		
 		if (event.equalsIgnoreCase("31577-03.htm"))
 		{
-			st.set("cond", "1");
 			st.setState(STATE_STARTED);
+			st.set("cond", "1");
 			st.playSound(QuestState.SOUND_ACCEPT);
 		}
 		else if (event.equalsIgnoreCase("31577-07.htm"))
@@ -115,6 +109,6 @@ public class Q053_LinnaeusSpecialBait extends Quest
 	
 	public static void main(String[] args)
 	{
-		new Q053_LinnaeusSpecialBait(53, qn, "Linnaues' Special Bait");
+		new Q053_LinnaeusSpecialBait();
 	}
 }

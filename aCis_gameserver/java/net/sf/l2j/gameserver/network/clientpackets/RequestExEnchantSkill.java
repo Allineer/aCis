@@ -109,15 +109,11 @@ public final class RequestExEnchantSkill extends L2GameClientPacket
 		if (Config.ES_SP_BOOK_NEEDED)
 			if (data.getItemId() != 0 && data.getItemCount() != 0)
 			{
-				if (!activeChar.destroyItemByItemId("SkillEnchant", data.getItemId(), data.getItemCount(), trainer, false))
+				if (!activeChar.destroyItemByItemId("SkillEnchant", data.getItemId(), data.getItemCount(), trainer, true))
 				{
 					activeChar.sendPacket(SystemMessageId.YOU_DONT_HAVE_ALL_OF_THE_ITEMS_NEEDED_TO_ENCHANT_THAT_SKILL);
 					return;
 				}
-				SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.S2_S1_DISAPPEARED);
-				sm.addItemName(data.getItemId());
-				sm.addItemNumber(data.getItemCount());
-				activeChar.sendPacket(sm);
 			}
 		
 		// All conditions fulfilled, consume exp and sp.

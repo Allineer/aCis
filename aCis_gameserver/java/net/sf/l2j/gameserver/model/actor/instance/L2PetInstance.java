@@ -361,18 +361,9 @@ public class L2PetInstance extends L2Summon
 		if (sendMessage)
 		{
 			if (count > 1)
-			{
-				SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.S2_S1_DISAPPEARED);
-				sm.addItemName(item.getItemId());
-				sm.addItemNumber(count);
-				getOwner().sendPacket(sm);
-			}
+				getOwner().sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S2_S1_DISAPPEARED).addItemName(item.getItemId()).addItemNumber(count));
 			else
-			{
-				SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.S1_DISAPPEARED);
-				sm.addItemName(item.getItemId());
-				getOwner().sendPacket(sm);
-			}
+				getOwner().sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_DISAPPEARED).addItemName(item.getItemId()));
 		}
 		return true;
 	}
@@ -407,18 +398,9 @@ public class L2PetInstance extends L2Summon
 		if (sendMessage)
 		{
 			if (count > 1)
-			{
-				SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.S2_S1_DISAPPEARED);
-				sm.addItemName(itemId);
-				sm.addItemNumber(count);
-				getOwner().sendPacket(sm);
-			}
+				getOwner().sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S2_S1_DISAPPEARED).addItemName(item.getItemId()).addItemNumber(count));
 			else
-			{
-				SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.S1_DISAPPEARED);
-				sm.addItemName(itemId);
-				getOwner().sendPacket(sm);
-			}
+				getOwner().sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_DISAPPEARED).addItemName(item.getItemId()));
 		}
 		return true;
 	}
@@ -587,7 +569,7 @@ public class L2PetInstance extends L2Summon
 	@Override
 	public boolean doDie(L2Character killer)
 	{
-		if (!super.doDie(killer, true))
+		if (!super.doDie(killer))
 			return false;
 		
 		stopFeed();

@@ -16,9 +16,9 @@ package net.sf.l2j.gameserver.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import net.sf.l2j.gameserver.model.actor.L2Attackable;
-import net.sf.l2j.gameserver.model.actor.L2Character;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.CreatureSay;
@@ -32,8 +32,8 @@ import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
  */
 public class L2CommandChannel
 {
-	private final List<L2Party> _partys;
-	private L2PcInstance _commandLeader = null;
+	private final List<L2Party> _partys = new CopyOnWriteArrayList<>();
+	private L2PcInstance _commandLeader;
 	private int _channelLvl;
 	
 	/**
@@ -43,9 +43,9 @@ public class L2CommandChannel
 	public L2CommandChannel(L2PcInstance leader)
 	{
 		_commandLeader = leader;
-		_partys = new ArrayList<>();
 		_partys.add(leader.getParty());
 		_channelLvl = leader.getParty().getLevel();
+		
 		leader.getParty().setCommandChannel(this);
 		leader.getParty().broadcastToPartyMembers(SystemMessage.getSystemMessage(SystemMessageId.COMMAND_CHANNEL_FORMED));
 		leader.getParty().broadcastToPartyMembers(ExOpenMPCC.STATIC_PACKET);
@@ -81,11 +81,13 @@ public class L2CommandChannel
 		
 		_partys.remove(party);
 		_channelLvl = 0;
+		
 		for (L2Party pty : _partys)
 		{
 			if (pty.getLevel() > _channelLvl)
 				_channelLvl = pty.getLevel();
 		}
+		
 		party.setCommandChannel(null);
 		party.broadcastToPartyMembers(ExCloseMPCC.STATIC_PACKET);
 		
@@ -101,13 +103,10 @@ public class L2CommandChannel
 	 */
 	public void disbandChannel()
 	{
-		if (_partys != null)
+		for (L2Party party : _partys)
 		{
-			for (L2Party party : _partys)
-			{
-				if (party != null)
-					removeParty(party);
-			}
+			if (party != null)
+				removeParty(party);
 		}
 		_partys.clear();
 	}
@@ -132,25 +131,19 @@ public class L2CommandChannel
 	 */
 	public void broadcastToChannelMembers(L2GameServerPacket gsp)
 	{
-		if (_partys != null && !_partys.isEmpty())
+		for (L2Party party : _partys)
 		{
-			for (L2Party party : _partys)
-			{
-				if (party != null)
-					party.broadcastToPartyMembers(gsp);
-			}
+			if (party != null)
+				party.broadcastToPartyMembers(gsp);
 		}
 	}
 	
 	public void broadcastCSToChannelMembers(CreatureSay gsp, L2PcInstance broadcaster)
 	{
-		if (_partys != null && !_partys.isEmpty())
+		for (L2Party party : _partys)
 		{
-			for (L2Party party : _partys)
-			{
-				if (party != null)
-					party.broadcastCSToPartyMembers(gsp, broadcaster);
-			}
+			if (party != null)
+				party.broadcastCSToPartyMembers(gsp, broadcaster);
 		}
 	}
 	
@@ -168,7 +161,7 @@ public class L2CommandChannel
 	public List<L2PcInstance> getMembers()
 	{
 		List<L2PcInstance> members = new ArrayList<>();
-		for (L2Party party : getPartys())
+		for (L2Party party : _partys)
 			members.addAll(party.getPartyMembers());
 		
 		return members;
@@ -207,13 +200,9 @@ public class L2CommandChannel
 	 * @param obj
 	 * @return true if proper condition for RaidWar
 	 */
-	public boolean meetRaidWarCondition(L2Object obj)
+	public boolean meetRaidWarCondition(L2Attackable obj)
 	{
-		if (!(obj instanceof L2Character && ((L2Character) obj).isRaid()))
-			return false;
-		
-		int npcId = ((L2Attackable) obj).getNpcId();
-		switch (npcId)
+		switch (obj.getNpcId())
 		{
 			case 29001: // Queen Ant
 			case 29006: // Core

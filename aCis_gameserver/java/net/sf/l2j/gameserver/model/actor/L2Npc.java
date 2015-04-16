@@ -29,13 +29,13 @@ import net.sf.l2j.gameserver.cache.HtmCache;
 import net.sf.l2j.gameserver.datatables.ClanTable;
 import net.sf.l2j.gameserver.datatables.HelperBuffTable;
 import net.sf.l2j.gameserver.datatables.ItemTable;
+import net.sf.l2j.gameserver.datatables.MapRegionTable;
 import net.sf.l2j.gameserver.datatables.SkillTable;
 import net.sf.l2j.gameserver.datatables.SkillTable.FrequentSkill;
 import net.sf.l2j.gameserver.idfactory.IdFactory;
 import net.sf.l2j.gameserver.instancemanager.CastleManager;
 import net.sf.l2j.gameserver.instancemanager.DimensionalRiftManager;
 import net.sf.l2j.gameserver.instancemanager.QuestManager;
-import net.sf.l2j.gameserver.instancemanager.TownManager;
 import net.sf.l2j.gameserver.instancemanager.games.Lottery;
 import net.sf.l2j.gameserver.model.L2Clan;
 import net.sf.l2j.gameserver.model.L2ItemInstance;
@@ -606,6 +606,7 @@ public class L2Npc extends L2Character
 				html.replace("%loc2d%", String.valueOf((int) Math.sqrt(getPlanDistanceSq(getSpawn().getLocx(), getSpawn().getLocy()))));
 				html.replace("%loc3d%", String.valueOf((int) Math.sqrt(getDistanceSq(getSpawn().getLocx(), getSpawn().getLocy(), getSpawn().getLocz()))));
 				html.replace("%resp%", String.valueOf(getSpawn().getRespawnDelay() / 1000));
+				html.replace("%rand_resp%", String.valueOf(getSpawn().getRandomRespawnDelay()));
 			}
 			else
 			{
@@ -613,6 +614,7 @@ public class L2Npc extends L2Character
 				html.replace("%loc2d%", "<font color=FF0000>--</font>");
 				html.replace("%loc3d%", "<font color=FF0000>--</font>");
 				html.replace("%resp%", "<font color=FF0000>--</font>");
+				html.replace("%rand_resp%", "<font color=FF0000>--</font>");
 			}
 			
 			if (hasAI())
@@ -671,7 +673,7 @@ public class L2Npc extends L2Character
 		// Get castle this NPC belongs to (excluding L2Attackable)
 		if (_castleIndex < 0)
 		{
-			L2TownZone town = TownManager.getTown(getX(), getY(), getZ());
+			L2TownZone town = MapRegionTable.getTown(getX(), getY(), getZ());
 			
 			if (town != null)
 				_castleIndex = CastleManager.getInstance().getCastleIndex(town.getTaxById());
@@ -1290,9 +1292,7 @@ public class L2Npc extends L2Character
 				return;
 			int[] check = Lottery.checkTicket(item);
 			
-			sm = SystemMessage.getSystemMessage(SystemMessageId.S2_S1_DISAPPEARED);
-			sm.addItemName(4442);
-			player.sendPacket(sm);
+			player.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S2_S1_DISAPPEARED).addItemName(4442));
 			
 			int adena = check[1];
 			if (adena > 0)
@@ -1577,8 +1577,9 @@ public class L2Npc extends L2Character
 		_currentSsCount = getSsCount();
 		_currentSpsCount = getSpsCount();
 		
-		if (getTemplate().getEventQuests(QuestEventType.ON_SPAWN) != null)
-			for (Quest quest : getTemplate().getEventQuests(QuestEventType.ON_SPAWN))
+		List<Quest> quests = getTemplate().getEventQuests(QuestEventType.ON_SPAWN);
+		if (quests != null)
+			for (Quest quest : quests)
 				quest.notifySpawn(this);
 	}
 	
@@ -1601,12 +1602,12 @@ public class L2Npc extends L2Character
 		
 		setDecayed(true);
 		
-		// Remove the L2Npc from the world when the decay task is launched
+		// Remove the L2Npc from the world when the decay task is launched.
 		super.onDecay();
 		
-		// Decrease its spawn counter
+		// Respawn it, if possible.
 		if (_spawn != null)
-			_spawn.decreaseCount(this);
+			_spawn.respawn(this);
 	}
 	
 	/**
@@ -1756,13 +1757,14 @@ public class L2Npc extends L2Character
 	{
 		try
 		{
-			if (getTemplate().getEventQuests(QuestEventType.ON_SPELL_FINISHED) != null)
+			List<Quest> quests = getTemplate().getEventQuests(QuestEventType.ON_SPELL_FINISHED);
+			if (quests != null)
 			{
 				L2PcInstance player = null;
 				if (target != null)
 					player = target.getActingPlayer();
 				
-				for (Quest quest : getTemplate().getEventQuests(QuestEventType.ON_SPELL_FINISHED))
+				for (Quest quest : quests)
 					quest.notifySpellFinished(this, player, skill);
 			}
 		}

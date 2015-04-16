@@ -246,6 +246,7 @@ public class AdminEditChar implements IAdminCommandHandler
 					
 					String newclass = player.getTemplate().className;
 					
+					player.refreshOverloaded();
 					player.store();
 					player.broadcastUserInfo();
 					

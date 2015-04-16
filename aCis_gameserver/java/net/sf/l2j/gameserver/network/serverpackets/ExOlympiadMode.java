@@ -19,10 +19,10 @@ package net.sf.l2j.gameserver.network.serverpackets;
  */
 public class ExOlympiadMode extends L2GameServerPacket
 {
-	private static int _mode;
+	private final int _mode;
 	
 	/**
-	 * @param mode (0 = return, 3 = spectate)
+	 * @param mode (0 = return, 1 = side 1, 2 = side 2, 3 = spectate)
 	 */
 	public ExOlympiadMode(int mode)
 	{

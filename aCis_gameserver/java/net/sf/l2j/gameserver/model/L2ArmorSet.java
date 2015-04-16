@@ -193,4 +193,27 @@ public final class L2ArmorSet
 		
 		return true;
 	}
+	
+	/**
+	 * @return chest, legs, gloves, feet, head
+	 */
+	public int[] getSetItemsId()
+	{
+		return new int[]
+		{
+			_chest,
+			_legs,
+			_gloves,
+			_feet,
+			_head
+		};
+	}
+	
+	/**
+	 * @return shield id
+	 */
+	public int getShield()
+	{
+		return _shield;
+	}
 }

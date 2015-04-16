@@ -47,11 +47,8 @@ public class BookmarkTable
 			ResultSet result = statement.executeQuery();
 			
 			while (result.next())
-			{
-				String name = result.getString("name");
-				
-				_bks.add(new L2Bookmark(name, result.getInt("obj_Id"), result.getInt("x"), result.getInt("y"), result.getInt("z")));
-			}
+				_bks.add(new L2Bookmark(result.getString("name"), result.getInt("obj_Id"), result.getInt("x"), result.getInt("y"), result.getInt("z")));
+			
 			result.close();
 			statement.close();
 		}

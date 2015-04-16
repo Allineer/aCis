@@ -28,9 +28,9 @@ public class Q013_ParcelDelivery extends Quest
 	// Item
 	private static final int PACKAGE = 7263;
 	
-	public Q013_ParcelDelivery(int questId, String name, String descr)
+	public Q013_ParcelDelivery()
 	{
-		super(questId, name, descr);
+		super(13, qn, "Parcel Delivery");
 		
 		questItemIds = new int[]
 		{
@@ -51,10 +51,10 @@ public class Q013_ParcelDelivery extends Quest
 		
 		if (event.equalsIgnoreCase("31274-2.htm"))
 		{
-			st.set("cond", "1");
 			st.setState(STATE_STARTED);
-			st.giveItems(PACKAGE, 1);
+			st.set("cond", "1");
 			st.playSound(QuestState.SOUND_ACCEPT);
+			st.giveItems(PACKAGE, 1);
 		}
 		else if (event.equalsIgnoreCase("31539-1.htm"))
 		{
@@ -104,6 +104,6 @@ public class Q013_ParcelDelivery extends Quest
 	
 	public static void main(String[] args)
 	{
-		new Q013_ParcelDelivery(13, qn, "Parcel Delivery");
+		new Q013_ParcelDelivery();
 	}
 }

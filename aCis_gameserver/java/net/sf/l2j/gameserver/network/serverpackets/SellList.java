@@ -38,7 +38,7 @@ public class SellList extends L2GameServerPacket
 	{
 		for (L2ItemInstance item : _activeChar.getInventory().getItems())
 		{
-			if (!item.isEquipped() && item.getItem().isSellable() && (_activeChar.getPet() == null || item.getObjectId() != _activeChar.getPet().getControlItemId()))
+			if (!item.isEquipped() && item.isSellable() && (_activeChar.getPet() == null || item.getObjectId() != _activeChar.getPet().getControlItemId()))
 				_selllist.add(item);
 		}
 	}

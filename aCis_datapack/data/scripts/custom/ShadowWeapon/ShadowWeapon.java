@@ -97,9 +97,9 @@ public class ShadowWeapon extends Quest
 		32096
 	};
 	
-	public ShadowWeapon(int id, String name, String descr)
+	public ShadowWeapon()
 	{
-		super(id, name, descr);
+		super(-1, qn, "custom");
 		
 		addStartNpc(FirstClassChange.FIRSTCLASSNPCS);
 		addTalkId(FirstClassChange.FIRSTCLASSNPCS);
@@ -116,16 +116,16 @@ public class ShadowWeapon extends Quest
 		if (st == null)
 			return htmltext;
 		
-		boolean _hasD = st.hasQuestItems(D_COUPON);
-		boolean _hasC = st.hasQuestItems(C_COUPON);
+		boolean hasD = st.hasQuestItems(D_COUPON);
+		boolean hasC = st.hasQuestItems(C_COUPON);
 		
-		if (_hasD || _hasC)
+		if (hasD || hasC)
 		{
 			// let's assume character had both c & d-grade coupons, we'll confirm later
 			String multisell = "306893003";
-			if (!_hasD) // if s/he had c-grade only...
+			if (!hasD) // if s/he had c-grade only...
 				multisell = "306893002";
-			else if (!_hasC) // or d-grade only.
+			else if (!hasC) // or d-grade only.
 				multisell = "306893001";
 			
 			// finally, return htm with proper multisell value in it.
@@ -140,6 +140,6 @@ public class ShadowWeapon extends Quest
 	
 	public static void main(String args[])
 	{
-		new ShadowWeapon(-1, qn, "custom");
+		new ShadowWeapon();
 	}
 }

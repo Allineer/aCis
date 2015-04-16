@@ -122,6 +122,6 @@ public class MercTicket implements IItemHandler
 		
 		MercTicketManager.getInstance().addTicket(item.getItemId(), activeChar);
 		activeChar.destroyItem("Consume", item.getObjectId(), 1, null, false); // Remove item from char's inventory
-		activeChar.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.PLACE_CURRENT_LOCATION_DIRECTION).addItemName(itemId));
+		activeChar.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.PLACE_S1_IN_CURRENT_LOCATION_AND_DIRECTION).addItemName(itemId));
 	}
 }

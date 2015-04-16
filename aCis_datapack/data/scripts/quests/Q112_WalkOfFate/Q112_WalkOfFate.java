@@ -26,12 +26,11 @@ public class Q112_WalkOfFate extends Quest
 	private static final int KARUDA = 32017;
 	
 	// Rewards
-	private static final int ADENA = 57;
 	private static final int ENCHANT_D = 956;
 	
-	public Q112_WalkOfFate(int questId, String name, String descr)
+	public Q112_WalkOfFate()
 	{
-		super(questId, name, descr);
+		super(112, qn, "Walk of Fate");
 		
 		addStartNpc(LIVINA);
 		addTalkId(LIVINA, KARUDA);
@@ -47,14 +46,14 @@ public class Q112_WalkOfFate extends Quest
 		
 		if (event.equalsIgnoreCase("30572-02.htm"))
 		{
-			st.set("cond", "1");
 			st.setState(STATE_STARTED);
+			st.set("cond", "1");
 			st.playSound(QuestState.SOUND_ACCEPT);
 		}
 		else if (event.equalsIgnoreCase("32017-02.htm"))
 		{
-			st.rewardItems(ADENA, 4665);
 			st.giveItems(ENCHANT_D, 1);
+			st.rewardItems(57, 4665);
 			st.playSound(QuestState.SOUND_FINISH);
 			st.exitQuest(false);
 		}
@@ -99,6 +98,6 @@ public class Q112_WalkOfFate extends Quest
 	
 	public static void main(String[] args)
 	{
-		new Q112_WalkOfFate(112, qn, "Walk of Fate");
+		new Q112_WalkOfFate();
 	}
 }

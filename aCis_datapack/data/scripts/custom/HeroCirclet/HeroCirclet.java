@@ -21,9 +21,9 @@ import net.sf.l2j.gameserver.model.quest.QuestState;
 
 public class HeroCirclet extends Quest
 {
-	public HeroCirclet(int questId, String name, String descr)
+	public HeroCirclet()
 	{
-		super(questId, name, descr);
+		super(-1, "HeroCirclet", "custom");
 		
 		addStartNpc(31690, 31769, 31770, 31771, 31772);
 		addTalkId(31690, 31769, 31770, 31771, 31772);
@@ -53,6 +53,6 @@ public class HeroCirclet extends Quest
 	
 	public static void main(String[] args)
 	{
-		new HeroCirclet(-1, "HeroCirclet", "custom");
+		new HeroCirclet();
 	}
 }

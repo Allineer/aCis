@@ -71,13 +71,7 @@ public class Q262_TradeWithTheIvoryTower extends Quest
 		switch (st.getState())
 		{
 			case STATE_CREATED:
-				if (player.getLevel() >= 8)
-					htmltext = "30137-02.htm";
-				else
-				{
-					htmltext = "30137-01.htm";
-					st.exitQuest(true);
-				}
+				htmltext = (player.getLevel() < 8) ? "30137-01.htm" : "30137-02.htm";
 				break;
 			
 			case STATE_STARTED:

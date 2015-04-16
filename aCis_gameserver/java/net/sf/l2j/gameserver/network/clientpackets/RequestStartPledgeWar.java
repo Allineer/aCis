@@ -79,12 +79,12 @@ public final class RequestStartPledgeWar extends L2GameClientPacket
 			return;
 		}
 		
-		ClanTable.getInstance().storeclanswars(player.getClanId(), clan.getClanId());
+		ClanTable.getInstance().storeClansWars(player.getClanId(), clan.getClanId());
 		
-		for (L2PcInstance member : clan.getOnlineMembers(0))
+		for (L2PcInstance member : clan.getOnlineMembers())
 			member.broadcastUserInfo();
 		
-		for (L2PcInstance member : _clan.getOnlineMembers(0))
+		for (L2PcInstance member : _clan.getOnlineMembers())
 			member.broadcastUserInfo();
 	}
 }

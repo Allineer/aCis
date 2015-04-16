@@ -171,7 +171,7 @@ public final class CharacterCreate extends L2GameClientPacket
 				newChar.registerShortCut(new L2ShortCut(1, 0, 2, skill.getId(), 1, 1));
 			
 			if (skill.getId() == 1216)
-				newChar.registerShortCut(new L2ShortCut(10, 0, 2, skill.getId(), 1, 1));
+				newChar.registerShortCut(new L2ShortCut(9, 0, 2, skill.getId(), 1, 1));
 		}
 		
 		if (!Config.DISABLE_TUTORIAL)

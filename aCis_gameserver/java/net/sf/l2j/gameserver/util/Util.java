@@ -16,8 +16,11 @@ package net.sf.l2j.gameserver.util;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -399,6 +402,22 @@ public final class Util
 			amount = (amount - rem) / 1000;
 		}
 		return s;
+	}
+	
+	/**
+	 * @param string the initial word to scramble.
+	 * @return an anagram of the given string.
+	 */
+	public static String scrambleString(String string)
+	{
+		List<String> letters = Arrays.asList(string.split(""));
+		Collections.shuffle(letters);
+		
+		StringBuilder sb = new StringBuilder(string.length());
+		for (String c : letters)
+			sb.append(c);
+		
+		return sb.toString();
 	}
 	
 	/**

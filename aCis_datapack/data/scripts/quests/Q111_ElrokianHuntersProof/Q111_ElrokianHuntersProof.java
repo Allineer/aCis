@@ -35,9 +35,9 @@ public class Q111_ElrokianHuntersProof extends Quest
 	private static final int SKIN = 8772;
 	private static final int PRACTICE_TRAP = 8773;
 	
-	public Q111_ElrokianHuntersProof(int questId, String name, String descr)
+	public Q111_ElrokianHuntersProof()
 	{
-		super(questId, name, descr);
+		super(111, qn, "Elrokian Hunter's Proof");
 		
 		questItemIds = new int[]
 		{
@@ -63,12 +63,10 @@ public class Q111_ElrokianHuntersProof extends Quest
 		if (st == null)
 			return htmltext;
 		
-		if (event.equalsIgnoreCase("32113-001c.htm"))
-			st.exitQuest(true);
-		else if (event.equalsIgnoreCase("32113-002.htm"))
+		if (event.equalsIgnoreCase("32113-002.htm"))
 		{
-			st.set("cond", "1");
 			st.setState(STATE_STARTED);
+			st.set("cond", "1");
 			st.playSound(QuestState.SOUND_ACCEPT);
 		}
 		else if (event.equalsIgnoreCase("32115-002.htm"))
@@ -84,9 +82,9 @@ public class Q111_ElrokianHuntersProof extends Quest
 		else if (event.equalsIgnoreCase("32113-018.htm"))
 		{
 			st.set("cond", "6");
+			st.playSound(QuestState.SOUND_MIDDLE);
 			st.takeItems(FRAGMENT, -1);
 			st.giveItems(EXPEDITION_LETTER, 1);
-			st.playSound(QuestState.SOUND_MIDDLE);
 		}
 		else if (event.equalsIgnoreCase("32116-003.htm"))
 		{
@@ -175,8 +173,8 @@ public class Q111_ElrokianHuntersProof extends Quest
 							htmltext = "32115-007.htm";
 							st.set("cond", "12");
 							st.playSound(QuestState.SOUND_MIDDLE);
-							st.takeItems(CLAW, -1);
 							st.takeItems(BONE, -1);
+							st.takeItems(CLAW, -1);
 							st.takeItems(SKIN, -1);
 							st.giveItems(PRACTICE_TRAP, 1);
 						}
@@ -221,39 +219,35 @@ public class Q111_ElrokianHuntersProof extends Quest
 			case 22197:
 			case 22198:
 			case 22218:
-				if (st.getInt("cond") == 4)
-					if (st.dropItems(FRAGMENT, 1, 50, 250000))
-						st.set("cond", "5");
+				if (st.getInt("cond") == 4 && st.dropItems(FRAGMENT, 1, 50, 250000))
+					st.set("cond", "5");
 				break;
 			
 			case 22200:
 			case 22201:
 			case 22202:
 			case 22219:
-				if (st.getInt("cond") == 10)
-					if (st.dropItems(CLAW, 1, 10, 650000))
-						if (st.getQuestItemsCount(BONE) >= 10 && st.getQuestItemsCount(SKIN) >= 10)
-							st.set("cond", "11");
+				if (st.getInt("cond") == 10 && st.dropItems(CLAW, 1, 10, 650000))
+					if (st.getQuestItemsCount(BONE) >= 10 && st.getQuestItemsCount(SKIN) >= 10)
+						st.set("cond", "11");
 				break;
 			
 			case 22208:
 			case 22209:
 			case 22210:
 			case 22221:
-				if (st.getInt("cond") == 10)
-					if (st.dropItems(SKIN, 1, 10, 650000))
-						if (st.getQuestItemsCount(CLAW) >= 10 && st.getQuestItemsCount(BONE) >= 10)
-							st.set("cond", "11");
+				if (st.getInt("cond") == 10 && st.dropItems(SKIN, 1, 10, 650000))
+					if (st.getQuestItemsCount(CLAW) >= 10 && st.getQuestItemsCount(BONE) >= 10)
+						st.set("cond", "11");
 				break;
 			
 			case 22203:
 			case 22204:
 			case 22205:
 			case 22220:
-				if (st.getInt("cond") == 10)
-					if (st.dropItems(BONE, 1, 10, 650000))
-						if (st.getQuestItemsCount(CLAW) >= 10 && st.getQuestItemsCount(SKIN) >= 10)
-							st.set("cond", "11");
+				if (st.getInt("cond") == 10 && st.dropItems(BONE, 1, 10, 650000))
+					if (st.getQuestItemsCount(CLAW) >= 10 && st.getQuestItemsCount(SKIN) >= 10)
+						st.set("cond", "11");
 				break;
 		}
 		
@@ -262,6 +256,6 @@ public class Q111_ElrokianHuntersProof extends Quest
 	
 	public static void main(String[] args)
 	{
-		new Q111_ElrokianHuntersProof(111, qn, "Elrokian Hunter's Proof");
+		new Q111_ElrokianHuntersProof();
 	}
 }

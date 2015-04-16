@@ -82,21 +82,12 @@ public class Q275_DarkWingedSpies extends Quest
 		switch (st.getState())
 		{
 			case STATE_CREATED:
-				if (player.getRace() == Race.Orc)
-				{
-					if (player.getLevel() >= 11)
-						htmltext = "30567-02.htm";
-					else
-					{
-						htmltext = "30567-01.htm";
-						st.exitQuest(true);
-					}
-				}
-				else
-				{
+				if (player.getRace() != Race.Orc)
 					htmltext = "30567-00.htm";
-					st.exitQuest(true);
-				}
+				else if (player.getLevel() < 11)
+					htmltext = "30567-01.htm";
+				else
+					htmltext = "30567-02.htm";
 				break;
 			
 			case STATE_STARTED:

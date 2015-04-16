@@ -102,7 +102,7 @@ public class ScrollOfResurrection implements IItemHandler
 				continue;
 			
 			// Scroll consumption is made on skill call, not on item call.
-			playable.useMagic(itemSkill, true, true);
+			playable.useMagic(itemSkill, false, false);
 		}
 	}
 }

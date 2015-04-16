@@ -18,7 +18,6 @@
 	</item>
 	<item id="8202" type="EtcItem" name="Fishing Potion">
 		<set name="default_action" val="skill_reduce" />
-		<set name="bodypart" val="lhand" />
 		<set name="material" val="liquid" />
 		<set name="weight" val="100" />
 		<set name="is_stackable" val="true" />

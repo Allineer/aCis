@@ -514,12 +514,13 @@ public class CastleManorManager
 			
 			if (notFunc)
 			{
-				L2Clan clan = ClanTable.getInstance().getClan(c.getOwnerId());
-				L2PcInstance clanLeader = null;
+				final L2Clan clan = ClanTable.getInstance().getClan(c.getOwnerId());
 				if (clan != null)
-					clanLeader = L2World.getInstance().getPlayer(clan.getLeaderId());
-				if (clanLeader != null)
-					clanLeader.sendPacket(SystemMessageId.THE_AMOUNT_IS_NOT_SUFFICIENT_AND_SO_THE_MANOR_IS_NOT_IN_OPERATION);
+				{
+					final L2PcInstance clanLeader = clan.getLeader().getPlayerInstance();
+					if (clanLeader != null)
+						clanLeader.sendPacket(SystemMessageId.THE_AMOUNT_IS_NOT_SUFFICIENT_AND_SO_THE_MANOR_IS_NOT_IN_OPERATION);
+				}
 			}
 		}
 	}

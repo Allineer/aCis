@@ -21,31 +21,25 @@ public class Q051_OFullesSpecialBait extends Quest
 {
 	private static final String qn = "Q051_OFullesSpecialBait";
 	
-	// NPC
-	private static final int OFULLE = 31572;
-	
 	// Item
 	private static final int LOST_BAIT = 7622;
 	
 	// Reward
 	private static final int ICY_AIR_LURE = 7611;
 	
-	// Monster
-	private static final int FETTERED_SOUL = 20552;
-	
-	public Q051_OFullesSpecialBait(int questId, String name, String descr)
+	public Q051_OFullesSpecialBait()
 	{
-		super(questId, name, descr);
+		super(51, qn, "O'Fulle's Special Bait");
 		
 		questItemIds = new int[]
 		{
 			LOST_BAIT
 		};
 		
-		addStartNpc(OFULLE);
-		addTalkId(OFULLE);
+		addStartNpc(31572); // O'Fulle
+		addTalkId(31572);
 		
-		addKillId(FETTERED_SOUL);
+		addKillId(20552); // Fettered Soul
 	}
 	
 	@Override
@@ -58,8 +52,8 @@ public class Q051_OFullesSpecialBait extends Quest
 		
 		if (event.equalsIgnoreCase("31572-03.htm"))
 		{
-			st.set("cond", "1");
 			st.setState(STATE_STARTED);
+			st.set("cond", "1");
 			st.playSound(QuestState.SOUND_ACCEPT);
 		}
 		else if (event.equalsIgnoreCase("31572-07.htm"))
@@ -115,6 +109,6 @@ public class Q051_OFullesSpecialBait extends Quest
 	
 	public static void main(String[] args)
 	{
-		new Q051_OFullesSpecialBait(51, qn, "O'Fulle's Special Bait");
+		new Q051_OFullesSpecialBait();
 	}
 }

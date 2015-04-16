@@ -122,19 +122,17 @@ public class OlympiadManager
 		if (!Olympiad._inCompPeriod)
 			return false;
 		
-		AbstractOlympiadGame game;
 		for (int i = OlympiadGameManager.getInstance().getNumberOfStadiums(); --i >= 0;)
 		{
-			game = OlympiadGameManager.getInstance().getOlympiadTask(i).getGame();
+			AbstractOlympiadGame game = OlympiadGameManager.getInstance().getOlympiadTask(i).getGame();
 			if (game == null)
 				continue;
 			
 			if (game.containsParticipant(player.getObjectId()))
 			{
-				if (!showMessage)
-					return true;
+				if (showMessage)
+					player.sendPacket(SystemMessageId.YOU_HAVE_ALREADY_BEEN_REGISTERED_IN_A_WAITING_LIST_OF_AN_EVENT);
 				
-				player.sendPacket(SystemMessageId.YOU_HAVE_ALREADY_BEEN_REGISTERED_IN_A_WAITING_LIST_OF_AN_EVENT);
 				return true;
 			}
 		}

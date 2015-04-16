@@ -243,16 +243,22 @@ public class GameServer
 		Util.printSection("Quests & Scripts");
 		QuestManager.getInstance();
 		BoatManager.getInstance();
-		try
+		
+		if (!Config.ALT_DEV_NO_SCRIPTS)
 		{
-			File scripts = new File("./data/scripts.cfg");
-			L2ScriptEngineManager.getInstance().executeScriptList(scripts);
+			try
+			{
+				File scripts = new File("./data/scripts.cfg");
+				L2ScriptEngineManager.getInstance().executeScriptList(scripts);
+			}
+			catch (IOException ioe)
+			{
+				_log.severe("Failed loading scripts.cfg, no script going to be loaded");
+			}
+			QuestManager.getInstance().report();
 		}
-		catch (IOException ioe)
-		{
-			_log.severe("Failed loading scripts.cfg, no script going to be loaded");
-		}
-		QuestManager.getInstance().report();
+		else
+			_log.config("QuestManager: Skipping scripts.");
 		
 		if (Config.SAVE_DROPPED_ITEM)
 			ItemsOnGroundManager.getInstance();

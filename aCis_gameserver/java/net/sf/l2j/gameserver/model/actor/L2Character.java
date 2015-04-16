@@ -16,6 +16,7 @@ package net.sf.l2j.gameserver.model.actor;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,7 +40,6 @@ import net.sf.l2j.gameserver.datatables.SkillTable.FrequentSkill;
 import net.sf.l2j.gameserver.handler.ISkillHandler;
 import net.sf.l2j.gameserver.handler.SkillHandler;
 import net.sf.l2j.gameserver.instancemanager.DimensionalRiftManager;
-import net.sf.l2j.gameserver.instancemanager.TownManager;
 import net.sf.l2j.gameserver.model.ChanceSkillList;
 import net.sf.l2j.gameserver.model.CharEffectList;
 import net.sf.l2j.gameserver.model.FusionSkill;
@@ -120,7 +120,6 @@ import net.sf.l2j.gameserver.templates.skills.L2EffectFlag;
 import net.sf.l2j.gameserver.templates.skills.L2EffectType;
 import net.sf.l2j.gameserver.templates.skills.L2SkillType;
 import net.sf.l2j.gameserver.util.Broadcast;
-import net.sf.l2j.gameserver.util.L2TIntObjectHashMap;
 import net.sf.l2j.gameserver.util.Util;
 import net.sf.l2j.util.Point3D;
 import net.sf.l2j.util.Rnd;
@@ -171,7 +170,7 @@ public abstract class L2Character extends L2Object
 	private boolean _champion = false;
 	
 	private final Calculator[] _calculators;
-	protected final L2TIntObjectHashMap<L2Skill> _skills = new L2TIntObjectHashMap<>();
+	protected final Map<Integer, L2Skill> _skills = new LinkedHashMap<>();
 	
 	private ChanceSkillList _chanceSkills;
 	protected FusionSkill _fusionSkill;
@@ -586,22 +585,19 @@ public abstract class L2Character extends L2Object
 			}
 		}
 		
-		if (this instanceof L2PcInstance)
+		if (getActingPlayer() != null && getActingPlayer().inObserverMode())
 		{
-			if (((L2PcInstance) this).inObserverMode())
-			{
-				sendPacket(SystemMessage.getSystemMessage(SystemMessageId.OBSERVERS_CANNOT_PARTICIPATE));
-				sendPacket(ActionFailed.STATIC_PACKET);
-				return;
-			}
-			
-			// Checking if target has moved to peace zone
-			if (target.isInsidePeaceZone((L2PcInstance) this))
-			{
-				getAI().setIntention(CtrlIntention.ACTIVE);
-				sendPacket(ActionFailed.STATIC_PACKET);
-				return;
-			}
+			sendPacket(SystemMessage.getSystemMessage(SystemMessageId.OBSERVERS_CANNOT_PARTICIPATE));
+			sendPacket(ActionFailed.STATIC_PACKET);
+			return;
+		}
+		
+		// Checking if target has moved to peace zone
+		if (isInsidePeaceZone(this, target))
+		{
+			getAI().setIntention(CtrlIntention.ACTIVE);
+			sendPacket(ActionFailed.STATIC_PACKET);
+			return;
 		}
 		
 		stopEffectsOnAction();
@@ -704,9 +700,6 @@ public abstract class L2Character extends L2Object
 		// Create Attack
 		Attack attack = new Attack(this, wasSSCharged, (weaponItem != null) ? weaponItem.getCrystalType() : 0);
 		
-		// Set the Attacking Body part to CHEST
-		setAttackingBodypart();
-		
 		// Make sure that char is facing selected target
 		setHeading(Util.calculateHeadingFrom(this, target));
 		
@@ -716,16 +709,26 @@ public abstract class L2Character extends L2Object
 		boolean hitted;
 		
 		// Select the type of attack to start
-		if (weaponItem == null)
-			hitted = doAttackHitSimple(attack, target, timeToHit);
-		else if (weaponItem.getItemType() == L2WeaponType.BOW)
-			hitted = doAttackHitByBow(attack, target, timeAtk, reuse);
-		else if (weaponItem.getItemType() == L2WeaponType.POLE)
-			hitted = doAttackHitByPole(attack, target, timeToHit);
-		else if (isUsingDualWeapon())
-			hitted = doAttackHitByDual(attack, target, timeToHit);
-		else
-			hitted = doAttackHitSimple(attack, target, timeToHit);
+		switch (getAttackType())
+		{
+			case BOW:
+				hitted = doAttackHitByBow(attack, target, timeAtk, reuse);
+				break;
+			
+			case POLE:
+				hitted = doAttackHitByPole(attack, target, timeToHit);
+				break;
+			
+			case DUAL:
+			case DUALFIST:
+			case FIST:
+				hitted = doAttackHitByDual(attack, target, timeToHit);
+				break;
+			
+			default:
+				hitted = doAttackHitSimple(attack, target, timeToHit);
+				break;
+		}
 		
 		// Flag the attacker if it's a L2PcInstance outside a PvP area
 		L2PcInstance player = getActingPlayer();
@@ -754,8 +757,9 @@ public abstract class L2Character extends L2Object
 					if (victim != null)
 					{
 						L2Npc mob = ((L2Npc) this);
-						if (mob.getTemplate().getEventQuests(QuestEventType.ON_ATTACK_ACT) != null)
-							for (Quest quest : mob.getTemplate().getEventQuests(QuestEventType.ON_ATTACK_ACT))
+						List<Quest> quests = mob.getTemplate().getEventQuests(QuestEventType.ON_ATTACK_ACT);
+						if (quests != null)
+							for (Quest quest : quests)
 								quest.notifyAttackAct(mob, victim);
 					}
 				}
@@ -839,7 +843,7 @@ public abstract class L2Character extends L2Object
 			crit1 = Formulas.calcCrit(getStat().getCriticalHit(target, null));
 			
 			// Calculate physical damages
-			damage1 = (int) Formulas.calcPhysDam(this, target, null, shld1, crit1, false, attack.soulshot);
+			damage1 = (int) Formulas.calcPhysDam(this, target, null, shld1, crit1, attack.soulshot);
 		}
 		
 		// Check if the L2Character is a L2PcInstance
@@ -906,7 +910,7 @@ public abstract class L2Character extends L2Object
 			crit1 = Formulas.calcCrit(getStat().getCriticalHit(target, null));
 			
 			// Calculate physical damages of hit 1
-			damage1 = (int) Formulas.calcPhysDam(this, target, null, shld1, crit1, true, attack.soulshot);
+			damage1 = (int) Formulas.calcPhysDam(this, target, null, shld1, crit1, attack.soulshot);
 			damage1 /= 2;
 		}
 		
@@ -920,7 +924,7 @@ public abstract class L2Character extends L2Object
 			crit2 = Formulas.calcCrit(getStat().getCriticalHit(target, null));
 			
 			// Calculate physical damages of hit 2
-			damage2 = (int) Formulas.calcPhysDam(this, target, null, shld2, crit2, true, attack.soulshot);
+			damage2 = (int) Formulas.calcPhysDam(this, target, null, shld2, crit2, attack.soulshot);
 			damage2 /= 2;
 		}
 		
@@ -1050,7 +1054,7 @@ public abstract class L2Character extends L2Object
 			crit1 = Formulas.calcCrit(getStat().getCriticalHit(target, null));
 			
 			// Calculate physical damages
-			damage1 = (int) Formulas.calcPhysDam(this, target, null, shld1, crit1, false, attack.soulshot);
+			damage1 = (int) Formulas.calcPhysDam(this, target, null, shld1, crit1, attack.soulshot);
 			
 			if (attackpercent != 100)
 				damage1 = (int) (damage1 * attackpercent / 100);
@@ -2931,7 +2935,6 @@ public abstract class L2Character extends L2Object
 	
 	// set by the start of attack, in game ticks
 	private int _attackEndTime;
-	private int _attacking;
 	private int _disableBowAttackEndTime;
 	private int _castInterruptTime;
 	
@@ -3201,31 +3204,12 @@ public abstract class L2Character extends L2Object
 	}
 	
 	/**
-	 * @return True if the L2Character has aborted its attack.
-	 */
-	public final boolean isAttackAborted()
-	{
-		return _attacking <= 0;
-	}
-	
-	/**
 	 * Abort the attack of the L2Character and send Server->Client ActionFailed packet.
 	 */
 	public final void abortAttack()
 	{
 		if (isAttackingNow())
-		{
-			_attacking = 0;
 			sendPacket(ActionFailed.STATIC_PACKET);
-		}
-	}
-	
-	/**
-	 * @return the body part (paperdoll slot) we are targeting right now.
-	 */
-	public final int getAttackingBodyPart()
-	{
-		return _attacking;
 	}
 	
 	/**
@@ -3266,7 +3250,7 @@ public abstract class L2Character extends L2Object
 			// safeguard for cannot be interrupt any more
 			_castInterruptTime = 0;
 			
-			if (this instanceof L2PcInstance)
+			if (this instanceof L2Playable)
 				getAI().notifyEvent(CtrlEvent.EVT_FINISH_CASTING); // setting back previous intention
 				
 			broadcastPacket(new MagicSkillCanceld(getObjectId())); // broadcast packet to stop animations client-side
@@ -4006,14 +3990,6 @@ public abstract class L2Character extends L2Object
 	}
 	
 	/**
-	 * Set _attacking corresponding to Attacking Body part to CHEST.
-	 */
-	public void setAttackingBodypart()
-	{
-		_attacking = Inventory.PAPERDOLL_CHEST;
-	}
-	
-	/**
 	 * @return True if arrows are available.
 	 */
 	protected boolean checkAndEquipArrows()
@@ -4102,116 +4078,106 @@ public abstract class L2Character extends L2Object
 		// Send message about damage/crit or miss
 		sendDamageMessage(target, damage, false, crit, miss);
 		
-		// If attack isn't aborted, send a message system (critical hit, missed...) to attacker/target if they are L2PcInstance
-		if (!isAttackAborted())
+		// Character will be petrified if attacking a raid that's more than 8 levels lower
+		if (target.isRaid() && !Config.RAID_DISABLE_CURSE)
 		{
-			// Character will be petrified if attacking a raid that's more than 8 levels lower
-			if (target.isRaid() && !Config.RAID_DISABLE_CURSE)
+			if (getLevel() > target.getLevel() + 8)
 			{
-				if (getLevel() > target.getLevel() + 8)
+				L2Skill skill = FrequentSkill.RAID_CURSE2.getSkill();
+				if (skill != null)
 				{
-					L2Skill skill = FrequentSkill.RAID_CURSE2.getSkill();
-					if (skill != null)
-					{
-						// Send visual and skill effects. Caster is the victim.
-						broadcastPacket(new MagicSkillUse(this, this, skill.getId(), skill.getLevel(), 300, 0));
-						skill.getEffects(this, this);
-					}
-					
-					damage = 0; // prevents messing up drop calculation
+					// Send visual and skill effects. Caster is the victim.
+					broadcastPacket(new MagicSkillUse(this, this, skill.getId(), skill.getLevel(), 300, 0));
+					skill.getEffects(this, this);
 				}
+				
+				damage = 0; // prevents messing up drop calculation
 			}
-			
-			// If the target is a player, start AutoAttack
-			if (target instanceof L2PcInstance)
-				((L2PcInstance) target).getAI().clientStartAutoAttack();
-			
-			if (!miss && damage > 0)
-			{
-				L2Weapon weapon = getActiveWeaponItem();
-				boolean isBow = (weapon != null && weapon.getItemType() == L2WeaponType.BOW);
-				int reflectedDamage = 0;
-				
-				// Reflect damage system - do not reflect if weapon is a bow or target is invulnerable
-				if (!isBow && !target.isInvul())
-				{
-					// quick fix for no drop from raid if boss attack high-level char with damage reflection
-					if (!target.isRaid() || getActingPlayer() == null || getActingPlayer().getLevel() <= target.getLevel() + 8)
-					{
-						// Calculate reflection damage to reduce HP of attacker if necessary
-						double reflectPercent = target.getStat().calcStat(Stats.REFLECT_DAMAGE_PERCENT, 0, null, null);
-						if (reflectPercent > 0)
-						{
-							reflectedDamage = (int) (reflectPercent / 100. * damage);
-							
-							// You can't kill someone from a reflect. If value > current HPs, make damages equal to current HP - 1.
-							int currentHp = (int) getCurrentHp();
-							if (reflectedDamage >= currentHp)
-								reflectedDamage = currentHp - 1;
-						}
-					}
-				}
-				
-				// Reduce target HPs
-				target.reduceCurrentHp(damage, this, null);
-				
-				// Reduce attacker HPs in case of a reflect.
-				if (reflectedDamage > 0)
-					reduceCurrentHp(reflectedDamage, target, true, false, null);
-				
-				if (!isBow) // Do not absorb if weapon is of type bow
-				{
-					// Absorb HP from the damage inflicted
-					double absorbPercent = getStat().calcStat(Stats.ABSORB_DAMAGE_PERCENT, 0, null, null);
-					
-					if (absorbPercent > 0)
-					{
-						int maxCanAbsorb = (int) (getMaxHp() - getCurrentHp());
-						int absorbDamage = (int) (absorbPercent / 100. * damage);
-						
-						if (absorbDamage > maxCanAbsorb)
-							absorbDamage = maxCanAbsorb; // Can't absord more than max hp
-							
-						if (absorbDamage > 0)
-							setCurrentHp(getCurrentHp() + absorbDamage);
-					}
-				}
-				
-				// Notify AI with EVT_ATTACKED
-				if (target.hasAI())
-					target.getAI().notifyEvent(CtrlEvent.EVT_ATTACKED, this);
-				
-				getAI().clientStartAutoAttack();
-				
-				// Manage cast break of the target (calculating rate, sending message...)
-				Formulas.calcCastBreak(target, damage);
-				
-				// Maybe launch chance skills on us
-				if (_chanceSkills != null)
-				{
-					_chanceSkills.onHit(target, damage, false, crit);
-					
-					// Reflect triggers onHit
-					if (reflectedDamage > 0)
-						_chanceSkills.onHit(target, damage, true, false);
-				}
-				
-				// Maybe launch chance skills on target
-				if (target.getChanceSkills() != null)
-					target.getChanceSkills().onHit(this, damage, true, crit);
-			}
-			
-			// Launch weapon Special ability effect if available
-			L2Weapon activeWeapon = getActiveWeaponItem();
-			
-			if (activeWeapon != null)
-				activeWeapon.getSkillEffects(this, target, crit);
-			
-			return;
 		}
 		
-		if (!isCastingNow() && !isCastingSimultaneouslyNow())
-			getAI().notifyEvent(CtrlEvent.EVT_CANCEL);
+		// If the target is a player, start AutoAttack
+		if (target instanceof L2PcInstance)
+			((L2PcInstance) target).getAI().clientStartAutoAttack();
+		
+		if (!miss && damage > 0)
+		{
+			L2Weapon weapon = getActiveWeaponItem();
+			boolean isBow = (weapon != null && weapon.getItemType() == L2WeaponType.BOW);
+			int reflectedDamage = 0;
+			
+			// Reflect damage system - do not reflect if weapon is a bow or target is invulnerable
+			if (!isBow && !target.isInvul())
+			{
+				// quick fix for no drop from raid if boss attack high-level char with damage reflection
+				if (!target.isRaid() || getActingPlayer() == null || getActingPlayer().getLevel() <= target.getLevel() + 8)
+				{
+					// Calculate reflection damage to reduce HP of attacker if necessary
+					double reflectPercent = target.getStat().calcStat(Stats.REFLECT_DAMAGE_PERCENT, 0, null, null);
+					if (reflectPercent > 0)
+					{
+						reflectedDamage = (int) (reflectPercent / 100. * damage);
+						
+						// You can't kill someone from a reflect. If value > current HPs, make damages equal to current HP - 1.
+						int currentHp = (int) getCurrentHp();
+						if (reflectedDamage >= currentHp)
+							reflectedDamage = currentHp - 1;
+					}
+				}
+			}
+			
+			// Reduce target HPs
+			target.reduceCurrentHp(damage, this, null);
+			
+			// Reduce attacker HPs in case of a reflect.
+			if (reflectedDamage > 0)
+				reduceCurrentHp(reflectedDamage, target, true, false, null);
+			
+			if (!isBow) // Do not absorb if weapon is of type bow
+			{
+				// Absorb HP from the damage inflicted
+				double absorbPercent = getStat().calcStat(Stats.ABSORB_DAMAGE_PERCENT, 0, null, null);
+				
+				if (absorbPercent > 0)
+				{
+					int maxCanAbsorb = (int) (getMaxHp() - getCurrentHp());
+					int absorbDamage = (int) (absorbPercent / 100. * damage);
+					
+					if (absorbDamage > maxCanAbsorb)
+						absorbDamage = maxCanAbsorb; // Can't absord more than max hp
+						
+					if (absorbDamage > 0)
+						setCurrentHp(getCurrentHp() + absorbDamage);
+				}
+			}
+			
+			// Notify AI with EVT_ATTACKED
+			if (target.hasAI())
+				target.getAI().notifyEvent(CtrlEvent.EVT_ATTACKED, this);
+			
+			getAI().clientStartAutoAttack();
+			
+			// Manage cast break of the target (calculating rate, sending message...)
+			Formulas.calcCastBreak(target, damage);
+			
+			// Maybe launch chance skills on us
+			if (_chanceSkills != null)
+			{
+				_chanceSkills.onHit(target, damage, false, crit);
+				
+				// Reflect triggers onHit
+				if (reflectedDamage > 0)
+					_chanceSkills.onHit(target, damage, true, false);
+			}
+			
+			// Maybe launch chance skills on target
+			if (target.getChanceSkills() != null)
+				target.getChanceSkills().onHit(this, damage, true, crit);
+		}
+		
+		// Launch weapon Special ability effect if available
+		final L2Weapon activeWeapon = getActiveWeaponItem();
+		if (activeWeapon != null)
+			activeWeapon.getSkillEffects(this, target, crit);
 	}
 	
 	/**
@@ -4273,7 +4239,7 @@ public abstract class L2Character extends L2Object
 	@Override
 	public void onForcedAttack(L2PcInstance player)
 	{
-		if (isInsidePeaceZone(player))
+		if (isInsidePeaceZone(player, this))
 		{
 			// If L2Character or target is in a peace zone, send a system message TARGET_IN_PEACEZONE ActionFailed
 			player.sendPacket(SystemMessageId.TARGET_IN_PEACEZONE);
@@ -4348,21 +4314,7 @@ public abstract class L2Character extends L2Object
 		return true;
 	}
 	
-	/**
-	 * @param attacker The attacker to test.
-	 * @return True if inside peace zone.
-	 */
-	public boolean isInsidePeaceZone(L2PcInstance attacker)
-	{
-		return isInsidePeaceZone(attacker, this);
-	}
-	
-	public static boolean isInsidePeaceZone(L2PcInstance attacker, L2Object target)
-	{
-		return (!attacker.getAccessLevel().allowPeaceAttack() && isInsidePeaceZone((L2Object) attacker, target));
-	}
-	
-	public static boolean isInsidePeaceZone(L2Object attacker, L2Object target)
+	public static boolean isInsidePeaceZone(L2Character attacker, L2Object target)
 	{
 		if (target == null)
 			return false;
@@ -4370,32 +4322,17 @@ public abstract class L2Character extends L2Object
 		if (target instanceof L2Npc || attacker instanceof L2Npc)
 			return false;
 		
-		if (Config.KARMA_PLAYER_CAN_BE_KILLED_IN_PZ)
-		{
-			// allows red to be attacked and red to attack flagged players
-			if (target.getActingPlayer() != null && target.getActingPlayer().getKarma() > 0)
-				return false;
-			
-			if (attacker.getActingPlayer() != null && attacker.getActingPlayer().getKarma() > 0 && target.getActingPlayer() != null && target.getActingPlayer().getPvpFlag() > 0)
-				return false;
-			
-			if (attacker instanceof L2Character)
-			{
-				if (target instanceof L2Character)
-					return target.isInsideZone(ZoneId.PEACE) || attacker.isInsideZone(ZoneId.PEACE);
-				
-				return (TownManager.getTown(target.getX(), target.getY(), target.getZ()) != null || attacker.isInsideZone(ZoneId.PEACE));
-			}
-		}
+		// Summon or player check.
+		if (attacker.getActingPlayer() != null && attacker.getActingPlayer().getAccessLevel().allowPeaceAttack())
+			return false;
 		
-		if (attacker instanceof L2Character)
-		{
-			if (target instanceof L2Character)
-				return target.isInsideZone(ZoneId.PEACE) || attacker.isInsideZone(ZoneId.PEACE);
-			
-			return (TownManager.getTown(target.getX(), target.getY(), target.getZ()) != null || attacker.isInsideZone(ZoneId.PEACE));
-		}
-		return (TownManager.getTown(target.getX(), target.getY(), target.getZ()) != null || TownManager.getTown(attacker.getX(), attacker.getY(), attacker.getZ()) != null);
+		if (Config.KARMA_PLAYER_CAN_BE_KILLED_IN_PZ && target.getActingPlayer() != null && target.getActingPlayer().getKarma() > 0)
+			return false;
+		
+		if (target instanceof L2Character)
+			return target.isInsideZone(ZoneId.PEACE) || attacker.isInsideZone(ZoneId.PEACE);
+		
+		return (MapRegionTable.getTown(target.getX(), target.getY(), target.getZ()) != null || attacker.isInsideZone(ZoneId.PEACE));
 	}
 	
 	/**
@@ -4492,11 +4429,15 @@ public abstract class L2Character extends L2Object
 	}
 	
 	/**
-	 * @return True if the L2Character use a dual weapon.
+	 * @return the type of attack, depending of the worn weapon.
 	 */
-	public boolean isUsingDualWeapon()
+	public L2WeaponType getAttackType()
 	{
-		return false;
+		final L2Weapon weapon = getActiveWeaponItem();
+		if (weapon != null)
+			return weapon.getItemType();
+		
+		return L2WeaponType.NONE;
 	}
 	
 	/**
@@ -4688,7 +4629,7 @@ public abstract class L2Character extends L2Object
 	 */
 	public final L2Skill[] getAllSkills()
 	{
-		return _skills.values(new L2Skill[0]);
+		return _skills.values().toArray(new L2Skill[_skills.values().size()]);
 	}
 	
 	public ChanceSkillList getChanceSkills()
@@ -4795,33 +4736,22 @@ public abstract class L2Character extends L2Object
 						_skiprange++;
 						continue;
 					}
+					
 					if (skill.getSkillRadius() > 0 && skill.isOffensive() && Config.GEODATA > 0 && !GeoData.getInstance().canSeeTarget(this, target))
 					{
 						_skipgeo++;
 						continue;
 					}
-					if (skill.isOffensive())
+					
+					if (skill.isOffensive() && isInsidePeaceZone(this, target))
 					{
-						if (this instanceof L2PcInstance)
-						{
-							if (((L2Character) target).isInsidePeaceZone((L2PcInstance) this))
-							{
-								_skippeace++;
-								continue;
-							}
-						}
-						else
-						{
-							if (isInsidePeaceZone(this, target))
-							{
-								_skippeace++;
-								continue;
-							}
-						}
+						_skippeace++;
+						continue;
 					}
 					targetList.add((L2Character) target);
 				}
 			}
+			
 			if (targetList.isEmpty())
 			{
 				if (this instanceof L2PcInstance)
@@ -5329,8 +5259,9 @@ public abstract class L2Character extends L2Object
 				// Mobs in range 1000 see spell
 				for (L2Npc npcMob : player.getKnownList().getKnownTypeInRadius(L2Npc.class, 1000))
 				{
-					if (npcMob.getTemplate().getEventQuests(QuestEventType.ON_SKILL_SEE) != null)
-						for (Quest quest : npcMob.getTemplate().getEventQuests(QuestEventType.ON_SKILL_SEE))
+					List<Quest> quests = npcMob.getTemplate().getEventQuests(QuestEventType.ON_SKILL_SEE);
+					if (quests != null)
+						for (Quest quest : quests)
 							quest.notifySkillSee(npcMob, player, skill, targets, this instanceof L2Summon);
 				}
 			}

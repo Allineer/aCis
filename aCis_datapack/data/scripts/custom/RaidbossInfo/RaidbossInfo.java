@@ -35,9 +35,9 @@ public class RaidbossInfo extends Quest
 {
 	private static final String qn = "RaidbossInfo";
 	
-	private static final Map<Integer, Location> RADAR = new HashMap<>();
+	private static final Map<Integer, Location> RADARS = new HashMap<>();
 	
-	private static final int[] _NPCs =
+	private static final int[] NPCs =
 	{
 		31729,
 		31730,
@@ -154,6 +154,30 @@ public class RaidbossInfo extends Quest
 		31841
 	};
 	
+	public RaidbossInfo()
+	{
+		super(-1, qn, "custom");
+		
+		for (int npcId : NPCs)
+		{
+			addStartNpc(npcId);
+			addTalkId(npcId);
+		}
+		
+		// Add all Raid Bosses to RAIDS list
+		for (L2NpcTemplate raid : NpcTable.getInstance().getAllNpcOfClassType("L2RaidBoss"))
+		{
+			for (L2Spawn spawn : SpawnTable.getInstance().getSpawnTable())
+			{
+				if (spawn.getNpcId() == raid.getNpcId())
+				{
+					RADARS.put(raid.getNpcId(), new Location(spawn.getLocx(), spawn.getLocy(), spawn.getLocz()));
+					break;
+				}
+			}
+		}
+	}
+	
 	@Override
 	public String onAdvEvent(String event, L2Npc npc, L2PcInstance player)
 	{
@@ -165,9 +189,9 @@ public class RaidbossInfo extends Quest
 		{
 			int rbid = Integer.parseInt(event);
 			
-			if (RADAR.containsKey(rbid))
+			if (RADARS.containsKey(rbid))
 			{
-				Location loc = RADAR.get(rbid);
+				Location loc = RADARS.get(rbid);
 				st.addRadar(loc.getX(), loc.getY(), loc.getZ());
 			}
 			st.exitQuest(true);
@@ -182,33 +206,8 @@ public class RaidbossInfo extends Quest
 		return "info.htm";
 	}
 	
-	public RaidbossInfo(int id, String name, String descr)
-	{
-		super(id, name, descr);
-		
-		for (int npcId : _NPCs)
-		{
-			addStartNpc(npcId);
-			addTalkId(npcId);
-		}
-		
-		// Add all Raid Bosses to RAIDS list
-		for (L2NpcTemplate raid : NpcTable.getInstance().getAllNpcOfClassType("L2RaidBoss"))
-		{
-			for (L2Spawn spawn : SpawnTable.getInstance().getSpawnTable())
-			{
-				if (spawn.getNpcId() == raid.getNpcId())
-				{
-					RADAR.put(raid.getNpcId(), new Location(spawn.getLocx(), spawn.getLocy(), spawn.getLocz()));
-					break;
-				}
-			}
-			
-		}
-	}
-	
 	public static void main(String args[])
 	{
-		new RaidbossInfo(-1, qn, "custom");
+		new RaidbossInfo();
 	}
 }

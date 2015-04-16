@@ -137,6 +137,91 @@ public final class Formulas
 			sqrtMENbonus[i] = Math.sqrt(MENbonus[i]);
 	}
 	
+	private static final double[] karmaMods =
+	{
+		0,
+		0.772184315,
+		2.069377971,
+		2.315085083,
+		2.467800843,
+		2.514219611,
+		2.510075822,
+		2.532083418,
+		2.473028945,
+		2.377178509,
+		2.285526643,
+		2.654635163,
+		2.963434737,
+		3.266100461,
+		3.561112664,
+		3.847320291,
+		4.123878064,
+		4.390194136,
+		4.645886341,
+		4.890745518,
+		5.124704707,
+		6.97914069,
+		7.270620642,
+		7.548951721,
+		7.81438302,
+		8.067235867,
+		8.307889422,
+		8.536768399,
+		8.754332624,
+		8.961068152,
+		9.157479758,
+		11.41901707,
+		11.64989746,
+		11.87007991,
+		12.08015809,
+		12.28072687,
+		12.47237891,
+		12.65570177,
+		12.83127553,
+		12.99967093,
+		13.16144786,
+		15.6563607,
+		15.84513182,
+		16.02782135,
+		16.20501182,
+		16.37727218,
+		16.54515749,
+		16.70920885,
+		16.86995336,
+		17.02790439,
+		17.18356182,
+		19.85792061,
+		20.04235517,
+		20.22556446,
+		20.40806338,
+		20.59035551,
+		20.77293378,
+		20.95628115,
+		21.1408714,
+		21.3271699,
+		21.51563446,
+		24.3895427,
+		24.61486587,
+		24.84389213,
+		25.07711247,
+		25.31501442,
+		25.55808296,
+		25.80680152,
+		26.06165297,
+		26.32312062,
+		26.59168923,
+		26.86784604,
+		27.15208178,
+		27.44489172,
+		27.74677676,
+		28.05824444,
+		28.37981005,
+		28.71199773,
+		29.05534154,
+		29.41038662,
+		29.77769028
+	};
+	
 	/**
 	 * @param cha The character to make checks on.
 	 * @return the period between 2 regenerations task (3s for L2Character, 5 min for L2DoorInstance).
@@ -172,12 +257,8 @@ public final class Formulas
 			// SevenSigns Festival modifier
 			if (SevenSignsFestival.getInstance().isFestivalInProgress() && player.isFestivalParticipant())
 				hpRegenMultiplier *= calcFestivalRegenModifier(player);
-			else
-			{
-				double siegeModifier = calcSiegeRegenModifer(player);
-				if (siegeModifier > 0)
-					hpRegenMultiplier *= siegeModifier;
-			}
+			else if (calcSiegeRegenModifer(player))
+				hpRegenMultiplier *= 1.5;
 			
 			if (player.isInsideZone(ZoneId.CLAN_HALL) && player.getClan() != null)
 			{
@@ -327,20 +408,29 @@ public final class Formulas
 		return 1.0 - (distToCenter * 0.0005); // Maximum Decreased Regen of ~ -65%;
 	}
 	
-	public static final double calcSiegeRegenModifer(L2PcInstance activeChar)
+	/**
+	 * @param activeChar the player to test on.
+	 * @return true if the player is near one of his clan HQ (+50% regen boost).
+	 */
+	public static final boolean calcSiegeRegenModifer(L2PcInstance activeChar)
 	{
 		if (activeChar == null || activeChar.getClan() == null)
-			return 0;
+			return false;
 		
-		Siege siege = SiegeManager.getSiege(activeChar.getPosition().getX(), activeChar.getPosition().getY(), activeChar.getPosition().getZ());
+		final Siege siege = SiegeManager.getSiege(activeChar.getX(), activeChar.getY(), activeChar.getZ());
 		if (siege == null || !siege.getIsInProgress())
-			return 0;
+			return false;
 		
-		L2SiegeClan siegeClan = siege.getAttackerClan(activeChar.getClan().getClanId());
-		if (siegeClan == null || siegeClan.getFlag().isEmpty() || !Util.checkIfInRange(200, activeChar, siegeClan.getFlag().get(0), true))
-			return 0;
+		final L2SiegeClan siegeClan = siege.getAttackerClan(activeChar.getClan().getClanId());
+		if (siegeClan == null)
+			return false;
 		
-		return 1.5; // If all is true, then modifer will be 50% more
+		for (L2Npc flag : siegeClan.getFlag())
+		{
+			if (Util.checkIfInRange(200, activeChar, flag, true))
+				return true;
+		}
+		return false;
 	}
 	
 	/**
@@ -399,11 +489,10 @@ public final class Formulas
 	 * @param skill skill used.
 	 * @param shld target was using a shield or not.
 	 * @param crit if the ATTACK have critical success
-	 * @param dual if dual weapon is used
 	 * @param ss if weapon item was charged by soulshot
 	 * @return damage points
 	 */
-	public static final double calcPhysDam(L2Character attacker, L2Character target, L2Skill skill, byte shld, boolean crit, boolean dual, boolean ss)
+	public static final double calcPhysDam(L2Character attacker, L2Character target, L2Skill skill, byte shld, boolean crit, boolean ss)
 	{
 		if (attacker instanceof L2PcInstance)
 		{
@@ -1538,6 +1627,9 @@ public final class Formulas
 		if (lvlDifference > 0)
 			rate = (Math.pow(1.3, lvlDifference)) * 100;
 		
+		if (attacker instanceof L2PcInstance && ((L2PcInstance) attacker).getExpertiseWeaponPenalty())
+			rate += 6000;
+		
 		if (Config.DEVELOPER)
 		{
 			final StringBuilder stat = new StringBuilder(80);
@@ -1791,5 +1883,36 @@ public final class Formulas
 					return true;
 		}
 		return false;
+	}
+	
+	/**
+	 * Calculates karma lost upon death.
+	 * @param playerLevel The level of the PKer.
+	 * @param exp The amount of xp earned.
+	 * @return The amount of karma player has lost.
+	 */
+	public static int calculateKarmaLost(int playerLevel, long exp)
+	{
+		return (int) (exp / karmaMods[playerLevel] / 15);
+	}
+	
+	/**
+	 * Calculates karma gain upon player kill.
+	 * @param pkCount
+	 * @param isSummon
+	 * @return karma points that will be added to the player.
+	 */
+	public static int calculateKarmaGain(int pkCount, boolean isSummon)
+	{
+		int result = 14400;
+		if (pkCount < 100)
+			result = (int) (((((pkCount - 1) * 0.5) + 1) * 60) * 4);
+		else if (pkCount < 180)
+			result = (int) (((((pkCount + 1) * 0.125) + 37.5) * 60) * 4);
+		
+		if (isSummon)
+			result = ((pkCount & 3) + result) >> 2;
+		
+		return result;
 	}
 }

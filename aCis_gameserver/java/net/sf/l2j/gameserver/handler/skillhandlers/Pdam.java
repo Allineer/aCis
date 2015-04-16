@@ -46,7 +46,6 @@ public class Pdam implements ISkillHandler
 		int damage = 0;
 		
 		final boolean ss = activeChar.isChargedShot(ShotType.SOULSHOT);
-		final boolean dual = activeChar.isUsingDualWeapon();
 		
 		final L2ItemInstance weapon = activeChar.getActiveWeaponInstance();
 		
@@ -84,7 +83,7 @@ public class Pdam implements ISkillHandler
 			if (!crit && (skill.getCondition() & L2Skill.COND_CRIT) != 0)
 				damage = 0;
 			else
-				damage = (int) Formulas.calcPhysDam(activeChar, target, skill, shld, false, dual, ss);
+				damage = (int) Formulas.calcPhysDam(activeChar, target, skill, shld, false, ss);
 			
 			if (crit)
 				damage *= 2; // PDAM Critical damage always 2x and not affected by buffs

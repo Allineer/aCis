@@ -17,11 +17,11 @@ package net.sf.l2j.gameserver.model.actor.stat;
 import net.sf.l2j.Config;
 import net.sf.l2j.gameserver.datatables.NpcTable;
 import net.sf.l2j.gameserver.datatables.PetDataTable;
+import net.sf.l2j.gameserver.model.actor.L2Character;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2PetInstance;
 import net.sf.l2j.gameserver.model.base.Experience;
 import net.sf.l2j.gameserver.model.quest.QuestState;
-import net.sf.l2j.gameserver.model.zone.ZoneId;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.PledgeShowMemberListUpdate;
 import net.sf.l2j.gameserver.network.serverpackets.SocialAction;
@@ -54,14 +54,6 @@ public class PcStat extends PlayableStat
 		if (!super.addExp(value))
 			return false;
 		
-		// Set new karma
-		if (!activeChar.isCursedWeaponEquipped() && activeChar.getKarma() > 0 && !activeChar.isInsideZone(ZoneId.PVP))
-		{
-			int karmaLost = activeChar.calculateKarmaLost(value);
-			if (karmaLost > 0)
-				activeChar.setKarma(activeChar.getKarma() - karmaLost);
-		}
-		
 		activeChar.sendPacket(new UserInfo(activeChar));
 		return true;
 	}
@@ -82,13 +74,13 @@ public class PcStat extends PlayableStat
 	@Override
 	public boolean addExpAndSp(long addToExp, int addToSp)
 	{
-		float ratioTakenByPet = 0;
-		// Player is Gm and acces level is below or equal to GM_DONT_TAKE_EXPSP and is in party, don't give Xp/Sp
-		L2PcInstance activeChar = getActiveChar();
+		final L2PcInstance activeChar = getActiveChar();
+		
+		// GM check concerning canGainExp().
 		if (!activeChar.getAccessLevel().canGainExp())
 			return false;
 		
-		// if this player has a pet that takes from the owner's Exp, give the pet Exp now
+		// If this player has a pet, give the xp to the pet now (if any).
 		if (activeChar.hasPet())
 		{
 			final L2PetInstance pet = (L2PetInstance) activeChar.getPet();
@@ -96,11 +88,8 @@ public class PcStat extends PlayableStat
 			{
 				if (Util.checkIfInShortRadius(Config.ALT_PARTY_RANGE, pet, activeChar, true))
 				{
-					ratioTakenByPet = pet.getPetLevelData().getOwnerExpTaken();
+					float ratioTakenByPet = pet.getPetLevelData().getOwnerExpTaken();
 					
-					// only give exp/sp to the pet by taking from the owner if the pet has a positive ratio
-					// allow possible customizations that would have the pet earning more than 100% of the
-					// owner's exp/sp
 					if (ratioTakenByPet > 0 && !pet.isDead())
 						pet.addExpAndSp((long) (addToExp * ratioTakenByPet), (int) (addToSp * ratioTakenByPet));
 					
@@ -349,14 +338,61 @@ public class PcStat extends PlayableStat
 		
 		int val;
 		
-		L2PcInstance player = getActiveChar();
-		if (player.isMounted())
+		if (getActiveChar().isMounted())
 		{
 			int baseRunSpd = NpcTable.getInstance().getTemplate(getActiveChar().getMountNpcId()).getBaseRunSpd();
 			val = (int) (calcStat(Stats.RUN_SPEED, baseRunSpd, null, null));
 		}
 		else
 			val = super.getRunSpeed();
+		
+		final int penalty = getActiveChar().getExpertiseArmorPenalty();
+		if (penalty > 0)
+			val *= Math.pow(0.84, penalty);
+		
+		return val;
+	}
+	
+	@Override
+	public int getMAtkSpd()
+	{
+		if (getActiveChar() == null)
+			return 1;
+		
+		int val = super.getMAtkSpd();
+		
+		final int penalty = getActiveChar().getExpertiseArmorPenalty();
+		if (penalty > 0)
+			val *= Math.pow(0.84, penalty);
+		
+		return val;
+	}
+	
+	@Override
+	public int getEvasionRate(L2Character target)
+	{
+		if (getActiveChar() == null)
+			return 1;
+		
+		int val = super.getEvasionRate(target);
+		
+		final int penalty = getActiveChar().getExpertiseArmorPenalty();
+		if (penalty > 0)
+			val -= (2 * penalty);
+		
+		return val;
+	}
+	
+	@Override
+	public int getAccuracy()
+	{
+		if (getActiveChar() == null)
+			return 1;
+		
+		int val = super.getAccuracy();
+		
+		if (getActiveChar().getExpertiseWeaponPenalty())
+			val -= 20;
 		
 		return val;
 	}

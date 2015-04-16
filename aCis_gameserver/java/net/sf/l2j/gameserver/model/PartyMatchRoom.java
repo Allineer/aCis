@@ -17,7 +17,7 @@ package net.sf.l2j.gameserver.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.l2j.gameserver.instancemanager.TownManager;
+import net.sf.l2j.gameserver.datatables.MapRegionTable;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.ExManagePartyRoomMember;
@@ -42,7 +42,7 @@ public class PartyMatchRoom
 		_id = id;
 		_title = title;
 		_loot = loot;
-		_location = TownManager.getClosestLocation(owner);
+		_location = MapRegionTable.getClosestLocation(owner.getX(), owner.getY());
 		_minlvl = minlvl;
 		_maxlvl = maxlvl;
 		_maxmem = maxmem;

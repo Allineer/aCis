@@ -84,26 +84,16 @@ public class Q267_WrathOfVerdure extends Quest
 		switch (st.getState())
 		{
 			case STATE_CREATED:
-				if (player.getRace() == Race.Elf)
-				{
-					if (player.getLevel() >= 4)
-						htmltext = "31853-02.htm";
-					else
-					{
-						htmltext = "31853-01.htm";
-						st.exitQuest(true);
-					}
-				}
-				else
-				{
+				if (player.getRace() != Race.Elf)
 					htmltext = "31853-00.htm";
-					st.exitQuest(true);
-				}
+				else if (player.getLevel() < 4)
+					htmltext = "31853-01.htm";
+				else
+					htmltext = "31853-02.htm";
 				break;
 			
 			case STATE_STARTED:
 				int count = st.getQuestItemsCount(GOBLIN_CLUB);
-				
 				if (count > 0)
 				{
 					htmltext = "31853-05.htm";

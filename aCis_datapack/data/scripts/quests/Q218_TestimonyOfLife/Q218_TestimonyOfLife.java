@@ -25,7 +25,7 @@ public class Q218_TestimonyOfLife extends Quest
 	private static final String qn = "Q218_TestimonyOfLife";
 	
 	private static final int ASTERIOS = 30154;
-	private static final int PUSKIN = 30300;
+	private static final int PUSHKIN = 30300;
 	private static final int THALIA = 30371;
 	private static final int ADONIUS = 30375;
 	private static final int ARKENIA = 30419;
@@ -34,32 +34,31 @@ public class Q218_TestimonyOfLife extends Quest
 	
 	// Items
 	private static final int TALINS_SPEAR = 3026;
-	private static final int MARK_OF_LIFE = 3140;
-	private static final int CARDIENS_LETTER = 3141;
+	private static final int CARDIEN_LETTER = 3141;
 	private static final int CAMOMILE_CHARM = 3142;
-	private static final int HIERARCHS_LETTER = 3143;
+	private static final int HIERARCH_LETTER = 3143;
 	private static final int MOONFLOWER_CHARM = 3144;
 	private static final int GRAIL_DIAGRAM = 3145;
-	private static final int THALIAS_LETTER1 = 3146;
-	private static final int THALIAS_LETTER2 = 3147;
-	private static final int THALIAS_INSTRUCTIONS = 3148;
-	private static final int PUSHKINS_LIST = 3149;
+	private static final int THALIA_LETTER_1 = 3146;
+	private static final int THALIA_LETTER_2 = 3147;
+	private static final int THALIA_INSTRUCTIONS = 3148;
+	private static final int PUSHKIN_LIST = 3149;
 	private static final int PURE_MITHRIL_CUP = 3150;
-	private static final int ARKENIAS_CONTRACT = 3151;
-	private static final int ARKENIAS_INSTRUCTIONS = 3152;
+	private static final int ARKENIA_CONTRACT = 3151;
+	private static final int ARKENIA_INSTRUCTIONS = 3152;
 	private static final int ADONIUS_LIST = 3153;
 	private static final int ANDARIEL_SCRIPTURE_COPY = 3154;
 	private static final int STARDUST = 3155;
-	private static final int ISAELS_INSTRUCTIONS = 3156;
-	private static final int ISAELS_LETTER = 3157;
+	private static final int ISAEL_INSTRUCTIONS = 3156;
+	private static final int ISAEL_LETTER = 3157;
 	private static final int GRAIL_OF_PURITY = 3158;
 	private static final int TEARS_OF_UNICORN = 3159;
 	private static final int WATER_OF_LIFE = 3160;
 	private static final int PURE_MITHRIL_ORE = 3161;
 	private static final int ANT_SOLDIER_ACID = 3162;
-	private static final int WYRMS_TALON1 = 3163;
+	private static final int WYRM_TALON = 3163;
 	private static final int SPIDER_ICHOR = 3164;
-	private static final int HARPYS_DOWN = 3165;
+	private static final int HARPY_DOWN = 3165;
 	
 	private static final int[] TALINS_PIECES =
 	{
@@ -71,38 +70,42 @@ public class Q218_TestimonyOfLife extends Quest
 		3171
 	};
 	
-	public Q218_TestimonyOfLife(int questId, String name, String descr)
+	// Rewards
+	private static final int MARK_OF_LIFE = 3140;
+	private static final int DIMENSIONAL_DIAMOND = 7562;
+	
+	public Q218_TestimonyOfLife()
 	{
-		super(questId, name, descr);
+		super(218, qn, "Testimony of Life");
 		
 		questItemIds = new int[]
 		{
 			TALINS_SPEAR,
-			CARDIENS_LETTER,
+			CARDIEN_LETTER,
 			CAMOMILE_CHARM,
-			HIERARCHS_LETTER,
+			HIERARCH_LETTER,
 			MOONFLOWER_CHARM,
 			GRAIL_DIAGRAM,
-			THALIAS_LETTER1,
-			THALIAS_LETTER2,
-			THALIAS_INSTRUCTIONS,
-			PUSHKINS_LIST,
+			THALIA_LETTER_1,
+			THALIA_LETTER_2,
+			THALIA_INSTRUCTIONS,
+			PUSHKIN_LIST,
 			PURE_MITHRIL_CUP,
-			ARKENIAS_CONTRACT,
-			ARKENIAS_INSTRUCTIONS,
+			ARKENIA_CONTRACT,
+			ARKENIA_INSTRUCTIONS,
 			ADONIUS_LIST,
 			ANDARIEL_SCRIPTURE_COPY,
 			STARDUST,
-			ISAELS_INSTRUCTIONS,
-			ISAELS_LETTER,
+			ISAEL_INSTRUCTIONS,
+			ISAEL_LETTER,
 			GRAIL_OF_PURITY,
 			TEARS_OF_UNICORN,
 			WATER_OF_LIFE,
 			PURE_MITHRIL_ORE,
 			ANT_SOLDIER_ACID,
-			WYRMS_TALON1,
+			WYRM_TALON,
 			SPIDER_ICHOR,
-			HARPYS_DOWN,
+			HARPY_DOWN,
 			3166,
 			3167,
 			3168,
@@ -112,7 +115,7 @@ public class Q218_TestimonyOfLife extends Quest
 		};
 		
 		addStartNpc(CARDIEN);
-		addTalkId(ASTERIOS, PUSKIN, THALIA, ADONIUS, ARKENIA, CARDIEN, ISAEL);
+		addTalkId(ASTERIOS, PUSHKIN, THALIA, ADONIUS, ARKENIA, CARDIEN, ISAEL);
 		
 		addKillId(20145, 20176, 20233, 27077, 20550, 20581, 20582, 20082, 20084, 20086, 20087, 20088);
 	}
@@ -127,25 +130,25 @@ public class Q218_TestimonyOfLife extends Quest
 		
 		if (event.equalsIgnoreCase("30460-04.htm"))
 		{
-			st.set("cond", "1");
 			st.setState(STATE_STARTED);
+			st.set("cond", "1");
 			st.playSound(QuestState.SOUND_ACCEPT);
-			st.giveItems(CARDIENS_LETTER, 1);
-			st.giveItems(7562, 16);
+			st.giveItems(CARDIEN_LETTER, 1);
+			st.giveItems(DIMENSIONAL_DIAMOND, 16);
 		}
 		else if (event.equalsIgnoreCase("30154-07.htm"))
 		{
 			st.set("cond", "2");
 			st.playSound(QuestState.SOUND_MIDDLE);
-			st.takeItems(CARDIENS_LETTER, 1);
-			st.giveItems(HIERARCHS_LETTER, 1);
+			st.takeItems(CARDIEN_LETTER, 1);
+			st.giveItems(HIERARCH_LETTER, 1);
 			st.giveItems(MOONFLOWER_CHARM, 1);
 		}
 		else if (event.equalsIgnoreCase("30371-03.htm"))
 		{
 			st.set("cond", "3");
 			st.playSound(QuestState.SOUND_MIDDLE);
-			st.takeItems(HIERARCHS_LETTER, 1);
+			st.takeItems(HIERARCH_LETTER, 1);
 			st.giveItems(GRAIL_DIAGRAM, 1);
 		}
 		else if (event.equalsIgnoreCase("30371-11.htm"))
@@ -157,12 +160,12 @@ public class Q218_TestimonyOfLife extends Quest
 			{
 				htmltext = "30371-10.htm";
 				st.set("cond", "13");
-				st.giveItems(THALIAS_INSTRUCTIONS, 1);
+				st.giveItems(THALIA_INSTRUCTIONS, 1);
 			}
 			else
 			{
 				st.set("cond", "14");
-				st.giveItems(THALIAS_LETTER2, 1);
+				st.giveItems(THALIA_LETTER_2, 1);
 			}
 		}
 		else if (event.equalsIgnoreCase("30300-06.htm"))
@@ -170,39 +173,39 @@ public class Q218_TestimonyOfLife extends Quest
 			st.set("cond", "4");
 			st.playSound(QuestState.SOUND_MIDDLE);
 			st.takeItems(GRAIL_DIAGRAM, 1);
-			st.giveItems(PUSHKINS_LIST, 1);
+			st.giveItems(PUSHKIN_LIST, 1);
 		}
 		else if (event.equalsIgnoreCase("30300-10.htm"))
 		{
 			st.set("cond", "6");
 			st.playSound(QuestState.SOUND_MIDDLE);
-			st.takeItems(PUSHKINS_LIST, 1);
+			st.takeItems(PUSHKIN_LIST, 1);
 			st.takeItems(ANT_SOLDIER_ACID, -1);
 			st.takeItems(PURE_MITHRIL_ORE, -1);
-			st.takeItems(WYRMS_TALON1, -1);
+			st.takeItems(WYRM_TALON, -1);
 			st.giveItems(PURE_MITHRIL_CUP, 1);
 		}
 		else if (event.equalsIgnoreCase("30419-04.htm"))
 		{
 			st.set("cond", "8");
 			st.playSound(QuestState.SOUND_MIDDLE);
-			st.takeItems(THALIAS_LETTER1, 1);
-			st.giveItems(ARKENIAS_CONTRACT, 1);
-			st.giveItems(ARKENIAS_INSTRUCTIONS, 1);
+			st.takeItems(THALIA_LETTER_1, 1);
+			st.giveItems(ARKENIA_CONTRACT, 1);
+			st.giveItems(ARKENIA_INSTRUCTIONS, 1);
 		}
 		else if (event.equalsIgnoreCase("30375-02.htm"))
 		{
 			st.set("cond", "9");
 			st.playSound(QuestState.SOUND_MIDDLE);
-			st.takeItems(ARKENIAS_INSTRUCTIONS, 1);
+			st.takeItems(ARKENIA_INSTRUCTIONS, 1);
 			st.giveItems(ADONIUS_LIST, 1);
 		}
 		else if (event.equalsIgnoreCase("30655-02.htm"))
 		{
 			st.set("cond", "15");
 			st.playSound(QuestState.SOUND_MIDDLE);
-			st.takeItems(THALIAS_LETTER2, 1);
-			st.giveItems(ISAELS_INSTRUCTIONS, 1);
+			st.takeItems(THALIA_LETTER_2, 1);
+			st.giveItems(ISAEL_INSTRUCTIONS, 1);
 		}
 		
 		return htmltext;
@@ -251,7 +254,7 @@ public class Q218_TestimonyOfLife extends Quest
 							htmltext = "30154-10.htm";
 						break;
 					
-					case PUSKIN:
+					case PUSHKIN:
 						if (cond == 3)
 							htmltext = "30300-01.htm";
 						else if (cond == 4)
@@ -277,7 +280,7 @@ public class Q218_TestimonyOfLife extends Quest
 							st.set("cond", "7");
 							st.playSound(QuestState.SOUND_MIDDLE);
 							st.takeItems(PURE_MITHRIL_CUP, 1);
-							st.giveItems(THALIAS_LETTER1, 1);
+							st.giveItems(THALIA_LETTER_1, 1);
 						}
 						else if (cond == 7)
 							htmltext = "30371-07.htm";
@@ -294,8 +297,8 @@ public class Q218_TestimonyOfLife extends Quest
 								htmltext = "30371-13.htm";
 								st.set("cond", "14");
 								st.playSound(QuestState.SOUND_MIDDLE);
-								st.takeItems(THALIAS_INSTRUCTIONS, 1);
-								st.giveItems(THALIAS_LETTER2, 1);
+								st.takeItems(THALIA_INSTRUCTIONS, 1);
+								st.giveItems(THALIA_LETTER_2, 1);
 							}
 						}
 						else if (cond == 14)
@@ -307,7 +310,7 @@ public class Q218_TestimonyOfLife extends Quest
 							htmltext = "30371-16.htm";
 							st.set("cond", "18");
 							st.playSound(QuestState.SOUND_MIDDLE);
-							st.takeItems(ISAELS_LETTER, 1);
+							st.takeItems(ISAEL_LETTER, 1);
 							st.giveItems(GRAIL_OF_PURITY, 1);
 						}
 						else if (cond == 18)
@@ -335,7 +338,7 @@ public class Q218_TestimonyOfLife extends Quest
 							st.set("cond", "11");
 							st.playSound(QuestState.SOUND_MIDDLE);
 							st.takeItems(ADONIUS_LIST, 1);
-							st.takeItems(HARPYS_DOWN, -1);
+							st.takeItems(HARPY_DOWN, -1);
 							st.takeItems(SPIDER_ICHOR, -1);
 							st.giveItems(ANDARIEL_SCRIPTURE_COPY, 1);
 						}
@@ -356,7 +359,7 @@ public class Q218_TestimonyOfLife extends Quest
 							st.set("cond", "12");
 							st.playSound(QuestState.SOUND_MIDDLE);
 							st.takeItems(ANDARIEL_SCRIPTURE_COPY, 1);
-							st.takeItems(ARKENIAS_CONTRACT, 1);
+							st.takeItems(ARKENIA_CONTRACT, 1);
 							st.giveItems(STARDUST, 1);
 						}
 						else if (cond == 12)
@@ -397,8 +400,8 @@ public class Q218_TestimonyOfLife extends Quest
 								for (int itemId : TALINS_PIECES)
 									st.takeItems(itemId, 1);
 								
-								st.takeItems(ISAELS_INSTRUCTIONS, 1);
-								st.giveItems(ISAELS_LETTER, 1);
+								st.takeItems(ISAEL_INSTRUCTIONS, 1);
+								st.giveItems(ISAEL_LETTER, 1);
 								st.giveItems(TALINS_SPEAR, 1);
 							}
 							else
@@ -429,13 +432,13 @@ public class Q218_TestimonyOfLife extends Quest
 			case 20550:
 				if (st.getInt("cond") == 4)
 					if (st.dropItems(PURE_MITHRIL_ORE, 1, 10, 500000))
-						if (st.getQuestItemsCount(WYRMS_TALON1) >= 20 && st.getQuestItemsCount(ANT_SOLDIER_ACID) >= 20)
+						if (st.getQuestItemsCount(WYRM_TALON) >= 20 && st.getQuestItemsCount(ANT_SOLDIER_ACID) >= 20)
 							st.set("cond", "5");
 				break;
 			
 			case 20176:
 				if (st.getInt("cond") == 4)
-					if (st.dropItems(WYRMS_TALON1, 1, 20, 500000))
+					if (st.dropItems(WYRM_TALON, 1, 20, 500000))
 						if (st.getQuestItemsCount(PURE_MITHRIL_ORE) >= 10 && st.getQuestItemsCount(ANT_SOLDIER_ACID) >= 20)
 							st.set("cond", "5");
 				break;
@@ -447,20 +450,20 @@ public class Q218_TestimonyOfLife extends Quest
 			case 20088:
 				if (st.getInt("cond") == 4)
 					if (st.dropItems(ANT_SOLDIER_ACID, 1, 20, 800000))
-						if (st.getQuestItemsCount(PURE_MITHRIL_ORE) >= 10 && st.getQuestItemsCount(WYRMS_TALON1) >= 20)
+						if (st.getQuestItemsCount(PURE_MITHRIL_ORE) >= 10 && st.getQuestItemsCount(WYRM_TALON) >= 20)
 							st.set("cond", "5");
 				break;
 			
 			case 20233:
 				if (st.getInt("cond") == 9)
 					if (st.dropItems(SPIDER_ICHOR, 1, 20, 500000))
-						if (st.getQuestItemsCount(HARPYS_DOWN) >= 20)
+						if (st.getQuestItemsCount(HARPY_DOWN) >= 20)
 							st.set("cond", "10");
 				break;
 			
 			case 20145:
 				if (st.getInt("cond") == 9)
-					if (st.dropItems(HARPYS_DOWN, 1, 20, 500000))
+					if (st.dropItems(HARPY_DOWN, 1, 20, 500000))
 						if (st.getQuestItemsCount(SPIDER_ICHOR) >= 20)
 							st.set("cond", "10");
 				break;
@@ -511,6 +514,6 @@ public class Q218_TestimonyOfLife extends Quest
 	
 	public static void main(String[] args)
 	{
-		new Q218_TestimonyOfLife(218, qn, "Testimony of Life");
+		new Q218_TestimonyOfLife();
 	}
 }

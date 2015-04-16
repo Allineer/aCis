@@ -14,13 +14,15 @@
  */
 package net.sf.l2j.gameserver.handler.admincommandhandlers;
 
-import java.util.Collection;
 import java.util.StringTokenizer;
 
+import net.sf.l2j.gameserver.datatables.ArmorSetsTable;
 import net.sf.l2j.gameserver.datatables.ItemTable;
 import net.sf.l2j.gameserver.handler.IAdminCommandHandler;
+import net.sf.l2j.gameserver.model.L2ArmorSet;
 import net.sf.l2j.gameserver.model.L2World;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
+import net.sf.l2j.gameserver.network.serverpackets.ItemList;
 import net.sf.l2j.gameserver.templates.item.L2Item;
 
 /**
@@ -28,6 +30,7 @@ import net.sf.l2j.gameserver.templates.item.L2Item;
  * <br>
  * - itemcreate = show "item creation" menu<br>
  * - create_item = creates num items with respective id, if num is not specified, assumes 1.<br>
+ * - create_set = creates armorset with respective chest id.<br>
  * - create_coin = creates currency, using the choice box or typing good IDs.<br>
  * - reward_all = reward all online players with items.
  */
@@ -37,6 +40,7 @@ public class AdminCreateItem implements IAdminCommandHandler
 	{
 		"admin_itemcreate",
 		"admin_create_item",
+		"admin_create_set",
 		"admin_create_coin",
 		"admin_reward_all"
 	};
@@ -44,136 +48,24 @@ public class AdminCreateItem implements IAdminCommandHandler
 	@Override
 	public boolean useAdminCommand(String command, L2PcInstance activeChar)
 	{
+		StringTokenizer st = new StringTokenizer(command);
+		command = st.nextToken();
+		
 		if (command.equals("admin_itemcreate"))
 		{
 			AdminHelpPage.showHelpPage(activeChar, "itemcreation.htm");
 		}
-		else if (command.startsWith("admin_create_item"))
-		{
-			L2PcInstance target;
-			if (activeChar.getTarget() != null && activeChar.getTarget() instanceof L2PcInstance)
-				target = (L2PcInstance) activeChar.getTarget();
-			else
-				target = activeChar;
-			
-			try
-			{
-				String val = command.substring(17);
-				StringTokenizer st = new StringTokenizer(val);
-				if (st.countTokens() == 3)
-				{
-					String id = st.nextToken();
-					int idval = Integer.parseInt(id);
-					String num = st.nextToken();
-					int numval = Integer.parseInt(num);
-					String radius = st.nextToken();
-					int radiusval = Integer.parseInt(radius);
-					createItem(activeChar, target, idval, numval, radiusval);
-				}
-				else if (st.countTokens() == 2)
-				{
-					String id = st.nextToken();
-					int idval = Integer.parseInt(id);
-					String num = st.nextToken();
-					int numval = Integer.parseInt(num);
-					createItem(activeChar, target, idval, numval);
-				}
-				else if (st.countTokens() == 1)
-				{
-					String id = st.nextToken();
-					int idval = Integer.parseInt(id);
-					createItem(activeChar, target, idval, 1);
-				}
-			}
-			catch (Exception e)
-			{
-				activeChar.sendMessage("Usage: //create_item <itemId> [amount] [radius]");
-			}
-			AdminHelpPage.showHelpPage(activeChar, "itemcreation.htm");
-		}
-		else if (command.startsWith("admin_create_coin"))
-		{
-			L2PcInstance target;
-			if (activeChar.getTarget() != null && activeChar.getTarget() instanceof L2PcInstance)
-				target = (L2PcInstance) activeChar.getTarget();
-			else
-				target = activeChar;
-			
-			try
-			{
-				String val = command.substring(17);
-				StringTokenizer st = new StringTokenizer(val);
-				if (st.countTokens() == 2)
-				{
-					String name = st.nextToken();
-					int idval = getCoinId(name);
-					if (idval > 0)
-					{
-						String num = st.nextToken();
-						int numval = Integer.parseInt(num);
-						createItem(activeChar, target, idval, numval);
-					}
-				}
-				else if (st.countTokens() == 1)
-				{
-					String name = st.nextToken();
-					int idval = getCoinId(name);
-					createItem(activeChar, target, idval, 1);
-				}
-			}
-			catch (Exception e)
-			{
-				activeChar.sendMessage("Usage: //create_coin <name> [amount]");
-			}
-			AdminHelpPage.showHelpPage(activeChar, "itemcreation.htm");
-		}
-		else if (command.startsWith("admin_reward_all"))
+		else if (command.equals("admin_reward_all"))
 		{
 			try
 			{
-				String val = command.substring(17);
-				StringTokenizer st = new StringTokenizer(val);
-				int idval = 0;
-				int numval = 0;
-				if (st.countTokens() == 2)
-				{
-					String id = st.nextToken();
-					idval = Integer.parseInt(id);
-					String num = st.nextToken();
-					numval = Integer.parseInt(num);
-				}
-				else if (st.countTokens() == 1)
-				{
-					String id = st.nextToken();
-					idval = Integer.parseInt(id);
-					numval = 1;
-				}
+				final int id = Integer.parseInt(st.nextToken());
+				final int count = (st.hasMoreTokens()) ? Integer.parseInt(st.nextToken()) : 1;
 				
-				int counter = 0;
-				L2Item template = ItemTable.getInstance().getTemplate(idval);
-				if (template == null)
-				{
-					activeChar.sendMessage("This item doesn't exist.");
-					return false;
-				}
+				for (L2PcInstance player : L2World.getInstance().getAllPlayers().values())
+					createItem(activeChar, player, id, count, 0, false);
 				
-				if (numval > 1 && !template.isStackable())
-				{
-					activeChar.sendMessage("This item doesn't stack - Creation aborted.");
-					return false;
-				}
-				
-				Collection<L2PcInstance> pls = L2World.getInstance().getAllPlayers().values();
-				for (L2PcInstance onlinePlayer : pls)
-				{
-					if (activeChar != onlinePlayer && onlinePlayer.isOnline() && (onlinePlayer.getClient() != null && !onlinePlayer.getClient().isDetached()))
-					{
-						onlinePlayer.getInventory().addItem("Admin", idval, numval, onlinePlayer, activeChar);
-						onlinePlayer.sendMessage("A GM spawned " + numval + " " + template.getName() + " in your inventory.");
-						counter++;
-					}
-				}
-				activeChar.sendMessage(counter + " players rewarded with " + template.getName());
+				activeChar.sendMessage(L2World.getInstance().getAllPlayersCount() + " players rewarded with " + ItemTable.getInstance().getTemplate(id).getName());
 			}
 			catch (Exception e)
 			{
@@ -181,17 +73,93 @@ public class AdminCreateItem implements IAdminCommandHandler
 			}
 			AdminHelpPage.showHelpPage(activeChar, "itemcreation.htm");
 		}
+		else
+		{
+			L2PcInstance target = activeChar;
+			if (activeChar.getTarget() != null && activeChar.getTarget() instanceof L2PcInstance)
+				target = (L2PcInstance) activeChar.getTarget();
+			
+			if (command.equals("admin_create_item"))
+			{
+				try
+				{
+					final int id = Integer.parseInt(st.nextToken());
+					
+					int count = 1;
+					int radius = 0;
+					
+					if (st.hasMoreTokens())
+					{
+						count = Integer.parseInt(st.nextToken());
+						if (st.hasMoreTokens())
+							radius = Integer.parseInt(st.nextToken());
+					}
+					
+					createItem(activeChar, target, id, count, radius, true);
+				}
+				catch (Exception e)
+				{
+					activeChar.sendMessage("Usage: //create_item <itemId> [amount] [radius]");
+				}
+				AdminHelpPage.showHelpPage(activeChar, "itemcreation.htm");
+			}
+			else if (command.equals("admin_create_coin"))
+			{
+				try
+				{
+					final int id = getCoinId(st.nextToken());
+					if (id <= 0)
+					{
+						activeChar.sendMessage("Usage: //create_coin <name> [amount]");
+						return false;
+					}
+					
+					createItem(activeChar, target, id, (st.hasMoreTokens()) ? Integer.parseInt(st.nextToken()) : 1, 0, true);
+				}
+				catch (Exception e)
+				{
+					activeChar.sendMessage("Usage: //create_coin <name> [amount]");
+				}
+				AdminHelpPage.showHelpPage(activeChar, "itemcreation.htm");
+			}
+			else if (command.equals("admin_create_set"))
+			{
+				try
+				{
+					final int chestId = Integer.parseInt(st.nextToken());
+					final L2ArmorSet set = ArmorSetsTable.getInstance().getSet(chestId);
+					if (set == null)
+					{
+						activeChar.sendMessage("This chest has no set.");
+						return false;
+					}
+					
+					for (int itemId : set.getSetItemsId())
+					{
+						if (ItemTable.getInstance().getTemplate(itemId) != null)
+							target.getInventory().addItem("Admin", itemId, 1, target, activeChar);
+					}
+					
+					if (set.getShield() > 0)
+						activeChar.getInventory().addItem("Admin", set.getShield(), 1, target, activeChar);
+					
+					activeChar.sendMessage("You have spawned " + ItemTable.getInstance().getTemplate(chestId) + " set in " + activeChar.getName() + "'s inventory.");
+					
+					// Send the whole item list and open inventory window.
+					activeChar.sendPacket(new ItemList(activeChar, true));
+				}
+				catch (Exception e)
+				{
+					activeChar.sendMessage("Usage: //create_set <chestId>");
+				}
+			}
+		}
 		return true;
 	}
 	
-	private static void createItem(L2PcInstance activeChar, L2PcInstance target, int id, int num)
+	private static void createItem(L2PcInstance activeChar, L2PcInstance target, int id, int num, int radius, boolean sendGmMessage)
 	{
-		createItem(activeChar, target, id, num, 0);
-	}
-	
-	private static void createItem(L2PcInstance activeChar, L2PcInstance target, int id, int num, int radius)
-	{
-		L2Item template = ItemTable.getInstance().getTemplate(id);
+		final L2Item template = ItemTable.getInstance().getTemplate(id);
 		if (template == null)
 		{
 			activeChar.sendMessage("This item doesn't exist.");
@@ -215,9 +183,14 @@ public class AdminCreateItem implements IAdminCommandHandler
 					obj.getInventory().addItem("Admin", id, num, obj, activeChar);
 					obj.sendMessage("A GM spawned " + num + " " + template.getName() + " in your inventory.");
 					counter++;
+					
+					// Send whole item list and open inventory window
+					obj.sendPacket(new ItemList(activeChar, true));
 				}
 			}
-			activeChar.sendMessage(counter + " players rewarded with " + num + " " + template.getName() + " in a " + radius + " radius.");
+			
+			if (sendGmMessage)
+				activeChar.sendMessage(counter + " players rewarded with " + num + " " + template.getName() + " in a " + radius + " radius.");
 		}
 		else
 		{
@@ -225,23 +198,26 @@ public class AdminCreateItem implements IAdminCommandHandler
 			if (activeChar != target)
 				target.sendMessage("A GM spawned " + num + " " + template.getName() + " in your inventory.");
 			
-			activeChar.sendMessage("You have spawned " + num + " " + template.getName() + " in " + target.getName() + " inventory.");
+			if (sendGmMessage)
+				activeChar.sendMessage("You have spawned " + num + " " + template.getName() + " (" + id + ") in " + target.getName() + "'s inventory.");
+			
+			// Send the whole item list and open inventory window.
+			target.sendPacket(new ItemList(activeChar, true));
 		}
 	}
 	
 	private static int getCoinId(String name)
 	{
-		int id;
 		if (name.equalsIgnoreCase("adena"))
-			id = 57;
-		else if (name.equalsIgnoreCase("ancientadena"))
-			id = 5575;
-		else if (name.equalsIgnoreCase("festivaladena"))
-			id = 6673;
-		else
-			id = 0;
+			return 57;
 		
-		return id;
+		if (name.equalsIgnoreCase("ancientadena"))
+			return 5575;
+		
+		if (name.equalsIgnoreCase("festivaladena"))
+			return 6673;
+		
+		return 0;
 	}
 	
 	@Override

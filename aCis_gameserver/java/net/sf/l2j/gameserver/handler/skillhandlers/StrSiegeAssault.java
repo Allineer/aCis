@@ -49,7 +49,6 @@ public class StrSiegeAssault implements ISkillHandler
 		int damage = 0;
 		
 		final boolean ss = activeChar.isChargedShot(ShotType.SOULSHOT);
-		final boolean dual = activeChar.isUsingDualWeapon();
 		
 		for (L2Object obj : targets)
 		{
@@ -66,7 +65,7 @@ public class StrSiegeAssault implements ISkillHandler
 			if (!crit && (skill.getCondition() & L2Skill.COND_CRIT) != 0)
 				damage = 0;
 			else
-				damage = (int) Formulas.calcPhysDam(activeChar, target, skill, shld, crit, dual, ss);
+				damage = (int) Formulas.calcPhysDam(activeChar, target, skill, shld, crit, ss);
 			
 			if (damage > 0)
 			{

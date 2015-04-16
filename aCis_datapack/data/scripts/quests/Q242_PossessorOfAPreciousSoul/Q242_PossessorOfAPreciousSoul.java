@@ -37,17 +37,17 @@ public class Q242_PossessorOfAPreciousSoul extends Quest
 	private static final int RESTRAINER_OF_GLORY = 27317;
 	
 	// Items
-	private static final int VIRGILS_LETTER = 7677;
+	private static final int VIRGIL_LETTER = 7677;
 	private static final int GOLDEN_HAIR = 7590;
 	private static final int SORCERY_INGREDIENT = 7596;
 	private static final int ORB_OF_BINDING = 7595;
-	private static final int CARADINE_LETTER_2 = 7678;
+	private static final int CARADINE_LETTER = 7678;
 	
 	private static boolean _unicorn = false;
 	
-	public Q242_PossessorOfAPreciousSoul(int questId, String name, String descr)
+	public Q242_PossessorOfAPreciousSoul()
 	{
-		super(questId, name, descr);
+		super(242, qn, "Possessor of a Precious Soul - 2");
 		
 		questItemIds = new int[]
 		{
@@ -102,9 +102,9 @@ public class Q242_PossessorOfAPreciousSoul extends Quest
 				st.set("orb", "0");
 				st.set("cornerstone", "0");
 				st.set("cond", "9");
+				st.playSound(QuestState.SOUND_MIDDLE);
 				st.takeItems(GOLDEN_HAIR, 1);
 				st.takeItems(SORCERY_INGREDIENT, 1);
-				st.playSound(QuestState.SOUND_MIDDLE);
 			}
 			else
 			{
@@ -116,8 +116,8 @@ public class Q242_PossessorOfAPreciousSoul extends Quest
 		else if (event.equalsIgnoreCase("30738-02.htm"))
 		{
 			st.set("cond", "8");
-			st.giveItems(SORCERY_INGREDIENT, 1);
 			st.playSound(QuestState.SOUND_MIDDLE);
+			st.giveItems(SORCERY_INGREDIENT, 1);
 		}
 		// Cornerstone
 		else if (event.equalsIgnoreCase("31748-03.htm"))
@@ -163,6 +163,7 @@ public class Q242_PossessorOfAPreciousSoul extends Quest
 			npc.getSpawn().startRespawn();
 			return null;
 		}
+		
 		return htmltext;
 	}
 	
@@ -177,20 +178,17 @@ public class Q242_PossessorOfAPreciousSoul extends Quest
 		switch (st.getState())
 		{
 			case STATE_CREATED:
-				if (st.hasQuestItems(VIRGILS_LETTER))
+				if (st.hasQuestItems(VIRGIL_LETTER))
 				{
 					if (!player.isSubClassActive() || player.getLevel() < 60)
-					{
 						htmltext = "31742-02.htm";
-						st.exitQuest(true);
-					}
 					else
 					{
 						htmltext = "31742-03.htm";
-						st.set("cond", "1");
-						st.takeItems(VIRGILS_LETTER, 1);
 						st.setState(STATE_STARTED);
+						st.set("cond", "1");
 						st.playSound(QuestState.SOUND_ACCEPT);
+						st.takeItems(VIRGIL_LETTER, 1);
 					}
 				}
 				break;
@@ -217,7 +215,7 @@ public class Q242_PossessorOfAPreciousSoul extends Quest
 						else if (cond == 11)
 						{
 							htmltext = "31743-07.htm";
-							st.giveItems(CARADINE_LETTER_2, 1);
+							st.giveItems(CARADINE_LETTER, 1);
 							st.rewardExpAndSp(455764, 0);
 							st.playSound(QuestState.SOUND_FINISH);
 							st.exitQuest(false);
@@ -240,9 +238,9 @@ public class Q242_PossessorOfAPreciousSoul extends Quest
 						{
 							if (st.hasQuestItems(GOLDEN_HAIR))
 							{
+								htmltext = "31751-04.htm";
 								st.set("cond", "6");
 								st.playSound(QuestState.SOUND_MIDDLE);
-								htmltext = "31751-04.htm";
 							}
 							else
 							{
@@ -263,11 +261,11 @@ public class Q242_PossessorOfAPreciousSoul extends Quest
 							
 							if (hair == 4)
 							{
+								htmltext = "31752-02.htm";
 								st.unset("angel");
 								st.set("cond", "5");
-								st.giveItems(GOLDEN_HAIR, 1);
 								st.playSound(QuestState.SOUND_MIDDLE);
-								htmltext = "31752-02.htm";
+								st.giveItems(GOLDEN_HAIR, 1);
 							}
 							else
 							{
@@ -359,26 +357,24 @@ public class Q242_PossessorOfAPreciousSoul extends Quest
 	@Override
 	public String onKill(L2Npc npc, L2PcInstance player, boolean isPet)
 	{
-		if (!player.isSubClassActive())
-			return null;
-		
 		QuestState st = checkPlayerCondition(player, npc, "cond", "9");
-		if (st == null)
+		if (st == null || !player.isSubClassActive())
 			return null;
 		
 		int orbs = st.getInt("orb"); // check orbs internally, because player can use them before he gets them all
 		if (orbs < 4)
 		{
-			st.giveItems(ORB_OF_BINDING, 1);
-			st.playSound(QuestState.SOUND_ITEMGET);
 			orbs++;
 			st.set("orb", Integer.toString(orbs));
+			st.playSound(QuestState.SOUND_ITEMGET);
+			st.giveItems(ORB_OF_BINDING, 1);
 		}
+		
 		return null;
 	}
 	
 	public static void main(String[] args)
 	{
-		new Q242_PossessorOfAPreciousSoul(242, qn, "Possessor of a Precious Soul - 2");
+		new Q242_PossessorOfAPreciousSoul();
 	}
 }

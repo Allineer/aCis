@@ -119,7 +119,7 @@ public final class L2AuctioneerInstance extends L2NpcInstance
 			{
 				NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
 				html.setFile("data/html/auction/location.htm");
-				html.replace("%location%", MapRegionTable.getInstance().getClosestTownName(player));
+				html.replace("%location%", MapRegionTable.getInstance().getClosestTownName(player.getX(), player.getY()));
 				html.replace("%LOCATION%", getPictureName(player));
 				html.replace("%AGIT_LINK_BACK%", "bypass -h npc_" + getObjectId() + "_start");
 				player.sendPacket(html);
@@ -626,37 +626,31 @@ public final class L2AuctioneerInstance extends L2NpcInstance
 	
 	private static String getPictureName(L2PcInstance plyr)
 	{
-		int nearestTownId = MapRegionTable.getInstance().getMapRegion(plyr.getX(), plyr.getY());
-		String nearestTown;
-		
-		switch (nearestTownId)
+		switch (MapRegionTable.getMapRegion(plyr.getX(), plyr.getY()))
 		{
 			case 5:
-				nearestTown = "GLUDIO";
-				break;
+				return "GLUDIO";
+				
 			case 6:
-				nearestTown = "GLUDIN";
-				break;
+				return "GLUDIN";
+				
 			case 7:
-				nearestTown = "DION";
-				break;
+				return "DION";
+				
 			case 8:
-				nearestTown = "GIRAN";
-				break;
+				return "GIRAN";
+				
 			case 14:
-				nearestTown = "RUNE";
-				break;
+				return "RUNE";
+				
 			case 15:
-				nearestTown = "GODARD";
-				break;
+				return "GODARD";
+				
 			case 16:
-				nearestTown = "SCHUTTGART";
-				break;
+				return "SCHUTTGART";
+				
 			default:
-				nearestTown = "ADEN";
-				break;
+				return "ADEN";
 		}
-		
-		return nearestTown;
 	}
 }

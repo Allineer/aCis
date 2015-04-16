@@ -21,31 +21,25 @@ public class Q052_WilliesSpecialBait extends Quest
 {
 	private static final String qn = "Q052_WilliesSpecialBait";
 	
-	// NPC
-	private static final int WILLIE = 31574;
-	
 	// Item
 	private static final int TARLK_EYE = 7623;
 	
 	// Reward
 	private static final int EARTH_FISHING_LURE = 7612;
 	
-	// Monster
-	private static final int TARLK_BASILISK = 20573;
-	
-	public Q052_WilliesSpecialBait(int questId, String name, String descr)
+	public Q052_WilliesSpecialBait()
 	{
-		super(questId, name, descr);
+		super(52, qn, "Willie's Special Bait");
 		
 		questItemIds = new int[]
 		{
 			TARLK_EYE
 		};
 		
-		addStartNpc(WILLIE);
-		addTalkId(WILLIE);
+		addStartNpc(31574); // Willie
+		addTalkId(31574);
 		
-		addKillId(TARLK_BASILISK);
+		addKillId(20573); // Tarlk Basilik
 	}
 	
 	@Override
@@ -58,8 +52,8 @@ public class Q052_WilliesSpecialBait extends Quest
 		
 		if (event.equalsIgnoreCase("31574-03.htm"))
 		{
-			st.set("cond", "1");
 			st.setState(STATE_STARTED);
+			st.set("cond", "1");
 			st.playSound(QuestState.SOUND_ACCEPT);
 		}
 		else if (event.equalsIgnoreCase("31574-07.htm"))
@@ -115,6 +109,6 @@ public class Q052_WilliesSpecialBait extends Quest
 	
 	public static void main(String[] args)
 	{
-		new Q052_WilliesSpecialBait(52, qn, "Willie's Special Bait");
+		new Q052_WilliesSpecialBait();
 	}
 }

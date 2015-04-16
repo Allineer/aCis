@@ -29,7 +29,6 @@ import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2VillageMasterInstance;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.ExStorageMaxCount;
-import net.sf.l2j.gameserver.network.serverpackets.PledgeSkillList;
 import net.sf.l2j.gameserver.network.serverpackets.ShortCutRegister;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 
@@ -121,16 +120,12 @@ public class RequestAcquireSkill extends L2GameClientPacket
 				int spbId = SpellbookTable.getInstance().getBookForSkill(_skillId, _skillLevel);
 				if (spbId > 0)
 				{
-					if (!activeChar.destroyItemByItemId("SkillLearn", spbId, 1, trainer, false))
+					if (!activeChar.destroyItemByItemId("SkillLearn", spbId, 1, trainer, true))
 					{
 						activeChar.sendPacket(SystemMessageId.ITEM_MISSING_TO_LEARN_SKILL);
 						L2NpcInstance.showSkillList(activeChar, trainer, activeChar.getSkillLearningClassId());
 						return;
 					}
-					
-					SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.S1_DISAPPEARED);
-					sm.addItemName(spbId);
-					activeChar.sendPacket(sm);
 				}
 				
 				// Consume SP.
@@ -171,14 +166,12 @@ public class RequestAcquireSkill extends L2GameClientPacket
 				if (!exists)
 					return;
 				
-				if (!activeChar.destroyItemByItemId("Consume", costId, costCount, trainer, false))
+				if (!activeChar.destroyItemByItemId("Consume", costId, costCount, trainer, true))
 				{
 					activeChar.sendPacket(SystemMessageId.ITEM_MISSING_TO_LEARN_SKILL);
 					L2FishermanInstance.showFishSkillList(activeChar);
 					return;
 				}
-				
-				activeChar.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S2_S1_DISAPPEARED).addItemName(costId).addItemNumber(costCount));
 				
 				activeChar.addSkill(skill, true);
 				activeChar.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.LEARNED_SKILL_S1).addSkillName(skill));
@@ -221,24 +214,19 @@ public class RequestAcquireSkill extends L2GameClientPacket
 				
 				if (Config.LIFE_CRYSTAL_NEEDED)
 				{
-					if (!activeChar.destroyItemByItemId("Consume", itemId, 1, trainer, false))
+					if (!activeChar.destroyItemByItemId("Consume", itemId, 1, trainer, true))
 					{
 						activeChar.sendPacket(SystemMessageId.ITEM_MISSING_TO_LEARN_SKILL);
 						L2VillageMasterInstance.showPledgeSkillList(activeChar);
 						return;
 					}
-					activeChar.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S2_S1_DISAPPEARED).addItemName(itemId).addItemNumber(1));
 				}
 				
 				activeChar.getClan().takeReputationScore(repCost);
 				activeChar.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_DEDUCTED_FROM_CLAN_REP).addNumber(repCost));
 				
 				activeChar.getClan().addNewSkill(skill);
-				activeChar.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.CLAN_SKILL_S1_ADDED).addSkillName(_skillId));
-				activeChar.getClan().broadcastToOnlineMembers(new PledgeSkillList(activeChar.getClan()));
 				
-				for (L2PcInstance member : activeChar.getClan().getOnlineMembers(0))
-					member.sendSkillList();
 				L2VillageMasterInstance.showPledgeSkillList(activeChar);
 				return;
 		}

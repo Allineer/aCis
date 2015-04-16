@@ -33,15 +33,7 @@ import net.sf.l2j.util.Rnd;
 public class Chests extends AbstractNpcAI
 {
 	private static final int SKILL_DELUXE_KEY = 2229;
-	
-	// Base chance for BOX to be opened.
-	private static final int BASE_CHANCE = 100;
-	
-	// Percent to decrease base chance when grade of DELUXE key not match.
-	private static final int LEVEL_DECREASE = 40;
-	
-	// Chance for a chest to actually be a BOX (as opposed to being a mimic).
-	private static final int IS_BOX = 40;
+	private static final int SKILL_BOX_KEY = 2065;
 	
 	private static final int[] NPC_IDS =
 	{
@@ -132,29 +124,35 @@ public class Chests extends AbstractNpcAI
 				chest.setInteracted();
 				
 				// If it's the first interaction, check if this is a box or mimic.
-				if (Rnd.get(100) < IS_BOX)
+				if (Rnd.get(100) < 40)
 				{
-					if (skill.getId() == SKILL_DELUXE_KEY)
+					switch (skill.getId())
 					{
-						// check the chance to open the box
-						int keyLevelNeeded = (chest.getLevel() / 10) - skill.getLevel();
-						if (keyLevelNeeded < 0)
-							keyLevelNeeded *= -1;
+						case SKILL_BOX_KEY:
+						case SKILL_DELUXE_KEY:
+							// check the chance to open the box.
+							int keyLevelNeeded = (chest.getLevel() / 10) - skill.getLevel();
+							if (keyLevelNeeded < 0)
+								keyLevelNeeded *= -1;
+							
+							// Regular keys got 60% to succeed.
+							final int chance = ((skill.getId() == SKILL_BOX_KEY) ? 60 : 100) - keyLevelNeeded * 40;
+							
+							// Success, die with rewards.
+							if (Rnd.get(100) < chance)
+							{
+								chest.setSpecialDrop();
+								chest.doDie(caster);
+							}
+							// Used a key but failed to open: disappears with no rewards.
+							else
+								chest.deleteMe(); // TODO: replace for a better system (as chests attack once before decaying)
+							break;
 						
-						final int chance = BASE_CHANCE - keyLevelNeeded * LEVEL_DECREASE;
-						
-						// Success, die with rewards.
-						if (Rnd.get(100) < chance)
-						{
-							chest.setSpecialDrop();
-							chest.doDie(caster);
-						}
-						// Used a key but failed to open: disappears with no rewards.
-						else
-							chest.deleteMe(); // TODO: replace for a better system (as chests attack once before decaying)
+						default:
+							chest.doCast(SkillTable.getInstance().getInfo(4143, Math.min(10, Math.round(npc.getLevel() / 10))));
+							break;
 					}
-					else
-						chest.doCast(SkillTable.getInstance().getInfo(4143, Math.min(10, Math.round(npc.getLevel() / 10))));
 				}
 				// Mimic behavior : attack the caster.
 				else
@@ -177,7 +175,7 @@ public class Chests extends AbstractNpcAI
 				chest.setInteracted();
 				
 				// If it was a box, cast a suicide type skill.
-				if (Rnd.get(100) < IS_BOX)
+				if (Rnd.get(100) < 40)
 					chest.doCast(SkillTable.getInstance().getInfo(4143, Math.min(10, Math.round(npc.getLevel() / 10))));
 				// Mimic behavior : attack the caster.
 				else

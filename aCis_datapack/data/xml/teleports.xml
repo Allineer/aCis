@@ -225,8 +225,9 @@
 	<teleport id="418" loc_x="139714" loc_y="-177456" loc_z="-1536" price="690" fornoble="0"/>
 	<teleport id="419" loc_x="171946" loc_y="-173352" loc_z="3448" price="2200" fornoble="0"/>
 	<teleport id="420" loc_x="208884" loc_y="-113705" loc_z="-256" price="0" fornoble="0"/>
-	<teleport id="450" loc_x="184397" loc_y="-11957" loc_z="-5493" price="0" fornoble="0"/>
-	<teleport id="451" loc_x="183225" loc_y="-11911" loc_z="-4897" price="0" fornoble="0"/>
+	<teleport id="450" loc_x="184466" loc_y="-12014" loc_z="-5488" price="0" fornoble="0"/>
+	<teleport id="451" loc_x="184466" loc_y="-9022" loc_z="-5488" price="0" fornoble="0"/>
+	<teleport id="452" loc_x="183225" loc_y="-11911" loc_z="-4897" price="0" fornoble="0"/>
 	<teleport id="460" loc_x="-99843" loc_y="237583" loc_z="-3568" price="200" fornoble="0"/>
 	<teleport id="461" loc_x="-102850" loc_y="215932" loc_z="-3424" price="3000" fornoble="0"/>
 	<teleport id="462" loc_x="49315" loc_y="248452" loc_z="-5960" price="2500" fornoble="0"/>

@@ -367,9 +367,7 @@ public class Siege implements Siegable
 				// The player's clan is in an alliance
 				if (allyId != 0)
 				{
-					L2Clan[] clanList = ClanTable.getInstance().getClans();
-					
-					for (L2Clan clan : clanList)
+					for (L2Clan clan : ClanTable.getInstance().getClans())
 					{
 						if (clan.getAllyId() == allyId)
 						{
@@ -462,43 +460,22 @@ public class Siege implements Siegable
 	public void announceToPlayer(SystemMessage message, boolean bothSides)
 	{
 		for (L2SiegeClan siegeClans : getDefenderClans())
-		{
-			L2Clan clan = ClanTable.getInstance().getClan(siegeClans.getClanId());
-			for (L2PcInstance member : clan.getOnlineMembers(0))
-			{
-				if (member != null)
-					member.sendPacket(message);
-			}
-		}
+			ClanTable.getInstance().getClan(siegeClans.getClanId()).broadcastToOnlineMembers(message);
 		
 		if (bothSides)
 		{
 			for (L2SiegeClan siegeClans : getAttackerClans())
-			{
-				L2Clan clan = ClanTable.getInstance().getClan(siegeClans.getClanId());
-				for (L2PcInstance member : clan.getOnlineMembers(0))
-				{
-					if (member != null)
-						member.sendPacket(message);
-				}
-			}
+				ClanTable.getInstance().getClan(siegeClans.getClanId()).broadcastToOnlineMembers(message);
 		}
 	}
 	
 	public void updatePlayerSiegeStateFlags(boolean clear)
 	{
-		L2Clan clan;
 		for (L2SiegeClan siegeclan : getAttackerClans())
 		{
-			if (siegeclan == null)
-				continue;
-			
-			clan = ClanTable.getInstance().getClan(siegeclan.getClanId());
-			for (L2PcInstance member : clan.getOnlineMembers(0))
+			L2Clan clan = ClanTable.getInstance().getClan(siegeclan.getClanId());
+			for (L2PcInstance member : clan.getOnlineMembers())
 			{
-				if (member == null)
-					continue;
-				
 				if (clear)
 				{
 					member.setSiegeState((byte) 0);
@@ -517,15 +494,9 @@ public class Siege implements Siegable
 		
 		for (L2SiegeClan siegeclan : getDefenderClans())
 		{
-			if (siegeclan == null)
-				continue;
-			
-			clan = ClanTable.getInstance().getClan(siegeclan.getClanId());
-			for (L2PcInstance member : clan.getOnlineMembers(0))
+			L2Clan clan = ClanTable.getInstance().getClan(siegeclan.getClanId());
+			for (L2PcInstance member : clan.getOnlineMembers())
 			{
-				if (member == null)
-					continue;
-				
 				if (clear)
 				{
 					member.setSiegeState((byte) 0);
@@ -655,15 +626,11 @@ public class Siege implements Siegable
 	public List<L2PcInstance> getAttackersInZone()
 	{
 		List<L2PcInstance> players = new ArrayList<>();
-		L2Clan clan;
 		for (L2SiegeClan siegeclan : getAttackerClans())
 		{
-			clan = ClanTable.getInstance().getClan(siegeclan.getClanId());
-			for (L2PcInstance player : clan.getOnlineMembers(0))
+			L2Clan clan = ClanTable.getInstance().getClan(siegeclan.getClanId());
+			for (L2PcInstance player : clan.getOnlineMembers())
 			{
-				if (player == null)
-					continue;
-				
 				if (player.isInSiege())
 					players.add(player);
 			}
@@ -677,18 +644,14 @@ public class Siege implements Siegable
 	public List<L2PcInstance> getDefendersButNotOwnersInZone()
 	{
 		List<L2PcInstance> players = new ArrayList<>();
-		L2Clan clan;
 		for (L2SiegeClan siegeclan : getDefenderClans())
 		{
-			clan = ClanTable.getInstance().getClan(siegeclan.getClanId());
+			L2Clan clan = ClanTable.getInstance().getClan(siegeclan.getClanId());
 			if (clan.getClanId() == getCastle().getOwnerId())
 				continue;
 			
-			for (L2PcInstance player : clan.getOnlineMembers(0))
+			for (L2PcInstance player : clan.getOnlineMembers())
 			{
-				if (player == null)
-					continue;
-				
 				if (player.isInSiege())
 					players.add(player);
 			}
@@ -710,18 +673,14 @@ public class Siege implements Siegable
 	public List<L2PcInstance> getOwnersInZone()
 	{
 		List<L2PcInstance> players = new ArrayList<>();
-		L2Clan clan;
 		for (L2SiegeClan siegeclan : getDefenderClans())
 		{
-			clan = ClanTable.getInstance().getClan(siegeclan.getClanId());
+			L2Clan clan = ClanTable.getInstance().getClan(siegeclan.getClanId());
 			if (clan.getClanId() != getCastle().getOwnerId())
 				continue;
 			
-			for (L2PcInstance player : clan.getOnlineMembers(0))
+			for (L2PcInstance player : clan.getOnlineMembers())
 			{
-				if (player == null)
-					continue;
-				
 				if (player.isInSiege())
 					players.add(player);
 			}
@@ -735,7 +694,6 @@ public class Siege implements Siegable
 	public List<L2PcInstance> getSpectatorsInZone()
 	{
 		List<L2PcInstance> players = new ArrayList<>();
-		
 		for (L2PcInstance player : getCastle().getZone().getKnownTypeInside(L2PcInstance.class))
 		{
 			if (!player.isInSiege())

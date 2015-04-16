@@ -215,7 +215,7 @@ public class Q421_LittleWingsBigAdventure extends Quest
 							htmltext = "30747-18.htm";
 							
 							final L2Skill skill = SkillTable.getInstance().getInfo(4167, 1);
-							if (skill != null)
+							if (skill != null && player.getFirstEffect(skill) == null)
 								skill.getEffects(npc, player);
 						}
 						break;
@@ -287,7 +287,7 @@ public class Q421_LittleWingsBigAdventure extends Quest
 			if (originalKiller != null)
 			{
 				final L2Skill skill = SkillTable.getInstance().getInfo(4243, 1);
-				if (skill != null)
+				if (skill != null && originalKiller.getFirstEffect(skill) == null)
 					skill.getEffects(npc, originalKiller);
 			}
 		}

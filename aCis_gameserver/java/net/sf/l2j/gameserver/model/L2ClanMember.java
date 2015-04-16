@@ -113,8 +113,7 @@ public class L2ClanMember
 			
 			if (_clan.getReputationScore() >= 0)
 			{
-				L2Skill[] skills = _clan.getAllSkills();
-				for (L2Skill sk : skills)
+				for (L2Skill sk : _clan.getClanSkills())
 				{
 					if (sk.getMinPledgeClass() <= player.getPledgeClass())
 						player.addSkill(sk, false);

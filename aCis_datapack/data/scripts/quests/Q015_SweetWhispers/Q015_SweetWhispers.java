@@ -22,16 +22,16 @@ public class Q015_SweetWhispers extends Quest
 	private static final String qn = "Q015_SweetWhispers";
 	
 	// NPCs
-	private static final int Vladimir = 31302;
-	private static final int Hierarch = 31517;
-	private static final int MysteriousNecromancer = 31518;
+	private static final int VLADIMIR = 31302;
+	private static final int HIERARCH = 31517;
+	private static final int MYSTERIOUS_NECRO = 31518;
 	
-	public Q015_SweetWhispers(int questId, String name, String descr)
+	public Q015_SweetWhispers()
 	{
-		super(questId, name, descr);
+		super(15, qn, "Sweet Whispers");
 		
-		addStartNpc(Vladimir);
-		addTalkId(Vladimir, Hierarch, MysteriousNecromancer);
+		addStartNpc(VLADIMIR);
+		addTalkId(VLADIMIR, HIERARCH, MYSTERIOUS_NECRO);
 	}
 	
 	@Override
@@ -81,18 +81,18 @@ public class Q015_SweetWhispers extends Quest
 				int cond = st.getInt("cond");
 				switch (npc.getNpcId())
 				{
-					case Vladimir:
+					case VLADIMIR:
 						htmltext = "31302-01a.htm";
 						break;
 					
-					case MysteriousNecromancer:
+					case MYSTERIOUS_NECRO:
 						if (cond == 1)
 							htmltext = "31518-00.htm";
 						else if (cond == 2)
 							htmltext = "31518-01a.htm";
 						break;
 					
-					case Hierarch:
+					case HIERARCH:
 						if (cond == 2)
 							htmltext = "31517-00.htm";
 						break;
@@ -109,6 +109,6 @@ public class Q015_SweetWhispers extends Quest
 	
 	public static void main(String[] args)
 	{
-		new Q015_SweetWhispers(15, qn, "Sweet Whispers");
+		new Q015_SweetWhispers();
 	}
 }

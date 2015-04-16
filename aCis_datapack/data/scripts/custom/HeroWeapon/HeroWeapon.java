@@ -22,7 +22,7 @@ import net.sf.l2j.gameserver.util.Util;
 
 public class HeroWeapon extends Quest
 {
-	private final static int[] weaponIds =
+	private static final int[] WEAPON_IDS =
 	{
 		6611,
 		6612,
@@ -37,9 +37,9 @@ public class HeroWeapon extends Quest
 		6621
 	};
 	
-	public HeroWeapon(int questId, String name, String descr)
+	public HeroWeapon()
 	{
-		super(questId, name, descr);
+		super(-1, "HeroWeapon", "custom");
 		
 		addStartNpc(31690, 31769, 31770, 31771, 31772, 31773);
 		addTalkId(31690, 31769, 31770, 31771, 31772, 31773);
@@ -51,7 +51,7 @@ public class HeroWeapon extends Quest
 		QuestState st = player.getQuestState(getName());
 		
 		int weaponId = Integer.valueOf(event);
-		if (Util.contains(weaponIds, weaponId))
+		if (Util.contains(WEAPON_IDS, weaponId))
 			st.giveItems(weaponId, 1);
 		
 		st.exitQuest(true);
@@ -90,7 +90,7 @@ public class HeroWeapon extends Quest
 	
 	private boolean hasHeroWeapon(L2PcInstance player)
 	{
-		for (int i : weaponIds)
+		for (int i : WEAPON_IDS)
 		{
 			if (player.getInventory().getItemByItemId(i) != null)
 				return true;
@@ -101,6 +101,6 @@ public class HeroWeapon extends Quest
 	
 	public static void main(String[] args)
 	{
-		new HeroWeapon(-1, "HeroWeapon", "custom");
+		new HeroWeapon();
 	}
 }

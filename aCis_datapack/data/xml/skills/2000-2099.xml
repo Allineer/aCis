@@ -613,13 +613,17 @@
 		</for>
 	</skill>
 	<skill id="2065" levels="8" name="Box Key">
-		<set name="target" val="TARGET_UNLOCKABLE" />
+		<table name="#skillId"> 5197 5198 5199 5200 5201 5202 5203 5204 </table>
+		<set name="target" val="TARGET_ONE" />
 		<set name="hitTime" val="500" />
 		<set name="staticHitTime" val="true" />
-		<set name="skillType" val="UNLOCK" />
+		<set name="skillType" val="DELUXE_KEY_UNLOCK" />
 		<set name="operateType" val="OP_ACTIVE" />
 		<set name="castRange" val="40" />
+		<set name="effectRange" val="400" />
 		<set name="reuseDelay" val="3000" />
+		<set name="itemConsumeId" val="#skillId"/>
+		<set name="itemConsumeCount" val="1"/>
 	</skill>
 	<skill id="2066" levels="1" name="Item - Theme Sound Crystal">
 		<set name="isPotion" val="true" />

@@ -22,7 +22,6 @@ import net.sf.l2j.gameserver.model.L2SiegeClan;
 import net.sf.l2j.gameserver.model.L2Skill;
 import net.sf.l2j.gameserver.model.actor.L2Character;
 import net.sf.l2j.gameserver.model.actor.L2Npc;
-import net.sf.l2j.gameserver.model.actor.status.SiegeFlagStatus;
 import net.sf.l2j.gameserver.model.entity.Siegable;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.ActionFailed;
@@ -37,16 +36,13 @@ public class L2SiegeFlagInstance extends L2Npc
 	private final L2Clan _clan;
 	private final L2PcInstance _player;
 	private final Siegable _siege;
-	private final boolean _isAdvanced;
-	private boolean _canTalk;
 	
-	public L2SiegeFlagInstance(L2PcInstance player, int objectId, L2NpcTemplate template, boolean advanced)
+	public L2SiegeFlagInstance(L2PcInstance player, int objectId, L2NpcTemplate template)
 	{
 		super(objectId, template);
 		
-		_clan = player.getClan();
 		_player = player;
-		_canTalk = true;
+		_clan = player.getClan();
 		_siege = SiegeManager.getSiege(_player.getX(), _player.getY(), _player.getZ());
 		
 		if (_clan == null || _siege == null)
@@ -57,9 +53,8 @@ public class L2SiegeFlagInstance extends L2Npc
 			throw new NullPointerException(getClass().getSimpleName() + ": Cannot find siege clan.");
 		
 		sc.addFlag(this);
-		_isAdvanced = advanced;
-		getStatus();
 		setIsInvul(false);
+		setScriptValue(1);
 	}
 	
 	@Override
@@ -128,45 +123,21 @@ public class L2SiegeFlagInstance extends L2Npc
 		}
 	}
 	
-	public boolean isAdvancedHeadquarter()
-	{
-		return _isAdvanced;
-	}
-	
-	@Override
-	public SiegeFlagStatus getStatus()
-	{
-		return (SiegeFlagStatus) super.getStatus();
-	}
-	
-	@Override
-	public void initCharStatus()
-	{
-		setStatus(new SiegeFlagStatus(this));
-	}
-	
 	@Override
 	public void reduceCurrentHp(double damage, L2Character attacker, L2Skill skill)
 	{
-		super.reduceCurrentHp(damage, attacker, skill);
-		if (canTalk())
+		// Send warning to owners of headquarters that theirs base is under attack.
+		if (isScriptValue(1) && _clan != null && getCastle() != null && getCastle().getSiege().getIsInProgress())
 		{
-			if (getCastle() != null && getCastle().getSiege().getIsInProgress())
-			{
-				if (_clan != null)
-				{
-					// send warning to owners of headquarters that theirs base is under attack
-					_clan.broadcastToOnlineMembers(SystemMessage.getSystemMessage(SystemMessageId.BASE_UNDER_ATTACK));
-					setCanTalk(false);
-					ThreadPoolManager.getInstance().scheduleGeneral(new ScheduleTalkTask(), 20000);
-				}
-			}
+			_clan.broadcastToOnlineMembers(SystemMessage.getSystemMessage(SystemMessageId.BASE_UNDER_ATTACK));
+			setScriptValue(0);
+			ThreadPoolManager.getInstance().scheduleGeneral(new ScheduleTalkTask(), 20000);
 		}
+		super.reduceCurrentHp(damage, attacker, skill);
 	}
 	
 	private class ScheduleTalkTask implements Runnable
 	{
-		
 		public ScheduleTalkTask()
 		{
 		}
@@ -174,17 +145,12 @@ public class L2SiegeFlagInstance extends L2Npc
 		@Override
 		public void run()
 		{
-			setCanTalk(true);
+			setScriptValue(1);
 		}
 	}
 	
-	void setCanTalk(boolean val)
+	@Override
+	public void addFuncsToNewCharacter()
 	{
-		_canTalk = val;
-	}
-	
-	private boolean canTalk()
-	{
-		return _canTalk;
 	}
 }

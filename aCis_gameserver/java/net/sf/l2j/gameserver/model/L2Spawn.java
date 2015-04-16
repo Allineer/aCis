@@ -57,8 +57,11 @@ public class L2Spawn
 	/** The heading of L2Npc when they are spawned */
 	private int _heading;
 	
-	/** The delay between a L2Npc remove and its re-spawn */
+	/** The fixed delay used for a L2Npc respawn */
 	private int _respawnDelay;
+	
+	/** The random delay used for a L2Npc respawn */
+	private int _randomRespawnDelay;
 	
 	/** Minimum delay RaidBoss */
 	private int _respawnMinDelay;
@@ -176,11 +179,19 @@ public class L2Spawn
 	}
 	
 	/**
-	 * @return the delay between a L2Npc remove and its re-spawn.
+	 * @return the fixed delay used for a L2Npc respawn.
 	 */
 	public int getRespawnDelay()
 	{
 		return _respawnDelay;
+	}
+	
+	/**
+	 * @return the random delay used for a L2Npc respawn.
+	 */
+	public int getRandomRespawnDelay()
+	{
+		return _randomRespawnDelay;
 	}
 	
 	/**
@@ -254,24 +265,21 @@ public class L2Spawn
 	}
 	
 	/**
-	 * Decrease the current number of L2Npc of this L2Spawn and if necessary create a SpawnTask to launch after the respawn Delay.<BR>
-	 * <BR>
-	 * <B><U> Actions</U> :</B><BR>
-	 * <BR>
-	 * <li>Decrease the current number of L2Npc of this L2Spawn</li> <li>Check if respawn is possible to prevent multiple respawning caused by lag</li> <li>Update the current number of SpawnTask in progress or stand by of this L2Spawn</li> <li>Create a new SpawnTask to launch after the respawn Delay
-	 * </li><BR>
-	 * <BR>
-	 * <FONT COLOR=#FF0000><B> <U>Caution</U> : A respawn is possible ONLY if _doRespawn=True and _scheduledCount + _currentCount < _maximumCount</B></FONT><BR>
-	 * <BR>
+	 * Create a SpawnTask to launch after the fixed + random delay. A respawn is ONLY possible if _doRespawn=True.<br>
+	 * <br>
+	 * The random timer is calculated here, in order each spawn got his own random timer. The * 1000 is made after Rnd.get because we don't need random ms, but seconds.
 	 * @param oldNpc
 	 */
-	public void decreaseCount(L2Npc oldNpc)
+	public void respawn(L2Npc oldNpc)
 	{
 		// Check if respawn is possible to prevent multiple respawning caused by lag
 		if (_doRespawn)
 		{
+			// Calculate the random time, if any.
+			final int randomTime = (_randomRespawnDelay > 0) ? Rnd.get(-_randomRespawnDelay, _randomRespawnDelay) * 1000 : 0;
+			
 			// Create a new SpawnTask to launch after the respawn Delay
-			ThreadPoolManager.getInstance().scheduleGeneral(new SpawnTask(oldNpc), _respawnDelay);
+			ThreadPoolManager.getInstance().scheduleGeneral(new SpawnTask(oldNpc), _respawnDelay + randomTime);
 		}
 	}
 	
@@ -461,13 +469,20 @@ public class L2Spawn
 	 */
 	public void setRespawnDelay(int i)
 	{
-		if (i < 0)
-			_log.warning("Respawn delay is negative for spawnId: " + this);
-		
 		if (i < 10)
+		{
+			if (i < 0)
+				_log.warning("Respawn delay is negative for spawnId: " + getNpcId());
+			
 			i = 10;
+		}
 		
 		_respawnDelay = i * 1000;
+	}
+	
+	public void setRandomRespawnDelay(int i)
+	{
+		_randomRespawnDelay = i;
 	}
 	
 	public L2Npc getLastSpawn()

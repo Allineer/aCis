@@ -51,12 +51,12 @@ public class L2CharTemplate
 	
 	public L2CharTemplate(StatsSet set)
 	{
-		_baseSTR = set.getInteger("str");
-		_baseCON = set.getInteger("con");
-		_baseDEX = set.getInteger("dex");
-		_baseINT = set.getInteger("int");
-		_baseWIT = set.getInteger("wit");
-		_baseMEN = set.getInteger("men");
+		_baseSTR = set.getInteger("str", 40);
+		_baseCON = set.getInteger("con", 21);
+		_baseDEX = set.getInteger("dex", 30);
+		_baseINT = set.getInteger("int", 20);
+		_baseWIT = set.getInteger("wit", 43);
+		_baseMEN = set.getInteger("men", 20);
 		
 		_baseHpMax = set.getDouble("hp");
 		_baseCpMax = set.getDouble("cp", 0);

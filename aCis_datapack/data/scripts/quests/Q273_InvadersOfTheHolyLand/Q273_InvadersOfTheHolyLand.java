@@ -81,15 +81,9 @@ public class Q273_InvadersOfTheHolyLand extends Quest
 		{
 			case STATE_CREATED:
 				if (player.getRace() != Race.Orc)
-				{
 					htmltext = "30566-00.htm";
-					st.exitQuest(true);
-				}
 				else if (player.getLevel() < 6)
-				{
 					htmltext = "30566-01.htm";
-					st.exitQuest(true);
-				}
 				else
 					htmltext = "30566-02.htm";
 				break;

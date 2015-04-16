@@ -60,8 +60,8 @@ public class ClanTable
 	protected ClanTable()
 	{
 		_clans = new HashMap<>();
-		L2Clan clan;
 		
+		// Load all clans.
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
 		{
 			PreparedStatement statement = con.prepareStatement("SELECT clan_id FROM clan_data");
@@ -71,11 +71,11 @@ public class ClanTable
 			{
 				int clanId = result.getInt("clan_id");
 				
-				_clans.put(clanId, new L2Clan(clanId));
-				clan = getClan(clanId);
+				L2Clan clan = new L2Clan(clanId);
+				_clans.put(clanId, clan);
 				
 				if (clan.getDissolvingExpiryTime() != 0)
-					scheduleRemoveClan(clan.getClanId());
+					scheduleRemoveClan(clan);
 			}
 			result.close();
 			statement.close();
@@ -86,8 +86,14 @@ public class ClanTable
 		}
 		_log.info("ClanTable: Restored " + _clans.size() + " clans.");
 		
+		// Check for non-existing alliances.
 		allianceCheck();
-		restorewars();
+		
+		// Restore clan wars.
+		restoreWars();
+		
+		// Refresh clans ladder.
+		refreshClansLadder(false);
 	}
 	
 	/**
@@ -96,12 +102,12 @@ public class ClanTable
 	 */
 	public L2Clan getClan(int clanId)
 	{
-		return _clans.get(Integer.valueOf(clanId));
+		return _clans.get(clanId);
 	}
 	
 	public L2Clan getClanByName(String clanName)
 	{
-		for (L2Clan clan : getClans())
+		for (L2Clan clan : _clans.values())
 		{
 			if (clan.getName().equalsIgnoreCase(clanName))
 				return clan;
@@ -172,7 +178,7 @@ public class ClanTable
 		if (Config.DEBUG)
 			_log.fine("New clan created: " + clan.getClanId() + " " + clan.getName());
 		
-		_clans.put(Integer.valueOf(clan.getClanId()), clan);
+		_clans.put(clan.getClanId(), clan);
 		
 		// should be update packet only
 		player.sendPacket(new PledgeShowInfoUpdate(clan));
@@ -185,7 +191,7 @@ public class ClanTable
 	
 	public synchronized void destroyClan(int clanId)
 	{
-		L2Clan clan = getClan(clanId);
+		L2Clan clan = _clans.get(clanId);
 		if (clan == null)
 			return;
 		
@@ -257,25 +263,25 @@ public class ClanTable
 		}
 	}
 	
-	public void scheduleRemoveClan(final int clanId)
+	public void scheduleRemoveClan(final L2Clan clan)
 	{
+		if (clan == null)
+			return;
+		
 		ThreadPoolManager.getInstance().scheduleGeneral(new Runnable()
 		{
 			@Override
 			public void run()
 			{
-				if (getClan(clanId) == null)
-					return;
-				
-				if (getClan(clanId).getDissolvingExpiryTime() != 0)
-					destroyClan(clanId);
+				if (clan.getDissolvingExpiryTime() != 0)
+					destroyClan(clan.getClanId());
 			}
-		}, Math.max(getClan(clanId).getDissolvingExpiryTime() - System.currentTimeMillis(), 60000));
+		}, Math.max(clan.getDissolvingExpiryTime() - System.currentTimeMillis(), 60000));
 	}
 	
 	public boolean isAllyExists(String allyName)
 	{
-		for (L2Clan clan : getClans())
+		for (L2Clan clan : _clans.values())
 		{
 			if (clan.getAllyName() != null && clan.getAllyName().equalsIgnoreCase(allyName))
 				return true;
@@ -283,13 +289,15 @@ public class ClanTable
 		return false;
 	}
 	
-	public void storeclanswars(int clanId1, int clanId2)
+	public void storeClansWars(int clanId1, int clanId2)
 	{
-		L2Clan clan1 = ClanTable.getInstance().getClan(clanId1);
-		L2Clan clan2 = ClanTable.getInstance().getClan(clanId2);
-		clan1.setEnemyClan(clan2);
-		clan2.setAttackerClan(clan1);
+		final L2Clan clan1 = _clans.get(clanId1);
+		final L2Clan clan2 = _clans.get(clanId2);
+		
+		clan1.setEnemyClan(clanId2);
 		clan1.broadcastClanStatus();
+		
+		clan2.setAttackerClan(clanId1);
 		clan2.broadcastClanStatus();
 		
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
@@ -312,13 +320,15 @@ public class ClanTable
 		clan2.broadcastToOnlineMembers(SystemMessage.getSystemMessage(SystemMessageId.CLAN_S1_DECLARED_WAR).addString(clan1.getName()));
 	}
 	
-	public void deleteclanswars(int clanId1, int clanId2)
+	public void deleteClansWars(int clanId1, int clanId2)
 	{
-		L2Clan clan1 = ClanTable.getInstance().getClan(clanId1);
-		L2Clan clan2 = ClanTable.getInstance().getClan(clanId2);
-		clan1.deleteEnemyClan(clan2);
-		clan2.deleteAttackerClan(clan1);
+		final L2Clan clan1 = _clans.get(clanId1);
+		final L2Clan clan2 = _clans.get(clanId2);
+		
+		clan1.deleteEnemyClan(clanId2);
 		clan1.broadcastClanStatus();
+		
+		clan2.deleteAttackerClan(clanId1);
 		clan2.broadcastClanStatus();
 		
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
@@ -347,15 +357,15 @@ public class ClanTable
 				count++;
 		}
 		
-		if (count == clan1.getMembers().length - 1)
+		if (count == clan1.getMembersCount() - 1)
 		{
-			clan1.deleteEnemyClan(clan2);
-			clan2.deleteEnemyClan(clan1);
-			deleteclanswars(clan1.getClanId(), clan2.getClanId());
+			clan1.deleteEnemyClan(clan2.getClanId());
+			clan2.deleteEnemyClan(clan1.getClanId());
+			deleteClansWars(clan1.getClanId(), clan2.getClanId());
 		}
 	}
 	
-	private void restorewars()
+	private void restoreWars()
 	{
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
 		{
@@ -363,8 +373,8 @@ public class ClanTable
 			ResultSet rset = statement.executeQuery();
 			while (rset.next())
 			{
-				getClan(rset.getInt("clan1")).setEnemyClan(rset.getInt("clan2"));
-				getClan(rset.getInt("clan2")).setAttackerClan(rset.getInt("clan1"));
+				_clans.get(rset.getInt("clan1")).setEnemyClan(rset.getInt("clan2"));
+				_clans.get(rset.getInt("clan2")).setAttackerClan(rset.getInt("clan1"));
 			}
 			rset.close();
 			statement.close();
@@ -409,6 +419,41 @@ public class ClanTable
 			}
 		}
 		return clanAllies;
+	}
+	
+	/**
+	 * Refresh clans ladder, picking up the 99 first best clans, and allocating their ranks accordingly.
+	 * @param cleanupRank if true, cleanup ranks. Used for the task, useless for startup.
+	 */
+	public void refreshClansLadder(boolean cleanupRank)
+	{
+		// Cleanup ranks. Needed, as one clan can go off the list.
+		if (cleanupRank)
+		{
+			for (L2Clan clan : _clans.values())
+				if (clan != null && clan.getRank() != 0)
+					clan.setRank(0);
+		}
+		
+		// Retrieve the 99 best clans, allocate their ranks.
+		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
+		{
+			PreparedStatement statement = con.prepareStatement("SELECT clan_id FROM clan_data ORDER BY reputation_score DESC LIMIT 99");
+			ResultSet result = statement.executeQuery();
+			
+			int rank = 1;
+			
+			while (result.next())
+			{
+				final L2Clan clan = _clans.get(result.getInt("clan_id"));
+				if (clan != null && clan.getReputationScore() > 0)
+					clan.setRank(rank++);
+			}
+		}
+		catch (Exception e)
+		{
+			_log.log(Level.SEVERE, "Error updating clans ladder.", e);
+		}
 	}
 	
 	private static class SingletonHolder

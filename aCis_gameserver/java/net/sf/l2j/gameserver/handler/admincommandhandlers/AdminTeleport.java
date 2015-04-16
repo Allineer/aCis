@@ -143,8 +143,7 @@ public class AdminTeleport implements IAdminCommandHandler
 				L2Clan clan = player.getClan();
 				if (clan != null)
 				{
-					L2PcInstance[] members = clan.getOnlineMembers(0);
-					for (L2PcInstance member : members)
+					for (L2PcInstance member : clan.getOnlineMembers())
 						teleportCharacter(member, activeChar.getX(), activeChar.getY(), activeChar.getZ());
 					
 					activeChar.sendMessage("You recall " + player.getName() + "'s clan.");

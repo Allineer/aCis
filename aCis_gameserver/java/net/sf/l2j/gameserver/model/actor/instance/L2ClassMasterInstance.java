@@ -20,16 +20,23 @@ import net.sf.l2j.gameserver.datatables.ItemTable;
 import net.sf.l2j.gameserver.model.base.ClassId;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.ActionFailed;
-import net.sf.l2j.gameserver.network.serverpackets.MagicSkillUse;
 import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
 import net.sf.l2j.gameserver.network.serverpackets.UserInfo;
 import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
 import net.sf.l2j.util.StringUtil;
 
 /**
- * Custom class allowing you to choose your class. You can customize class rewards as needed items. Check npc.properties for more informations. This NPC type got 2 differents ways to level : - the normal one, where you have to be at least of the good level NOTE : you have to take 1st class then 2nd,
- * if you try to take 2nd directly it won't work. - the "allow_entire_tree" version, where you can take class depending of your current path. NOTE : you don't need to be of the good level. Added to the "change class" function, this NPC can noblesse and give available skills (related to your current
- * class and level).
+ * Custom class allowing you to choose your class.<br>
+ * <br>
+ * You can customize class rewards as needed items. Check npc.properties for more informations.<br>
+ * This NPC type got 2 differents ways to level:
+ * <ul>
+ * <li>the normal one, where you have to be at least of the good level.<br>
+ * NOTE : you have to take 1st class then 2nd, if you try to take 2nd directly it won't work.</li>
+ * <li>the "allow_entire_tree" version, where you can take class depending of your current path.<br>
+ * NOTE : you don't need to be of the good level.</li>
+ * </ul>
+ * Added to the "change class" function, this NPC can noblesse and give available skills (related to your current class and level).
  */
 public final class L2ClassMasterInstance extends L2NpcInstance
 {
@@ -72,9 +79,6 @@ public final class L2ClassMasterInstance extends L2NpcInstance
 			
 			if (checkAndChangeClass(player, val))
 			{
-				// self-animation
-				player.broadcastPacket(new MagicSkillUse(player, player, 5103, 1, 0, 0));
-				
 				NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
 				html.setFile("data/html/classmaster/ok.htm");
 				html.replace("%name%", CharTemplateTable.getInstance().getClassNameById(val));

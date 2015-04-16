@@ -18,7 +18,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -38,7 +38,7 @@ public class MacroList
 	private final L2PcInstance _owner;
 	private int _revision;
 	private int _macroId;
-	private final Map<Integer, L2Macro> _macroses = new HashMap<>();
+	private final Map<Integer, L2Macro> _macroses = new LinkedHashMap<>();
 	
 	public MacroList(L2PcInstance owner)
 	{

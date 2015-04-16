@@ -18,6 +18,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -97,7 +98,7 @@ public class SkillTreeTable
 		// Enchant skills tree && Enchant data
 		try
 		{
-			_enchantSkillData = new HashMap<>();
+			_enchantSkillData = new LinkedHashMap<>();
 			_enchantSkillTrees = new ArrayList<>();
 			
 			File f = new File("./data/xml/skillstrees/enchant_skills_tree.xml");
@@ -223,7 +224,7 @@ public class SkillTreeTable
 		if (skills == null || skills.isEmpty())
 			return;
 		
-		Map<Integer, L2SkillLearn> tmp = new HashMap<>();
+		Map<Integer, L2SkillLearn> tmp = new LinkedHashMap<>();
 		
 		if (parentId > -1)
 		{
@@ -302,7 +303,7 @@ public class SkillTreeTable
 	 */
 	public Collection<L2SkillLearn> getAllAvailableSkills(L2PcInstance cha, ClassId classId)
 	{
-		Map<Integer, L2SkillLearn> result = new HashMap<>();
+		Map<Integer, L2SkillLearn> result = new LinkedHashMap<>();
 		
 		int skillId, level = cha.getLevel();
 		L2SkillLearn skill;
@@ -480,7 +481,7 @@ public class SkillTreeTable
 	{
 		List<L2PledgeSkillLearn> result = new ArrayList<>();
 		
-		L2Skill[] clanSkills = cha.getClan().getAllSkills();
+		L2Skill[] clanSkills = cha.getClan().getClanSkills();
 		int clanLvl = cha.getClan().getLevel();
 		
 		for (L2PledgeSkillLearn psl : _pledgeSkillTrees)

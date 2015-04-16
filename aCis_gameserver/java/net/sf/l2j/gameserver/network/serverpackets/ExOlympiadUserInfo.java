@@ -15,15 +15,16 @@
 package net.sf.l2j.gameserver.network.serverpackets;
 
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
-import net.sf.l2j.gameserver.model.olympiad.Participant;
 
 /**
  * @author godson
  */
 public class ExOlympiadUserInfo extends L2GameServerPacket
 {
-	private final L2PcInstance _player;
-	private Participant _par = null;
+	private int _side;
+	private int _objectId;
+	private String _name;
+	private int _classId;
 	private int _curHp;
 	private int _maxHp;
 	private int _curCp;
@@ -31,43 +32,14 @@ public class ExOlympiadUserInfo extends L2GameServerPacket
 	
 	public ExOlympiadUserInfo(L2PcInstance player)
 	{
-		_player = player;
-		
-		if (_player != null)
-		{
-			_curHp = (int) _player.getCurrentHp();
-			_maxHp = _player.getMaxHp();
-			_curCp = (int) _player.getCurrentCp();
-			_maxCp = _player.getMaxCp();
-		}
-		else
-		{
-			_curHp = 0;
-			_maxHp = 100;
-			_curCp = 0;
-			_maxCp = 100;
-		}
-	}
-	
-	public ExOlympiadUserInfo(Participant par)
-	{
-		_par = par;
-		_player = par.player;
-		
-		if (_player != null)
-		{
-			_curHp = (int) _player.getCurrentHp();
-			_maxHp = _player.getMaxHp();
-			_curCp = (int) _player.getCurrentCp();
-			_maxCp = _player.getMaxCp();
-		}
-		else
-		{
-			_curHp = 0;
-			_maxHp = 100;
-			_curCp = 0;
-			_maxCp = 100;
-		}
+		_side = player.getOlympiadSide();
+		_objectId = player.getObjectId();
+		_name = player.getName();
+		_classId = player.getClassId().getId();
+		_curHp = (int) player.getCurrentHp();
+		_maxHp = player.getMaxHp();
+		_curCp = (int) player.getCurrentCp();
+		_maxCp = player.getMaxCp();
 	}
 	
 	@Override
@@ -75,20 +47,10 @@ public class ExOlympiadUserInfo extends L2GameServerPacket
 	{
 		writeC(0xfe);
 		writeH(0x29);
-		if (_player != null)
-		{
-			writeC(_player.getOlympiadSide());
-			writeD(_player.getObjectId());
-			writeS(_player.getName());
-			writeD(_player.getClassId().getId());
-		}
-		else
-		{
-			writeC(_par.side);
-			writeD(_par.objectId);
-			writeS(_par.name);
-			writeD(_par.baseClass);
-		}
+		writeC(_side);
+		writeD(_objectId);
+		writeS(_name);
+		writeD(_classId);
 		writeD(_curHp);
 		writeD(_maxHp);
 		writeD(_curCp);

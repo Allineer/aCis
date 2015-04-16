@@ -20,7 +20,6 @@ import java.util.logging.Logger;
 import net.sf.l2j.Config;
 import net.sf.l2j.gameserver.datatables.SkillTable;
 import net.sf.l2j.gameserver.handler.IAdminCommandHandler;
-import net.sf.l2j.gameserver.model.L2Clan;
 import net.sf.l2j.gameserver.model.L2Object;
 import net.sf.l2j.gameserver.model.L2Skill;
 import net.sf.l2j.gameserver.model.actor.L2Character;
@@ -28,7 +27,6 @@ import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.MagicSkillUse;
 import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
-import net.sf.l2j.gameserver.network.serverpackets.PledgeSkillList;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 import net.sf.l2j.util.StringUtil;
 
@@ -445,16 +443,9 @@ public class AdminSkill implements IAdminCommandHandler
 			return;
 		}
 		
-		// The previous check on CL checks already if player is/isn't in a clan.
-		L2Clan clanTarget = player.getClan();
+		player.getClan().addNewSkill(skill);
 		
-		clanTarget.addNewSkill(skill);
-		clanTarget.broadcastToOnlineMembers(SystemMessage.getSystemMessage(SystemMessageId.CLAN_SKILL_S1_ADDED).addSkillName(id));
-		clanTarget.broadcastToOnlineMembers(new PledgeSkillList(clanTarget));
-		for (L2PcInstance member : clanTarget.getOnlineMembers(0))
-			member.sendSkillList();
-		
-		activeChar.sendMessage("You gave " + skill.getName() + " Clan Skill to " + clanTarget.getName() + " clan.");
+		activeChar.sendMessage("You gave " + skill.getName() + " Clan Skill to " + player.getClan().getName() + " clan.");
 		
 		showMainPage(activeChar);
 		return;

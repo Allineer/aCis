@@ -24,23 +24,17 @@ public class Q020_BringUpWithLove extends Quest
 	// Item
 	private static final int JEWEL_OF_INNOCENCE = 7185;
 	
-	// Reward
-	private static final int ADENA = 57;
-	
-	// NPC
-	private static final int TUNATUN = 31537;
-	
-	public Q020_BringUpWithLove(int questId, String name, String descr)
+	public Q020_BringUpWithLove()
 	{
-		super(questId, name, descr);
+		super(20, qn, "Bring Up With Love");
 		
 		questItemIds = new int[]
 		{
 			JEWEL_OF_INNOCENCE
 		};
 		
-		addStartNpc(TUNATUN);
-		addTalkId(TUNATUN);
+		addStartNpc(31537); // Tunatun
+		addTalkId(31537);
 	}
 	
 	@Override
@@ -53,14 +47,14 @@ public class Q020_BringUpWithLove extends Quest
 		
 		if (event.equalsIgnoreCase("31537-09.htm"))
 		{
-			st.set("cond", "1");
 			st.setState(STATE_STARTED);
+			st.set("cond", "1");
 			st.playSound(QuestState.SOUND_ACCEPT);
 		}
 		else if (event.equalsIgnoreCase("31537-12.htm"))
 		{
 			st.takeItems(JEWEL_OF_INNOCENCE, -1);
-			st.rewardItems(ADENA, 68500);
+			st.rewardItems(57, 68500);
 			st.playSound(QuestState.SOUND_FINISH);
 			st.exitQuest(false);
 		}
@@ -99,6 +93,6 @@ public class Q020_BringUpWithLove extends Quest
 	
 	public static void main(String[] args)
 	{
-		new Q020_BringUpWithLove(20, qn, "Bring Up With Love");
+		new Q020_BringUpWithLove();
 	}
 }

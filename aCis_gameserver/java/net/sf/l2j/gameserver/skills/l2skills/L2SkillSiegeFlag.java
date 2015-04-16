@@ -14,9 +14,6 @@
  */
 package net.sf.l2j.gameserver.skills.l2skills;
 
-import java.util.logging.Level;
-
-import net.sf.l2j.gameserver.datatables.NpcTable;
 import net.sf.l2j.gameserver.idfactory.IdFactory;
 import net.sf.l2j.gameserver.instancemanager.CastleManager;
 import net.sf.l2j.gameserver.instancemanager.SiegeManager;
@@ -30,6 +27,7 @@ import net.sf.l2j.gameserver.model.zone.ZoneId;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 import net.sf.l2j.gameserver.templates.StatsSet;
+import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
 
 public class L2SkillSiegeFlag extends L2Skill
 {
@@ -41,16 +39,13 @@ public class L2SkillSiegeFlag extends L2Skill
 		_isAdvanced = set.getBool("isAdvanced", false);
 	}
 	
-	/**
-	 * @see net.sf.l2j.gameserver.model.L2Skill#useSkill(net.sf.l2j.gameserver.model.actor.L2Character, net.sf.l2j.gameserver.model.L2Object[])
-	 */
 	@Override
 	public void useSkill(L2Character activeChar, L2Object[] targets)
 	{
 		if (!(activeChar instanceof L2PcInstance))
 			return;
 		
-		final L2PcInstance player = (L2PcInstance) activeChar;
+		final L2PcInstance player = activeChar.getActingPlayer();
 		
 		if (!player.isClanLeader())
 			return;
@@ -58,23 +53,37 @@ public class L2SkillSiegeFlag extends L2Skill
 		if (!checkIfOkToPlaceFlag(player, true))
 			return;
 		
-		try
-		{
-			// Spawn a new flag
-			L2SiegeFlagInstance flag = new L2SiegeFlagInstance(player, IdFactory.getInstance().getNextId(), NpcTable.getInstance().getTemplate(35062), _isAdvanced);
-			flag.setTitle(player.getClan().getName());
-			flag.setCurrentHpMp(flag.getMaxHp(), flag.getMaxMp());
-			flag.setHeading(player.getHeading());
-			flag.spawnMe(player.getX(), player.getY(), player.getZ() + 50);
-			
-			final Castle castle = CastleManager.getInstance().getCastle(activeChar);
-			if (castle != null)
-				castle.getSiege().getFlag(player.getClan()).add(flag);
-		}
-		catch (Exception e)
-		{
-			_log.log(Level.WARNING, "Error placing flag: " + e.getMessage(), e);
-		}
+		// Template initialization
+		final StatsSet npcDat = new StatsSet();
+		
+		npcDat.set("id", 35062);
+		npcDat.set("type", "");
+		
+		npcDat.set("name", "Headquarters");
+		npcDat.set("title", player.getClan().getName());
+		
+		npcDat.set("hp", (_isAdvanced) ? 100000 : 50000);
+		npcDat.set("mp", 0);
+		
+		npcDat.set("radius", 10);
+		npcDat.set("height", 80);
+		
+		npcDat.set("pAtk", 0);
+		npcDat.set("mAtk", 0);
+		npcDat.set("pDef", 500);
+		npcDat.set("mDef", 500);
+		
+		npcDat.set("runSpd", 0); // Have to keep this, static object MUST BE 0 (critical error otherwise).
+		
+		// Spawn a new flag.
+		final L2SiegeFlagInstance flag = new L2SiegeFlagInstance(player, IdFactory.getInstance().getNextId(), new L2NpcTemplate(npcDat));
+		flag.setCurrentHp(flag.getMaxHp());
+		flag.setHeading(player.getHeading());
+		flag.spawnMe(player.getX(), player.getY(), player.getZ() + 50);
+		
+		final Castle castle = CastleManager.getInstance().getCastle(activeChar);
+		if (castle != null)
+			castle.getSiege().getFlag(player.getClan()).add(flag);
 	}
 	
 	/**
@@ -84,40 +93,28 @@ public class L2SkillSiegeFlag extends L2Skill
 	 */
 	public static boolean checkIfOkToPlaceFlag(L2Character activeChar, boolean isCheckOnly)
 	{
-		final Castle castle = CastleManager.getInstance().getCastle(activeChar);
-		if (castle == null)
-			return false;
-		
 		if (!(activeChar instanceof L2PcInstance))
 			return false;
 		
-		SystemMessage sm;
-		final L2PcInstance player = (L2PcInstance) activeChar;
+		final L2PcInstance player = activeChar.getActingPlayer();
+		final Castle castle = CastleManager.getInstance().getCastle(activeChar);
 		
-		if (castle.getCastleId() <= 0 || (!castle.getSiege().getIsInProgress()) || (castle.getSiege().getAttackerClan(player.getClan()) == null))
+		SystemMessage sm;
+		if (castle == null || !castle.getSiege().getIsInProgress() || castle.getSiege().getAttackerClan(player.getClan()) == null)
 			sm = SystemMessage.getSystemMessage(SystemMessageId.S1_CANNOT_BE_USED).addSkillName(247);
-		else if (player.getClan() == null || !player.isClanLeader())
+		else if (!player.isClanLeader())
 			sm = SystemMessage.getSystemMessage(SystemMessageId.ONLY_CLAN_LEADER_CAN_ISSUE_COMMANDS);
 		else if (castle.getSiege().getAttackerClan(player.getClan()).getNumFlags() >= SiegeManager.getInstance().getFlagMaxCount())
 			sm = SystemMessage.getSystemMessage(SystemMessageId.NOT_ANOTHER_HEADQUARTERS);
 		else if (!player.isInsideZone(ZoneId.HQ))
 			sm = SystemMessage.getSystemMessage(SystemMessageId.NOT_SET_UP_BASE_HERE);
-		else if (isNearAnotherHeadquarter(player))
+		else if (!player.getKnownList().getKnownTypeInRadius(L2SiegeFlagInstance.class, 400).isEmpty())
 			sm = SystemMessage.getSystemMessage(SystemMessageId.HEADQUARTERS_TOO_CLOSE);
 		else
 			return true;
 		
 		if (!isCheckOnly)
 			player.sendPacket(sm);
-		
-		return false;
-	}
-	
-	private static boolean isNearAnotherHeadquarter(L2PcInstance player)
-	{
-		// Search all flag instances in the knownlist of the player in a defined radius
-		if (!player.getKnownList().getKnownTypeInRadius(L2SiegeFlagInstance.class, 400).isEmpty())
-			return true;
 		
 		return false;
 	}

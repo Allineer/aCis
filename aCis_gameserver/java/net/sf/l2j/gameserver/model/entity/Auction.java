@@ -256,7 +256,7 @@ public class Auction
 			if (takeItem(bidder, requiredAdena))
 			{
 				updateInDB(bidder, bid);
-				bidder.getClan().setAuctionBiddedAt(_id, true);
+				bidder.getClan().setAuctionBiddedAt(_id);
 				return;
 			}
 		}
@@ -379,7 +379,7 @@ public class Auction
 		for (Bidder b : _bidders.values())
 		{
 			biddingClan = ClanTable.getInstance().getClanByName(b.getClanName());
-			biddingClan.setAuctionBiddedAt(0, true);
+			biddingClan.setAuctionBiddedAt(0);
 			
 			if (biddingClan != newOwner)
 				returnItem(b.getClanName(), b.getBid(), true); // 10 % tax
@@ -467,7 +467,7 @@ public class Auction
 		}
 		
 		returnItem(_bidders.get(bidder).getClanName(), _bidders.get(bidder).getBid(), true);
-		ClanTable.getInstance().getClanByName(_bidders.get(bidder).getClanName()).setAuctionBiddedAt(0, true);
+		ClanTable.getInstance().getClanByName(_bidders.get(bidder).getClanName()).setAuctionBiddedAt(0);
 		_bidders.clear();
 		loadBid();
 	}

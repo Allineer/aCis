@@ -143,6 +143,8 @@ public final class Config
 	public static long ALT_OLY_WPERIOD;
 	public static long ALT_OLY_VPERIOD;
 	public static int ALT_OLY_WAIT_TIME;
+	public static int ALT_OLY_WAIT_BATTLE;
+	public static int ALT_OLY_WAIT_END;
 	public static int ALT_OLY_START_POINTS;
 	public static int ALT_OLY_WEEKLY_POINTS;
 	public static int ALT_OLY_MIN_MATCHES;
@@ -425,10 +427,6 @@ public final class Config
 	public static boolean KARMA_PLAYER_CAN_TRADE;
 	public static boolean KARMA_PLAYER_CAN_USE_WH;
 	
-	public static int KARMA_MIN_KARMA;
-	public static int KARMA_MAX_KARMA;
-	public static int KARMA_XP_DIVIDER;
-	public static int KARMA_LOST_BASE;
 	public static boolean KARMA_DROP_GM;
 	public static boolean KARMA_AWARD_PK_KILL;
 	public static int KARMA_PK_LIMIT;
@@ -601,7 +599,7 @@ public final class Config
 	public static boolean ENABLE_FALLING_DAMAGE;
 	
 	/** Debug & Dev */
-	public static boolean ALT_DEV_NO_QUESTS;
+	public static boolean ALT_DEV_NO_SCRIPTS;
 	public static boolean ALT_DEV_NO_SPAWNS;
 	public static boolean DEBUG;
 	public static boolean DEVELOPER;
@@ -796,6 +794,8 @@ public final class Config
 			ALT_OLY_WPERIOD = events.getProperty("AltOlyWPeriod", 604800000);
 			ALT_OLY_VPERIOD = events.getProperty("AltOlyVPeriod", 86400000);
 			ALT_OLY_WAIT_TIME = events.getProperty("AltOlyWaitTime", 30);
+			ALT_OLY_WAIT_BATTLE = events.getProperty("AltOlyWaitBattle", 60);
+			ALT_OLY_WAIT_END = events.getProperty("AltOlyWaitEnd", 40);
 			ALT_OLY_START_POINTS = events.getProperty("AltOlyStartPoints", 18);
 			ALT_OLY_WEEKLY_POINTS = events.getProperty("AltOlyWeeklyPoints", 3);
 			ALT_OLY_MIN_MATCHES = events.getProperty("AltOlyMinMatchesToBeClassed", 5);
@@ -1026,10 +1026,6 @@ public final class Config
 			KARMA_PLAYER_CAN_TELEPORT = players.getProperty("KarmaPlayerCanTeleport", true);
 			KARMA_PLAYER_CAN_TRADE = players.getProperty("KarmaPlayerCanTrade", true);
 			KARMA_PLAYER_CAN_USE_WH = players.getProperty("KarmaPlayerCanUseWareHouse", true);
-			KARMA_MIN_KARMA = players.getProperty("MinKarma", 240);
-			KARMA_MAX_KARMA = players.getProperty("MaxKarma", 10000);
-			KARMA_XP_DIVIDER = players.getProperty("XPDivider", 260);
-			KARMA_LOST_BASE = players.getProperty("BaseKarmaLost", 0);
 			KARMA_DROP_GM = players.getProperty("CanGMDropEquipment", false);
 			KARMA_AWARD_PK_KILL = players.getProperty("AwardPKKillPVPPoint", true);
 			KARMA_PK_LIMIT = players.getProperty("MinimumPKRequiredToDrop", 5);
@@ -1204,7 +1200,7 @@ public final class Config
 			String str = server.getProperty("EnableFallingDamage", "auto");
 			ENABLE_FALLING_DAMAGE = "auto".equalsIgnoreCase(str) ? GEODATA > 0 : Boolean.parseBoolean(str);
 			
-			ALT_DEV_NO_QUESTS = server.getProperty("NoQuests", false);
+			ALT_DEV_NO_SCRIPTS = server.getProperty("NoScripts", false);
 			ALT_DEV_NO_SPAWNS = server.getProperty("NoSpawns", false);
 			DEBUG = server.getProperty("Debug", false);
 			DEVELOPER = server.getProperty("Developer", false);

@@ -26,12 +26,12 @@ public class Q247_PossessorOfAPreciousSoul extends Quest
 	private static final int LADY_OF_THE_LAKE = 31745;
 	
 	// Items
-	private static final int CARADINE_LETTER_3 = 7679;
+	private static final int CARADINE_LETTER = 7679;
 	private static final int NOBLESS_TIARA = 7694;
 	
-	public Q247_PossessorOfAPreciousSoul(int questId, String name, String descr)
+	public Q247_PossessorOfAPreciousSoul()
 	{
-		super(questId, name, descr);
+		super(247, qn, "Possessor of a Precious Soul - 4");
 		
 		addStartNpc(CARADINE);
 		addTalkId(CARADINE, LADY_OF_THE_LAKE);
@@ -48,10 +48,10 @@ public class Q247_PossessorOfAPreciousSoul extends Quest
 		// Caradine
 		if (event.equalsIgnoreCase("31740-03.htm"))
 		{
-			st.set("cond", "1");
-			st.takeItems(CARADINE_LETTER_3, 1);
 			st.setState(STATE_STARTED);
+			st.set("cond", "1");
 			st.playSound(QuestState.SOUND_ACCEPT);
+			st.takeItems(CARADINE_LETTER, 1);
 		}
 		else if (event.equalsIgnoreCase("31740-05.htm"))
 		{
@@ -62,11 +62,12 @@ public class Q247_PossessorOfAPreciousSoul extends Quest
 		else if (event.equalsIgnoreCase("31745-05.htm"))
 		{
 			player.setNoble(true, true);
-			st.rewardExpAndSp(93836, 0);
 			st.giveItems(NOBLESS_TIARA, 1);
+			st.rewardExpAndSp(93836, 0);
 			st.playSound(QuestState.SOUND_FANFARE);
 			st.exitQuest(false);
 		}
+		
 		return htmltext;
 	}
 	
@@ -81,16 +82,8 @@ public class Q247_PossessorOfAPreciousSoul extends Quest
 		switch (st.getState())
 		{
 			case STATE_CREATED:
-				if (st.hasQuestItems(CARADINE_LETTER_3))
-				{
-					if (!player.isSubClassActive() || player.getLevel() < 75)
-					{
-						htmltext = "31740-02.htm";
-						st.exitQuest(true);
-					}
-					else
-						htmltext = "31740-01.htm";
-				}
+				if (st.hasQuestItems(CARADINE_LETTER))
+					htmltext = (!player.isSubClassActive() || player.getLevel() < 75) ? "31740-02.htm" : "31740-01.htm";
 				break;
 			
 			case STATE_STARTED:
@@ -109,12 +102,7 @@ public class Q247_PossessorOfAPreciousSoul extends Quest
 					
 					case LADY_OF_THE_LAKE:
 						if (cond == 2)
-						{
-							if (player.getLevel() < 75)
-								htmltext = "31745-06.htm";
-							else
-								htmltext = "31745-01.htm";
-						}
+							htmltext = (player.getLevel() < 75) ? "31745-06.htm" : "31745-01.htm";
 						break;
 				}
 				break;
@@ -123,11 +111,12 @@ public class Q247_PossessorOfAPreciousSoul extends Quest
 				htmltext = getAlreadyCompletedMsg();
 				break;
 		}
+		
 		return htmltext;
 	}
 	
 	public static void main(String[] args)
 	{
-		new Q247_PossessorOfAPreciousSoul(247, qn, "Possessor of a Precious Soul - 4");
+		new Q247_PossessorOfAPreciousSoul();
 	}
 }

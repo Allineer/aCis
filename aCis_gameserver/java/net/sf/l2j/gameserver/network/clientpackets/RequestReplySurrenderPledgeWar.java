@@ -41,7 +41,7 @@ public final class RequestReplySurrenderPledgeWar extends L2GameClientPacket
 		if (_answer == 1)
 		{
 			requestor.deathPenalty(false, false, false);
-			ClanTable.getInstance().deleteclanswars(requestor.getClanId(), activeChar.getClanId());
+			ClanTable.getInstance().deleteClansWars(requestor.getClanId(), activeChar.getClanId());
 		}
 		
 		activeChar.onTransactionRequest(requestor);

@@ -526,7 +526,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 				npc.stopHating(attackTarget);
 			
 			// Search the nearest target. If a target is found, continue regular process, else drop angry behavior.
-			attackTarget = targetReconsider(npc.getAggroRange());
+			attackTarget = targetReconsider(npc.getAggroRange(), false);
 			if (attackTarget == null)
 			{
 				setIntention(CtrlIntention.ACTIVE);
@@ -801,7 +801,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 		{
 			// If distance is too big, choose another target.
 			if (dist > range)
-				attackTarget = targetReconsider(range);
+				attackTarget = targetReconsider(range, true);
 			
 			// Any AI type, even healer or mage, will try to melee attack if it can't do anything else (desesperate situation).
 			if (attackTarget != null)
@@ -948,7 +948,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 				
 				if (sk.getTargetType() == SkillTargetType.TARGET_ONE)
 				{
-					L2Character target = targetReconsider(sk.getCastRange());
+					L2Character target = targetReconsider(sk.getCastRange(), true);
 					if (target != null)
 					{
 						clientStopMoving(null);
@@ -1084,7 +1084,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 				}
 				else if (sk.getTargetType() == SkillTargetType.TARGET_ONE)
 				{
-					L2Character target = targetReconsider(sk.getCastRange());
+					L2Character target = targetReconsider(sk.getCastRange(), true);
 					if (target != null)
 					{
 						clientStopMoving(null);
@@ -1112,7 +1112,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 						}
 					}
 					
-					L2Character target = targetReconsider(sk.getCastRange());
+					L2Character target = targetReconsider(sk.getCastRange(), true);
 					if (target != null)
 					{
 						clientStopMoving(null);
@@ -1169,7 +1169,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 				}
 				else if (sk.getTargetType() == SkillTargetType.TARGET_ONE)
 				{
-					L2Character target = targetReconsider(sk.getCastRange());
+					L2Character target = targetReconsider(sk.getCastRange(), true);
 					if (target != null)
 					{
 						clientStopMoving(null);
@@ -1210,7 +1210,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 				}
 				else if (sk.getTargetType() == SkillTargetType.TARGET_ONE)
 				{
-					L2Character target = targetReconsider(sk.getCastRange());
+					L2Character target = targetReconsider(sk.getCastRange(), true);
 					if (target != null)
 					{
 						clientStopMoving(null);
@@ -1237,7 +1237,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 						return true;
 					}
 					
-					L2Character target = targetReconsider(sk.getCastRange());
+					L2Character target = targetReconsider(sk.getCastRange(), true);
 					if (target != null)
 					{
 						clientStopMoving(null);
@@ -1277,7 +1277,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 						return true;
 					}
 					
-					L2Character target = targetReconsider(sk.getCastRange());
+					L2Character target = targetReconsider(sk.getCastRange(), true);
 					if (target != null)
 					{
 						clientStopMoving(null);
@@ -1350,9 +1350,10 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 	 * <li>If the actor didn't find a target on his hate list, check if he is aggro type and pickup a new target using his knownlist.</li>
 	 * </ul>
 	 * @param range The range to check (skill range for skill ; physical range for melee).
+	 * @param rangeCheck That boolean is used to see if a check based on the distance must be made (skill check).
 	 * @return The new L2Character victim.
 	 */
-	protected L2Character targetReconsider(int range)
+	protected L2Character targetReconsider(int range, boolean rangeCheck)
 	{
 		final L2Attackable actor = getActiveChar();
 		
@@ -1365,30 +1366,29 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 			
 			for (L2Character obj : actor.getHateList())
 			{
-				if (obj == actor || obj == getTarget() || obj.isAlikeDead() || !GeoData.getInstance().canSeeTarget(actor, obj))
+				if (!autoAttackCondition(obj))
 					continue;
 				
-				// Verify if the actor is confused.
-				if (obj instanceof L2Attackable && !actor.isConfused())
-					continue;
-				
-				// Verify the distance, -15 if the victim is moving, -15 if the npc is moving.
-				double dist = Math.sqrt(actor.getPlanDistanceSq(obj.getX(), obj.getY())) - obj.getTemplate().getCollisionRadius();
-				if (actor.isMoving())
-					dist -= 15;
-				
-				if (obj.isMoving())
-					dist -= 15;
-				
-				if (dist <= range)
+				if (rangeCheck)
 				{
-					// Stop to hate the most hated.
-					actor.stopHating(previousMostHated);
+					// Verify the distance, -15 if the victim is moving, -15 if the npc is moving.
+					double dist = Math.sqrt(actor.getPlanDistanceSq(obj.getX(), obj.getY())) - obj.getTemplate().getCollisionRadius();
+					if (actor.isMoving())
+						dist -= 15;
 					
-					// Add previous most hated aggro to that new victim.
-					actor.addDamageHate(obj, 0, (aggroMostHated > 0) ? aggroMostHated : 2000);
-					return obj;
+					if (obj.isMoving())
+						dist -= 15;
+					
+					if (dist > range)
+						continue;
 				}
+				
+				// Stop to hate the most hated.
+				actor.stopHating(previousMostHated);
+				
+				// Add previous most hated aggro to that new victim.
+				actor.addDamageHate(obj, 0, (aggroMostHated > 0) ? aggroMostHated : 2000);
+				return obj;
 			}
 		}
 		
@@ -1397,27 +1397,26 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 		{
 			for (L2Character target : actor.getKnownList().getKnownTypeInRadius(L2Character.class, actor.getAggroRange()))
 			{
-				if (target == actor || target == getTarget() || target.isAlikeDead() || !GeoData.getInstance().canSeeTarget(actor, target))
+				if (!autoAttackCondition(target))
 					continue;
 				
-				// Verify if the actor is confused.
-				if (target instanceof L2Attackable && !actor.isConfused())
-					continue;
-				
-				// Verify the distance, -25 if the victim is moving, -25 if the npc is moving.
-				double dist = Math.sqrt(actor.getPlanDistanceSq(target.getX(), target.getY())) - target.getTemplate().getCollisionRadius();
-				if (actor.isMoving())
-					dist -= 25;
-				
-				if (target.isMoving())
-					dist -= 25;
-				
-				if (dist <= range)
+				if (rangeCheck)
 				{
-					// Only 1 aggro, as the hate list is supposed to be cleaned. Simulate an aggro range entrance.
-					actor.addDamageHate(target, 0, 1);
-					return target;
+					// Verify the distance, -15 if the victim is moving, -15 if the npc is moving.
+					double dist = Math.sqrt(actor.getPlanDistanceSq(target.getX(), target.getY())) - target.getTemplate().getCollisionRadius();
+					if (actor.isMoving())
+						dist -= 15;
+					
+					if (target.isMoving())
+						dist -= 15;
+					
+					if (dist > range)
+						continue;
 				}
+				
+				// Only 1 aggro, as the hate list is supposed to be cleaned. Simulate an aggro range entrance.
+				actor.addDamageHate(target, 0, 1);
+				return target;
 			}
 		}
 		
@@ -1437,7 +1436,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 		// Choose a new victim, and make checks to see if it fits.
 		for (L2Character victim : actor.getHateList())
 		{
-			if (victim.isDead() || !GeoData.getInstance().canSeeTarget(actor, victim) || victim == getTarget() || victim == actor)
+			if (!autoAttackCondition(victim))
 				continue;
 			
 			// Add most hated aggro to the victim aggro.

@@ -75,23 +75,13 @@ public class Q274_SkirmishWithTheWerewolves extends Quest
 		{
 			case STATE_CREATED:
 				if (player.getRace() != Race.Orc)
-				{
 					htmltext = "30569-00.htm";
-					st.exitQuest(true);
-				}
 				else if (player.getLevel() < 9)
-				{
 					htmltext = "30569-01.htm";
-					st.exitQuest(true);
-				}
 				else if (st.hasQuestItems(NECKLACE_OF_COURAGE) || st.hasQuestItems(NECKLACE_OF_VALOR))
 					htmltext = "30569-02.htm";
 				else
-				{
 					htmltext = "30569-07.htm";
-					st.exitQuest(true);
-				}
-				
 				break;
 			
 			case STATE_STARTED:

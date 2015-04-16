@@ -40,7 +40,7 @@ public final class RequestReplyStopPledgeWar extends L2GameClientPacket
 			return;
 		
 		if (_answer == 1)
-			ClanTable.getInstance().deleteclanswars(requestor.getClanId(), activeChar.getClanId());
+			ClanTable.getInstance().deleteClansWars(requestor.getClanId(), activeChar.getClanId());
 		else
 			requestor.sendPacket(SystemMessageId.REQUEST_TO_END_WAR_HAS_BEEN_DENIED);
 		

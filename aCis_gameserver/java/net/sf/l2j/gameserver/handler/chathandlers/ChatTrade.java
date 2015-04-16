@@ -43,12 +43,12 @@ public class ChatTrade implements IChatHandler
 	{
 		CreatureSay cs = new CreatureSay(activeChar.getObjectId(), type, activeChar.getName(), text);
 		Collection<L2PcInstance> pls = L2World.getInstance().getAllPlayers().values();
-		int region = MapRegionTable.getInstance().getMapRegion(activeChar.getX(), activeChar.getY());
+		int region = MapRegionTable.getMapRegion(activeChar.getX(), activeChar.getY());
 		
 		for (L2PcInstance player : pls)
 		{
 			if (!BlockList.isBlocked(player, activeChar))
-				if (region == MapRegionTable.getInstance().getMapRegion(player.getX(), player.getY()))
+				if (region == MapRegionTable.getMapRegion(player.getX(), player.getY()))
 					player.sendPacket(cs);
 		}
 	}

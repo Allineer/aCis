@@ -3650,9 +3650,9 @@ public final class SystemMessageId
 	
 	/**
 	 * ID: 651<br>
-	 * Message: Place in the current location and direction. Do you wish to continue?
+	 * Message: Place $s1 in the current location and direction. Do you wish to continue?
 	 */
-	public static final SystemMessageId PLACE_CURRENT_LOCATION_DIRECTION;
+	public static final SystemMessageId PLACE_S1_IN_CURRENT_LOCATION_AND_DIRECTION;
 	
 	/**
 	 * ID: 652<br>
@@ -8620,13 +8620,13 @@ public final class SystemMessageId
 	
 	/**
 	 * ID: 1493<br>
-	 * Message: Your opponent made haste with their tail between their legs), the match has been cancelled.
+	 * Message: Your opponent made haste with their tail between their legs, the match has been cancelled.
 	 */
 	public static final SystemMessageId THE_GAME_HAS_BEEN_CANCELLED_BECAUSE_THE_OTHER_PARTY_ENDS_THE_GAME;
 	
 	/**
 	 * ID: 1494<br>
-	 * Message: Your opponent does not meet the requirements to do battle), the match has been cancelled.
+	 * Message: Your opponent does not meet the requirements to do battle, the match has been cancelled.
 	 */
 	public static final SystemMessageId THE_GAME_HAS_BEEN_CANCELLED_BECAUSE_THE_OTHER_PARTY_DOES_NOT_MEET_THE_REQUIREMENTS_FOR_JOINING_THE_GAME;
 	
@@ -9040,9 +9040,9 @@ public final class SystemMessageId
 	
 	/**
 	 * ID: 1563<br>
-	 * or they do not have enough members.
+	 * Message: The clan, $s1, cannot declare a Clan War because their clan is less than level three, and or they do not have enough members.
 	 */
-	public static final SystemMessageId CANNOT_DECLARE_WAR_TOO_LOW_LEVEL_OR_NOT_ENOUGH_MEMBERS;
+	public static final SystemMessageId S1_CLAN_CANNOT_DECLARE_WAR_TOO_LOW_LEVEL_OR_NOT_ENOUGH_MEMBERS;
 	
 	/**
 	 * ID: 1564<br>
@@ -9100,27 +9100,27 @@ public final class SystemMessageId
 	
 	/**
 	 * ID: 1573<br>
-	 * Message: All is well. There are no clans that have declared war against your clan.
+	 * Message: There are no clans that your clan has declared war against.
 	 */
-	public static final SystemMessageId NO_WARS_AGAINST_YOU;
+	public static final SystemMessageId YOU_ARENT_IN_CLAN_WARS;
 	
 	/**
 	 * ID: 1574<br>
+	 * Message: All is well. There are no clans that have declared war against your clan.
+	 */
+	public static final SystemMessageId NO_CLAN_WARS_VS_YOU;
+	
+	/**
+	 * ID: 1575<br>
 	 * Message: Command Channels can only be formed by a party leader who is also the leader of a level 5 clan.
 	 */
 	public static final SystemMessageId COMMAND_CHANNEL_ONLY_BY_LEVEL_5_CLAN_LEADER_PARTY_LEADER;
 	
 	/**
-	 * ID: 1575<br>
-	 * Message: Your pet uses spiritshot.
-	 */
-	public static final SystemMessageId PET_USE_SPIRITSHOT;
-	
-	/**
 	 * ID: 1576<br>
-	 * Message: Your servitor uses spiritshot.
+	 * Message: Pet uses the power of spirit.
 	 */
-	public static final SystemMessageId SERVITOR_USE_SPIRITSHOT;
+	public static final SystemMessageId PET_USE_THE_POWER_OF_SPIRIT;
 	
 	/**
 	 * ID: 1577<br>
@@ -12421,7 +12421,7 @@ public final class SystemMessageId
 		ATTACKER_SIDE_FULL = new SystemMessageId(648);
 		DEFENDER_SIDE_FULL = new SystemMessageId(649);
 		YOU_MAY_NOT_SUMMON_FROM_YOUR_CURRENT_LOCATION = new SystemMessageId(650);
-		PLACE_CURRENT_LOCATION_DIRECTION = new SystemMessageId(651);
+		PLACE_S1_IN_CURRENT_LOCATION_AND_DIRECTION = new SystemMessageId(651);
 		TARGET_OF_SUMMON_WRONG = new SystemMessageId(652);
 		YOU_DO_NOT_HAVE_AUTHORITY_TO_POSITION_MERCENARIES = new SystemMessageId(653);
 		YOU_DO_NOT_HAVE_AUTHORITY_TO_CANCEL_MERCENARY_POSITIONING = new SystemMessageId(654);
@@ -13318,7 +13318,7 @@ public final class SystemMessageId
 		THE_QUANTITY_OF_CROP_SHOULD_BE_MORE_THAN_S1_AND_LESS_THAN_S2 = new SystemMessageId(1560);
 		CLAN_S1_DECLARED_WAR = new SystemMessageId(1561);
 		CLAN_WAR_DECLARED_AGAINST_S1_IF_KILLED_LOSE_LOW_EXP = new SystemMessageId(1562);
-		CANNOT_DECLARE_WAR_TOO_LOW_LEVEL_OR_NOT_ENOUGH_MEMBERS = new SystemMessageId(1563);
+		S1_CLAN_CANNOT_DECLARE_WAR_TOO_LOW_LEVEL_OR_NOT_ENOUGH_MEMBERS = new SystemMessageId(1563);
 		CLAN_WAR_DECLARED_IF_CLAN_LVL3_OR_15_MEMBER = new SystemMessageId(1564);
 		CLAN_WAR_CANNOT_DECLARED_CLAN_NOT_EXIST = new SystemMessageId(1565);
 		CLAN_S1_HAS_DECIDED_TO_STOP = new SystemMessageId(1566);
@@ -13328,10 +13328,10 @@ public final class SystemMessageId
 		TOO_MANY_CLAN_WARS = new SystemMessageId(1570);
 		CLANS_YOU_DECLARED_WAR_ON = new SystemMessageId(1571);
 		CLANS_THAT_HAVE_DECLARED_WAR_ON_YOU = new SystemMessageId(1572);
-		NO_WARS_AGAINST_YOU = new SystemMessageId(1573);
-		COMMAND_CHANNEL_ONLY_BY_LEVEL_5_CLAN_LEADER_PARTY_LEADER = new SystemMessageId(1574);
-		PET_USE_SPIRITSHOT = new SystemMessageId(1575);
-		SERVITOR_USE_SPIRITSHOT = new SystemMessageId(1576);
+		YOU_ARENT_IN_CLAN_WARS = new SystemMessageId(1573);
+		NO_CLAN_WARS_VS_YOU = new SystemMessageId(1574);
+		COMMAND_CHANNEL_ONLY_BY_LEVEL_5_CLAN_LEADER_PARTY_LEADER = new SystemMessageId(1575);
+		PET_USE_THE_POWER_OF_SPIRIT = new SystemMessageId(1576);
 		SERVITOR_USE_THE_POWER_OF_SPIRIT = new SystemMessageId(1577);
 		ITEMS_UNAVAILABLE_FOR_STORE_MANUFACTURE = new SystemMessageId(1578);
 		S1_PET_GAINED_S2_ADENA = new SystemMessageId(1579);

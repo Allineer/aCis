@@ -419,10 +419,14 @@ public class L2DoorInstance extends L2Character
 			html.setFile("data/html/admin/infos/doorinfo.htm");
 			
 			html.replace("%class%", getClass().getSimpleName());
-			html.replace("%hp%", String.valueOf((int) getCurrentHp()));
-			html.replace("%hpmax%", String.valueOf(getMaxHp()));
 			html.replace("%objid%", String.valueOf(getObjectId()));
 			html.replace("%doorid%", String.valueOf(getDoorId()));
+			
+			html.replace("%hp%", String.valueOf((int) getCurrentHp()));
+			html.replace("%hpmax%", String.valueOf(getMaxHp()));
+			
+			html.replace("%pdef%", String.valueOf(getPDef(null)));
+			html.replace("%mdef%", String.valueOf(getMDef(null, null)));
 			
 			html.replace("%minx%", String.valueOf(getXMin()));
 			html.replace("%miny%", String.valueOf(getYMin()));

@@ -1036,7 +1036,7 @@
 		<set name="material" val="steel" />
 		<set name="weight" val="10" />
 		<set name="is_stackable" val="true" />
-		<set name="handler" val="ItemSkills" />
+		<set name="handler" val="Keys" />
 		<set name="item_skill" val="2229-1" />
 	</item>
 	<item id="6666" type="EtcItem" name="Deluxe Chest Key - Grade 2">
@@ -1045,7 +1045,7 @@
 		<set name="weight" val="10" />
 		<set name="price" val="200" />
 		<set name="is_stackable" val="true" />
-		<set name="handler" val="ItemSkills" />
+		<set name="handler" val="Keys" />
 		<set name="item_skill" val="2229-2" />
 	</item>
 	<item id="6667" type="EtcItem" name="Deluxe Chest Key - Grade 3">
@@ -1054,7 +1054,7 @@
 		<set name="weight" val="10" />
 		<set name="price" val="320" />
 		<set name="is_stackable" val="true" />
-		<set name="handler" val="ItemSkills" />
+		<set name="handler" val="Keys" />
 		<set name="item_skill" val="2229-3" />
 	</item>
 	<item id="6668" type="EtcItem" name="Deluxe Chest Key - Grade 4">
@@ -1063,7 +1063,7 @@
 		<set name="weight" val="10" />
 		<set name="price" val="560" />
 		<set name="is_stackable" val="true" />
-		<set name="handler" val="ItemSkills" />
+		<set name="handler" val="Keys" />
 		<set name="item_skill" val="2229-4" />
 	</item>
 	<item id="6669" type="EtcItem" name="Deluxe Chest Key - Grade 5">
@@ -1072,7 +1072,7 @@
 		<set name="weight" val="10" />
 		<set name="price" val="860" />
 		<set name="is_stackable" val="true" />
-		<set name="handler" val="ItemSkills" />
+		<set name="handler" val="Keys" />
 		<set name="item_skill" val="2229-5" />
 	</item>
 	<item id="6670" type="EtcItem" name="Deluxe Chest Key - Grade 6">
@@ -1081,7 +1081,7 @@
 		<set name="weight" val="10" />
 		<set name="price" val="1200" />
 		<set name="is_stackable" val="true" />
-		<set name="handler" val="ItemSkills" />
+		<set name="handler" val="Keys" />
 		<set name="item_skill" val="2229-6" />
 	</item>
 	<item id="6671" type="EtcItem" name="Deluxe Chest Key - Grade 7">
@@ -1090,7 +1090,7 @@
 		<set name="weight" val="10" />
 		<set name="price" val="1800" />
 		<set name="is_stackable" val="true" />
-		<set name="handler" val="ItemSkills" />
+		<set name="handler" val="Keys" />
 		<set name="item_skill" val="2229-7" />
 	</item>
 	<item id="6672" type="EtcItem" name="Deluxe Chest Key - Grade 8">
@@ -1099,7 +1099,7 @@
 		<set name="weight" val="10" />
 		<set name="price" val="2400" />
 		<set name="is_stackable" val="true" />
-		<set name="handler" val="ItemSkills" />
+		<set name="handler" val="Keys" />
 		<set name="item_skill" val="2229-8" />
 	</item>
 	<item id="6673" type="EtcItem" name="Festival Adena">

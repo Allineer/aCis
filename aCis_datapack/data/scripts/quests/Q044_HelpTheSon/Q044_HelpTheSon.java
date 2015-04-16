@@ -35,9 +35,9 @@ public class Q044_HelpTheSon extends Quest
 	private static final int MAILLE_GUARD = 20921;
 	private static final int MAILLE_SCOUT = 20920;
 	
-	public Q044_HelpTheSon(int questId, String name, String descr)
+	public Q044_HelpTheSon()
 	{
-		super(questId, name, descr);
+		super(44, qn, "Help the Son!");
 		
 		questItemIds = new int[]
 		{
@@ -61,28 +61,28 @@ public class Q044_HelpTheSon extends Quest
 		
 		if (event.equalsIgnoreCase("30827-01.htm"))
 		{
-			st.set("cond", "1");
 			st.setState(STATE_STARTED);
+			st.set("cond", "1");
 			st.playSound(QuestState.SOUND_ACCEPT);
 		}
 		else if (event.equalsIgnoreCase("30827-03.htm") && st.hasQuestItems(WORK_HAMMER))
 		{
 			st.set("cond", "2");
-			st.takeItems(WORK_HAMMER, 1);
 			st.playSound(QuestState.SOUND_MIDDLE);
+			st.takeItems(WORK_HAMMER, 1);
 		}
 		else if (event.equalsIgnoreCase("30827-05.htm"))
 		{
-			st.takeItems(GEMSTONE_FRAGMENT, 30);
-			st.giveItems(GEMSTONE, 1);
 			st.set("cond", "4");
 			st.playSound(QuestState.SOUND_MIDDLE);
+			st.takeItems(GEMSTONE_FRAGMENT, 30);
+			st.giveItems(GEMSTONE, 1);
 		}
 		else if (event.equalsIgnoreCase("30505-06.htm"))
 		{
-			st.takeItems(GEMSTONE, 1);
 			st.set("cond", "5");
 			st.playSound(QuestState.SOUND_MIDDLE);
+			st.takeItems(GEMSTONE, 1);
 		}
 		else if (event.equalsIgnoreCase("30827-07.htm"))
 		{
@@ -157,6 +157,6 @@ public class Q044_HelpTheSon extends Quest
 	
 	public static void main(String[] args)
 	{
-		new Q044_HelpTheSon(44, qn, "Help the Son!");
+		new Q044_HelpTheSon();
 	}
 }

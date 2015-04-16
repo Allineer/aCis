@@ -52,7 +52,7 @@ public class VarkaSilenosSupport extends Quest
 	
 	private static final int SEED = 7187;
 	
-	private static final int[] _varkas =
+	private static final int[] VARKAS =
 	{
 		21350,
 		21351,
@@ -135,19 +135,19 @@ public class VarkaSilenosSupport extends Quest
 		"Q616_MagicalPowerOfFire_Part2"
 	};
 	
-	public VarkaSilenosSupport(int id, String name, String descr)
+	public VarkaSilenosSupport()
 	{
-		super(id, name, descr);
+		super(-1, qn, "custom");
 		
 		addFirstTalkId(ASHAS, NARAN, UDAN, DIYABU, HAGOS, SHIKON, TERANU);
 		addTalkId(UDAN, HAGOS, TERANU);
 		addStartNpc(HAGOS, TERANU);
 		
 		// Verify if the killer didn't kill an allied mob. Test his party aswell.
-		addKillId(_varkas);
+		addKillId(VARKAS);
 		
 		// Verify if an allied is healing/buff an enemy. Petrify him if it's the case.
-		addSkillSeeId(_varkas);
+		addSkillSeeId(VARKAS);
 	}
 	
 	@Override
@@ -421,6 +421,6 @@ public class VarkaSilenosSupport extends Quest
 	
 	public static void main(String[] args)
 	{
-		new VarkaSilenosSupport(-1, qn, "custom");
+		new VarkaSilenosSupport();
 	}
 }

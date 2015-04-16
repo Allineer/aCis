@@ -44,9 +44,9 @@ public class Q101_SwordOfSolidarity extends Quest
 	private static final int ECHO_FEAST = 4415;
 	private static final int ECHO_CELEBRATION = 4416;
 	
-	public Q101_SwordOfSolidarity(int questId, String name, String descr)
+	public Q101_SwordOfSolidarity()
 	{
-		super(questId, name, descr);
+		super(101, qn, "Sword of Solidarity");
 		
 		questItemIds = new int[]
 		{
@@ -71,17 +71,17 @@ public class Q101_SwordOfSolidarity extends Quest
 		
 		if (event.equalsIgnoreCase("30008-03.htm"))
 		{
-			st.set("cond", "1");
 			st.setState(STATE_STARTED);
-			st.giveItems(ROIENS_LETTER, 1);
+			st.set("cond", "1");
 			st.playSound(QuestState.SOUND_ACCEPT);
+			st.giveItems(ROIENS_LETTER, 1);
 		}
 		else if (event.equalsIgnoreCase("30283-02.htm"))
 		{
 			st.set("cond", "2");
+			st.playSound(QuestState.SOUND_MIDDLE);
 			st.takeItems(ROIENS_LETTER, 1);
 			st.giveItems(DIR_TO_RUINS, 1);
-			st.playSound(QuestState.SOUND_MIDDLE);
 		}
 		else if (event.equalsIgnoreCase("30283-06.htm"))
 		{
@@ -150,9 +150,9 @@ public class Q101_SwordOfSolidarity extends Quest
 						{
 							htmltext = "30008-05.htm";
 							st.set("cond", "5");
+							st.playSound(QuestState.SOUND_MIDDLE);
 							st.takeItems(ALTRANS_NOTE, 1);
 							st.giveItems(BROKEN_SWORD_HANDLE, 1);
-							st.playSound(QuestState.SOUND_MIDDLE);
 						}
 						else if (cond == 5)
 							htmltext = "30008-05a.htm";
@@ -167,11 +167,11 @@ public class Q101_SwordOfSolidarity extends Quest
 						{
 							htmltext = "30283-04.htm";
 							st.set("cond", "4");
+							st.playSound(QuestState.SOUND_MIDDLE);
 							st.takeItems(DIR_TO_RUINS, 1);
 							st.takeItems(BROKEN_BLADE_TOP, 1);
 							st.takeItems(BROKEN_BLADE_BOTTOM, 1);
 							st.giveItems(ALTRANS_NOTE, 1);
-							st.playSound(QuestState.SOUND_MIDDLE);
 						}
 						else if (cond == 4)
 							htmltext = "30283-04a.htm";
@@ -205,6 +205,6 @@ public class Q101_SwordOfSolidarity extends Quest
 	
 	public static void main(String[] args)
 	{
-		new Q101_SwordOfSolidarity(101, qn, "Sword of Solidarity");
+		new Q101_SwordOfSolidarity();
 	}
 }

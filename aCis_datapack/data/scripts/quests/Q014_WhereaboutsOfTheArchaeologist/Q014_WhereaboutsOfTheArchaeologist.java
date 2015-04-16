@@ -28,9 +28,9 @@ public class Q014_WhereaboutsOfTheArchaeologist extends Quest
 	// Items
 	private static final int LETTER = 7253;
 	
-	public Q014_WhereaboutsOfTheArchaeologist(int questId, String name, String descr)
+	public Q014_WhereaboutsOfTheArchaeologist()
 	{
-		super(questId, name, descr);
+		super(14, qn, "Whereabouts of the Archaeologist");
 		
 		questItemIds = new int[]
 		{
@@ -51,10 +51,10 @@ public class Q014_WhereaboutsOfTheArchaeologist extends Quest
 		
 		if (event.equalsIgnoreCase("31263-2.htm"))
 		{
-			st.set("cond", "1");
 			st.setState(STATE_STARTED);
-			st.giveItems(LETTER, 1);
+			st.set("cond", "1");
 			st.playSound(QuestState.SOUND_ACCEPT);
+			st.giveItems(LETTER, 1);
 		}
 		else if (event.equalsIgnoreCase("31538-1.htm"))
 		{
@@ -104,6 +104,6 @@ public class Q014_WhereaboutsOfTheArchaeologist extends Quest
 	
 	public static void main(String[] args)
 	{
-		new Q014_WhereaboutsOfTheArchaeologist(14, qn, "Whereabouts of the Archaeologist");
+		new Q014_WhereaboutsOfTheArchaeologist();
 	}
 }

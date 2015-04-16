@@ -21,31 +21,25 @@ public class Q050_LanoscosSpecialBait extends Quest
 {
 	private static final String qn = "Q050_LanoscosSpecialBait";
 	
-	// NPC
-	private static final int LANOSCO = 31570;
-	
 	// Item
 	private static final int ESSENCE_OF_WIND = 7621;
 	
 	// Reward
 	private static final int WIND_FISHING_LURE = 7610;
 	
-	// Monster
-	private static final int SINGING_WIND = 21026;
-	
-	public Q050_LanoscosSpecialBait(int questId, String name, String descr)
+	public Q050_LanoscosSpecialBait()
 	{
-		super(questId, name, descr);
+		super(50, qn, "Lanosco's Special Bait");
 		
 		questItemIds = new int[]
 		{
 			ESSENCE_OF_WIND
 		};
 		
-		addStartNpc(LANOSCO);
-		addTalkId(LANOSCO);
+		addStartNpc(31570); // Lanosco
+		addTalkId(31570);
 		
-		addKillId(SINGING_WIND);
+		addKillId(21026); // Singing wind
 	}
 	
 	@Override
@@ -58,8 +52,8 @@ public class Q050_LanoscosSpecialBait extends Quest
 		
 		if (event.equalsIgnoreCase("31570-03.htm"))
 		{
-			st.set("cond", "1");
 			st.setState(STATE_STARTED);
+			st.set("cond", "1");
 			st.playSound(QuestState.SOUND_ACCEPT);
 		}
 		else if (event.equalsIgnoreCase("31570-07.htm"))
@@ -115,6 +109,6 @@ public class Q050_LanoscosSpecialBait extends Quest
 	
 	public static void main(String[] args)
 	{
-		new Q050_LanoscosSpecialBait(50, qn, "Lanosco's Special Bait");
+		new Q050_LanoscosSpecialBait();
 	}
 }
