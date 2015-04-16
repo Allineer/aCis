@@ -353,70 +353,70 @@ public class L2Party
 	
 	public synchronized void removePartyMember(L2PcInstance player, boolean sendMessage)
 	{
-		if (_members.contains(player))
+		if (!_members.contains(player))
+			return;
+		
+		boolean isLeader = isLeader(player);
+		_members.remove(player);
+		recalculatePartyLevel();
+		
+		if (player.isFestivalParticipant())
+			SevenSignsFestival.getInstance().updateParticipants(player, this);
+		
+		if (player.isInDuel())
+			DuelManager.getInstance().onRemoveFromParty(player);
+		
+		if (player.getFusionSkill() != null)
+			player.abortCast();
+		
+		for (L2Character character : player.getKnownList().getKnownType(L2Character.class))
+			if (character.getFusionSkill() != null && character.getFusionSkill().getTarget() == player)
+				character.abortCast();
+		
+		if (sendMessage)
 		{
-			boolean isLeader = isLeader(player);
-			_members.remove(player);
-			recalculatePartyLevel();
-			
-			if (player.isFestivalParticipant())
-				SevenSignsFestival.getInstance().updateParticipants(player, this);
-			
-			if (player.isInDuel())
-				DuelManager.getInstance().onRemoveFromParty(player);
-			
-			if (player.getFusionSkill() != null)
-				player.abortCast();
-			
-			for (L2Character character : player.getKnownList().getKnownType(L2Character.class))
-				if (character.getFusionSkill() != null && character.getFusionSkill().getTarget() == player)
-					character.abortCast();
-			
-			if (sendMessage)
-			{
-				player.sendPacket(SystemMessageId.YOU_LEFT_PARTY);
-				broadcastToPartyMembers(SystemMessage.getSystemMessage(SystemMessageId.S1_LEFT_PARTY).addPcName(player));
-			}
-			
-			player.sendPacket(PartySmallWindowDeleteAll.STATIC_PACKET);
-			player.setParty(null);
-			
-			broadcastToPartyMembers(new PartySmallWindowDelete(player));
-			
-			if (isInDimensionalRift())
-				_dr.partyMemberExited(player);
-			
-			// Close the CCInfoWindow
+			player.sendPacket(SystemMessageId.YOU_LEFT_PARTY);
+			broadcastToPartyMembers(SystemMessage.getSystemMessage(SystemMessageId.S1_LEFT_PARTY).addPcName(player));
+		}
+		
+		player.sendPacket(PartySmallWindowDeleteAll.STATIC_PACKET);
+		player.setParty(null);
+		
+		broadcastToPartyMembers(new PartySmallWindowDelete(player));
+		
+		if (isInDimensionalRift())
+			_dr.partyMemberExited(player);
+		
+		// Close the CCInfoWindow
+		if (isInCommandChannel())
+			player.sendPacket(ExCloseMPCC.STATIC_PACKET);
+		
+		if (isLeader && _members.size() > 1)
+			broadcastToPartyMembersNewLeader();
+		else if (_members.size() == 1)
+		{
 			if (isInCommandChannel())
-				player.sendPacket(ExCloseMPCC.STATIC_PACKET);
-			
-			if (isLeader && _members.size() > 1)
-				broadcastToPartyMembersNewLeader();
-			else if (_members.size() == 1)
 			{
-				if (isInCommandChannel())
-				{
-					// delete the whole command channel when the party who opened the channel is disbanded
-					if (_commandChannel.getChannelLeader().equals(getLeader()))
-						_commandChannel.disbandChannel();
-					else
-						_commandChannel.removeParty(this);
-				}
-				
-				if (getLeader() != null)
-				{
-					getLeader().setParty(null);
-					if (getLeader().isInDuel())
-						DuelManager.getInstance().onRemoveFromParty(getLeader());
-				}
-				
-				if (_positionBroadcastTask != null)
-				{
-					_positionBroadcastTask.cancel(false);
-					_positionBroadcastTask = null;
-				}
-				_members.clear();
+				// delete the whole command channel when the party who opened the channel is disbanded
+				if (_commandChannel.getChannelLeader().equals(getLeader()))
+					_commandChannel.disbandChannel();
+				else
+					_commandChannel.removeParty(this);
 			}
+			
+			if (getLeader() != null)
+			{
+				getLeader().setParty(null);
+				if (getLeader().isInDuel())
+					DuelManager.getInstance().onRemoveFromParty(getLeader());
+			}
+			
+			if (_positionBroadcastTask != null)
+			{
+				_positionBroadcastTask.cancel(false);
+				_positionBroadcastTask = null;
+			}
+			_members.clear();
 		}
 	}
 	

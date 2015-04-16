@@ -37,6 +37,8 @@ DROP TABLE IF EXISTS heroes_diary;
 DROP TABLE IF EXISTS heroes;
 DROP TABLE IF EXISTS items;
 DROP TABLE IF EXISTS itemsonground;
+DROP TABLE IF EXISTS mdt_bets;
+DROP TABLE IF EXISTS mdt_history;
 DROP TABLE IF EXISTS olympiad_data;
 DROP TABLE IF EXISTS olympiad_fights;
 DROP TABLE IF EXISTS olympiad_nobles_eom;

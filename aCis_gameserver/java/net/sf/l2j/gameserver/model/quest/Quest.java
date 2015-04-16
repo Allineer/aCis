@@ -64,6 +64,7 @@ public class Quest extends ManagedScript
 	
 	private static final String HTML_NONE_AVAILABLE = "<html><body>You are either not on a quest that involves this NPC, or you don't meet this NPC's minimum quest requirements.</body></html>";
 	private static final String HTML_ALREADY_COMPLETED = "<html><body>This quest has already been completed.</body></html>";
+	private static final String HTML_TOO_MUCH_QUESTS = "<html><body>You have already accepted the maximum number of quests. No more than 25 quests may be undertaken simultaneously.<br>For quest information, enter Alt+U.</body></html>";
 	
 	public static final byte STATE_CREATED = 0;
 	public static final byte STATE_STARTED = 1;
@@ -704,11 +705,23 @@ public class Quest extends ManagedScript
 	}
 	
 	/**
+	 * @return default html page "You have already accepted the maximum number of quests. No more than 25 quests may be undertaken simultaneously. For quest information, enter Alt+U."
+	 */
+	public static String getTooMuchQuestsMsg()
+	{
+		return HTML_TOO_MUCH_QUESTS;
+	}
+	
+	/**
 	 * Show a message to player.<BR>
 	 * <BR>
 	 * <U><I>Concept : </I></U><BR>
-	 * 3 cases are managed according to the value of the parameter "res" :<BR>
-	 * <LI><U>"res" ends with string ".html" :</U> an HTML is opened in order to be shown in a dialog box</LI> <LI><U>"res" starts with "<html>" :</U> the message hold in "res" is shown in a dialog box</LI> <LI><U>otherwise :</U> the message held in "res" is shown in chat box</LI>
+	 * 3 cases are managed according to the value of the parameter "res" :
+	 * <UL>
+	 * <LI><U>"res" ends with string ".html" :</U> an HTML is opened in order to be shown in a dialog box</LI>
+	 * <LI><U>"res" starts with "<html>" :</U> the message hold in "res" is shown in a dialog box</LI>
+	 * <LI><U>otherwise :</U> the message held in "res" is shown in chat box</LI>
+	 * </UL>
 	 * @param npc : which launches the dialog, null in case of random scripts
 	 * @param player : the player.
 	 * @param result : String pointing out the message to show at the player

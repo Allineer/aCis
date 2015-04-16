@@ -890,7 +890,6 @@ public class L2Npc extends L2Character
 		{
 			NpcHtmlMessage npcReply = new NpcHtmlMessage(npc.getObjectId());
 			npcReply.setHtml(Quest.getNoQuestMsg());
-			npcReply.replace("%objectId%", npc.getObjectId());
 			player.sendPacket(npcReply);
 			
 			player.sendPacket(ActionFailed.STATIC_PACKET);
@@ -908,7 +907,11 @@ public class L2Npc extends L2Character
 		{
 			if (quest.isRealQuest() && player.getAllQuests(false).size() >= 25)
 			{
-				player.sendPacket(SystemMessageId.TOO_MANY_QUESTS);
+				NpcHtmlMessage npcReply = new NpcHtmlMessage(npc.getObjectId());
+				npcReply.setHtml(Quest.getTooMuchQuestsMsg());
+				player.sendPacket(npcReply);
+				
+				player.sendPacket(ActionFailed.STATIC_PACKET);
 				return;
 			}
 			

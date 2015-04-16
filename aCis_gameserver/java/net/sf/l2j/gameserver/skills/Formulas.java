@@ -426,7 +426,7 @@ public final class Formulas
 		if (siegeClan == null)
 			return false;
 		
-		for (L2Npc flag : siegeClan.getFlag())
+		for (L2Npc flag : siegeClan.getFlags())
 		{
 			if (Util.checkIfInRange(200, activeChar, flag, true))
 				return true;

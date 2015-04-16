@@ -12,17 +12,24 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.l2j.gameserver;
+package net.sf.l2j.gameserver.instancemanager.games;
 
 import java.lang.reflect.Constructor;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ScheduledFuture;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.sf.l2j.L2DatabaseFactory;
+import net.sf.l2j.gameserver.ThreadPoolManager;
 import net.sf.l2j.gameserver.datatables.NpcTable;
 import net.sf.l2j.gameserver.idfactory.IdFactory;
 import net.sf.l2j.gameserver.model.actor.L2Npc;
@@ -40,9 +47,6 @@ public class MonsterRace
 {
 	protected static final Logger _log = Logger.getLogger(MonsterRace.class.getName());
 	
-	public static final int LANES = 8;
-	public static final int WINDOW_START = 0;
-	
 	public static enum RaceState
 	{
 		ACCEPTING_BETS,
@@ -54,8 +58,10 @@ public class MonsterRace
 	protected static final PlaySound _sound1 = new PlaySound(1, "S_Race", 0, 0, 0, 0, 0);
 	protected static final PlaySound _sound2 = new PlaySound(0, "ItemSound2.race_start", 1, 121209259, 12125, 182487, -3559);
 	
-	protected static final List<Integer> _npcTemplates = new ArrayList<>();
-	protected static final LinkedList<HistoryInfo> _history = new LinkedList<>();
+	protected static final List<Integer> _npcTemplates = new ArrayList<>(); // List holding npc templates, shuffled on a new race.
+	protected static final List<HistoryInfo> _history = new ArrayList<>(); // List holding old race records.
+	protected static final Map<Integer, Long> _betsPerLane = new ConcurrentHashMap<>(); // Map holding all bets for each lane ; values setted to 0 after every race.
+	protected static final List<Double> _odds = new ArrayList<>(); // List holding sorted odds per lane ; cleared at new odds calculation.
 	
 	protected static final int[][] _codes =
 	{
@@ -73,8 +79,6 @@ public class MonsterRace
 		}
 	};
 	
-	private static ScheduledFuture<?> _task = null;
-	
 	protected static int _raceNumber = 1;
 	protected static int _finalCountdown = 0;
 	protected static RaceState _state = RaceState.RACE_END;
@@ -88,17 +92,22 @@ public class MonsterRace
 	
 	protected MonsterRace()
 	{
+		// Feed _history with previous race results.
+		loadHistory();
+		
+		// Feed _betsPerLane with stored informations on bets.
+		loadBets();
+		
+		// Feed _npcTemplates, we will only have to shuffle it when needed.
+		for (int i = 31003; i < 31027; i++)
+			_npcTemplates.add(i);
+		
 		_monsters = new L2Npc[8];
 		_speeds = new int[8][20];
 		_first = new int[2];
 		_second = new int[2];
 		
-		if (_task == null)
-			_task = ThreadPoolManager.getInstance().scheduleGeneralAtFixedRate(new Announcement(), 0, 1000);
-		
-		// Feed _npcTemplates, we will only have to shuffle it when needed.
-		for (int i = 31003; i < 31027; i++)
-			_npcTemplates.add(i);
+		ThreadPoolManager.getInstance().scheduleGeneralAtFixedRate(new Announcement(), 0, 1000);
 	}
 	
 	public static MonsterRace getInstance()
@@ -106,12 +115,12 @@ public class MonsterRace
 		return SingletonHolder._instance;
 	}
 	
-	public class HistoryInfo
+	public static class HistoryInfo
 	{
 		private final int _raceId;
 		private int _first;
 		private int _second;
-		private final double _oddRate;
+		private double _oddRate;
 		
 		public HistoryInfo(int raceId, int first, int second, double oddRate)
 		{
@@ -149,6 +158,11 @@ public class MonsterRace
 		public void setSecond(int second)
 		{
 			_second = second;
+		}
+		
+		public void setOddRate(double oddRate)
+		{
+			_oddRate = oddRate;
 		}
 	}
 	
@@ -220,6 +234,8 @@ public class MonsterRace
 				case 900: // 15 min
 					_state = RaceState.WAITING;
 					
+					calculateOdds();
+					
 					Broadcast.toAllPlayersInZoneType(L2DerbyTrackZone.class, SystemMessage.getSystemMessage(SystemMessageId.MONSRACE_TICKETS_NOW_AVAILABLE_FOR_S1_RACE).addNumber(_raceNumber), SystemMessage.getSystemMessage(SystemMessageId.MONSRACE_S1_TICKET_SALES_CLOSED));
 					break;
 				
@@ -255,16 +271,21 @@ public class MonsterRace
 				
 				case 1085: // 18 min 5 sec
 					_packet = new MonRaceInfo(_codes[2][0], _codes[2][1], getMonsters(), getSpeeds());
+					
 					Broadcast.toAllPlayersInZoneType(L2DerbyTrackZone.class, _packet);
 					break;
 				
 				case 1115: // 18 min 35 sec
 					_state = RaceState.RACE_END;
 					
-					// Populate history info with data.
-					HistoryInfo info = _history.getFirst();
+					// Populate history info with data, stores it in database.
+					final HistoryInfo info = _history.get(_history.size() - 1);
 					info.setFirst(getFirstPlace());
 					info.setSecond(getSecondPlace());
+					info.setOddRate(_odds.get(getFirstPlace() - 1));
+					
+					saveHistory(info);
+					clearBets();
 					
 					Broadcast.toAllPlayersInZoneType(L2DerbyTrackZone.class, SystemMessage.getSystemMessage(SystemMessageId.MONSRACE_FIRST_PLACE_S1_SECOND_S2).addNumber(getFirstPlace()).addNumber(getSecondPlace()), SystemMessage.getSystemMessage(SystemMessageId.MONSRACE_S1_RACE_END).addNumber(_raceNumber));
 					_raceNumber++;
@@ -282,8 +303,6 @@ public class MonsterRace
 	{
 		// Edit _history.
 		_history.add(new HistoryInfo(_raceNumber, 0, 0, 0));
-		if (_history.size() > 7)
-			_history.removeLast();
 		
 		// Randomize _npcTemplates.
 		Collections.shuffle(_npcTemplates);
@@ -339,6 +358,154 @@ public class MonsterRace
 		}
 	}
 	
+	/**
+	 * Load past races informations, feeding _history arrayList.<br>
+	 * Also sets _raceNumber, based on latest HistoryInfo loaded.
+	 */
+	protected static void loadHistory()
+	{
+		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
+		{
+			PreparedStatement statement = con.prepareStatement("SELECT * FROM mdt_history");
+			ResultSet rset = statement.executeQuery();
+			
+			while (rset.next())
+			{
+				_history.add(new HistoryInfo(rset.getInt("race_id"), rset.getInt("first"), rset.getInt("second"), rset.getDouble("odd_rate")));
+				_raceNumber++;
+			}
+			rset.close();
+			statement.close();
+		}
+		catch (SQLException e)
+		{
+			_log.log(Level.WARNING, "MonsterRace: can't load history: " + e.getMessage(), e);
+		}
+		_log.info("MonsterRace : loaded " + _history.size() + " records, currently on race #" + _raceNumber);
+	}
+	
+	/**
+	 * Save an history record into database.
+	 * @param history The infos to store.
+	 */
+	protected static void saveHistory(HistoryInfo history)
+	{
+		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
+		{
+			PreparedStatement statement = con.prepareStatement("INSERT INTO mdt_history (race_id, first, second, odd_rate) VALUES (?,?,?,?)");
+			statement.setInt(1, history.getRaceId());
+			statement.setInt(2, history.getFirst());
+			statement.setInt(3, history.getSecond());
+			statement.setDouble(4, history.getOddRate());
+			statement.execute();
+			statement.close();
+		}
+		catch (SQLException e)
+		{
+			_log.log(Level.WARNING, "MonsterRace: can't save history: " + e.getMessage(), e);
+		}
+	}
+	
+	/**
+	 * Load current bets per lane ; initialize the map keys.
+	 */
+	protected static void loadBets()
+	{
+		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
+		{
+			PreparedStatement statement = con.prepareStatement("SELECT * FROM mdt_bets");
+			ResultSet rset = statement.executeQuery();
+			
+			while (rset.next())
+				setBetOnLane(rset.getInt("lane_id"), rset.getLong("bet"), false);
+			
+			rset.close();
+			statement.close();
+		}
+		catch (SQLException e)
+		{
+			_log.log(Level.WARNING, "MonsterRace: can't load bets: " + e.getMessage(), e);
+		}
+	}
+	
+	/**
+	 * Save the current lane bet into database.
+	 * @param lane : The lane to affect.
+	 * @param sum : The sum to set.
+	 */
+	protected static void saveBet(int lane, long sum)
+	{
+		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
+		{
+			PreparedStatement statement = con.prepareStatement("REPLACE INTO mdt_bets (lane_id, bet) VALUES (?,?)");
+			statement.setInt(1, lane);
+			statement.setLong(2, sum);
+			statement.execute();
+			statement.close();
+		}
+		catch (SQLException e)
+		{
+			_log.log(Level.WARNING, "MonsterRace: can't save bet: " + e.getMessage(), e);
+		}
+	}
+	
+	/**
+	 * Clear all lanes bets, either on database or Map.
+	 */
+	protected static void clearBets()
+	{
+		for (int key : _betsPerLane.keySet())
+			_betsPerLane.put(key, 0L);
+		
+		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
+		{
+			PreparedStatement statement = con.prepareStatement("UPDATE mdt_bets SET bet = 0");
+			statement.execute();
+			statement.close();
+		}
+		catch (SQLException e)
+		{
+			_log.log(Level.WARNING, "MonsterRace: can't clear bets: " + e.getMessage(), e);
+		}
+	}
+	
+	/**
+	 * Setup lane bet, based on previous value (if any).
+	 * @param lane : The lane to edit.
+	 * @param amount : The amount to add.
+	 * @param saveOnDb : Should it be saved on db or not.
+	 */
+	public static void setBetOnLane(int lane, long amount, boolean saveOnDb)
+	{
+		final long sum = (_betsPerLane.containsKey(lane)) ? _betsPerLane.get(lane) + amount : amount;
+		
+		_betsPerLane.put(lane, sum);
+		
+		if (saveOnDb)
+			saveBet(lane, sum);
+	}
+	
+	/**
+	 * Calculate odds for every lane, based on others lanes.
+	 */
+	protected static void calculateOdds()
+	{
+		// Clear previous List holding old odds.
+		_odds.clear();
+		
+		// Sort bets lanes per lane.
+		final Map<Integer, Long> sortedLanes = new TreeMap<>(_betsPerLane);
+		
+		// Pass a first loop in order to calculate total sum of all lanes.
+		long sumOfAllLanes = 0;
+		for (long amount : sortedLanes.values())
+			sumOfAllLanes += amount;
+		
+		// As we get the sum, we can now calculate the odd rate of each lane.
+		for (long amount : sortedLanes.values())
+			_odds.add((amount == 0) ? 0D : Math.max(1.25, sumOfAllLanes * 0.7 / amount));
+	}
+	
 	public L2Npc[] getMonsters()
 	{
 		return _monsters;
@@ -377,6 +544,11 @@ public class MonsterRace
 	public List<HistoryInfo> getHistory()
 	{
 		return _history;
+	}
+	
+	public List<Double> getOdds()
+	{
+		return _odds;
 	}
 	
 	private static class SingletonHolder

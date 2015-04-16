@@ -1,4 +1,24 @@
 ====================================================================================================
+Changeset 321 @ 2014.03.20
+
+MDT (part II), Misc
+
+Monster Derby Track - part II - a big thanks to roko91 for odd calculation ^^.
+    - Move MonsterRace in most appropriate section (instancemanager.games)
+    - Add data persistance:
+        - Current race state is saved on race end. The current race number is retrieved from history aswell.
+        - Bets on lanes (from CURRENT race) are saved on ticket obtention. It allows to recalculate odds without errors.
+    - Fix previous commit regarding "View Past Results" button (records should be shown from newest race to oldest).
+    - Add odds rate calculation per lane (happens at "tickets sales closed" event).
+    - The odd of the first place is now saved on HistoryInfo.
+    - Drop double message on ticket obtention.
+    - Implements "Calculate Winnings" button (3 different bypasses, with numerous checks).
+
+Misc
+    - Add retail HTM when you got too much quests. Ty Root.
+    - Fix a ConcurrentModificationException; slight rework of L2SiegeClan. Ty sahar.
+
+====================================================================================================
 Changeset 320 @ 2014.03.17
 
 Sieges, MDT (Part I), Misc

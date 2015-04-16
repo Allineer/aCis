@@ -116,6 +116,8 @@ $MYG < ../sql/heroes_diary.sql &> /dev/null
 $MYG < ../sql/heroes.sql &> /dev/null
 $MYG < ../sql/items.sql &> /dev/null
 $MYG < ../sql/itemsonground.sql &> /dev/null
+$MYG < ../sql/mdt_bets.sql &> /dev/null
+$MYG < ../sql/mdt_history.sql &> /dev/null
 $MYG < ../sql/merchant_buylists.sql &> /dev/null
 $MYG < ../sql/merchant_shopids.sql &> /dev/null
 $MYG < ../sql/merchants.sql &> /dev/null
