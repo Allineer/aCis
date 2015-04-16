@@ -17,6 +17,7 @@ import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.base.Race;
 import net.sf.l2j.gameserver.model.quest.Quest;
 import net.sf.l2j.gameserver.model.quest.QuestState;
+import net.sf.l2j.gameserver.network.serverpackets.SocialAction;
 
 public class Q222_TestOfTheDuelist extends Quest
 {
@@ -148,9 +149,6 @@ public class Q222_TestOfTheDuelist extends Quest
 		switch (st.getState())
 		{
 			case STATE_CREATED:
-				if (st.hasQuestItems(MARK_OF_DUELIST))
-					return getAlreadyCompletedMsg();
-				
 				final int classId = player.getClassId().getId();
 				if (classId != 0x01 && classId != 0x2f && classId != 0x13 && classId != 0x20)
 					htmltext = "30623-02.htm";
@@ -179,9 +177,14 @@ public class Q222_TestOfTheDuelist extends Quest
 					st.takeItems(LAKIN_MACE, -1);
 					st.giveItems(MARK_OF_DUELIST, 1);
 					st.rewardExpAndSp(47015, 20000);
+					player.broadcastPacket(new SocialAction(player, 3));
 					st.playSound(QuestState.SOUND_FINISH);
-					st.exitQuest(true);
+					st.exitQuest(false);
 				}
+				break;
+			
+			case STATE_COMPLETED:
+				htmltext = getAlreadyCompletedMsg();
 				break;
 		}
 		

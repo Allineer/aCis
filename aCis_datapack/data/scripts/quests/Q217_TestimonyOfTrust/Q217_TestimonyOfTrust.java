@@ -19,6 +19,7 @@ import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.base.Race;
 import net.sf.l2j.gameserver.model.quest.Quest;
 import net.sf.l2j.gameserver.model.quest.QuestState;
+import net.sf.l2j.gameserver.network.serverpackets.SocialAction;
 import net.sf.l2j.util.Rnd;
 
 public class Q217_TestimonyOfTrust extends Quest
@@ -198,8 +199,6 @@ public class Q217_TestimonyOfTrust extends Quest
 			case STATE_CREATED:
 				if (player.getClassId().level() != 1)
 					htmltext = "30191-01a.htm";
-				else if (st.hasQuestItems(MARK_OF_TRUST))
-					htmltext = "30191-01b.htm";
 				else if (player.getRace() != Race.Human)
 					htmltext = "30191-02.htm";
 				else if (player.getLevel() < 37)
@@ -383,11 +382,16 @@ public class Q217_TestimonyOfTrust extends Quest
 							st.takeItems(RECOMMENDATION_OF_HOLLINT, 1);
 							st.giveItems(MARK_OF_TRUST, 1);
 							st.rewardExpAndSp(39571, 2500);
+							player.broadcastPacket(new SocialAction(player, 3));
 							st.playSound(QuestState.SOUND_FINISH);
-							st.exitQuest(true);
+							st.exitQuest(false);
 						}
 						break;
 				}
+				break;
+			
+			case STATE_COMPLETED:
+				htmltext = getAlreadyCompletedMsg();
 				break;
 		}
 		

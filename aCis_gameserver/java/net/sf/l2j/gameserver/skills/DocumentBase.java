@@ -102,7 +102,7 @@ abstract class DocumentBase
 		_tables = new HashMap<>();
 	}
 	
-	Document parse()
+	public Document parse()
 	{
 		Document doc;
 		try

@@ -21,6 +21,7 @@ import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.base.ClassId;
 import net.sf.l2j.gameserver.model.quest.Quest;
 import net.sf.l2j.gameserver.model.quest.QuestState;
+import net.sf.l2j.gameserver.network.serverpackets.SocialAction;
 
 public class Q231_TestOfTheMaestro extends Quest
 {
@@ -149,9 +150,7 @@ public class Q231_TestOfTheMaestro extends Quest
 		switch (st.getState())
 		{
 			case STATE_CREATED:
-				if (st.hasQuestItems(MARK_OF_MAESTRO))
-					htmltext = getAlreadyCompletedMsg();
-				else if (player.getClassId() != ClassId.artisan)
+				if (player.getClassId() != ClassId.artisan)
 					htmltext = "30531-01.htm";
 				else if (player.getLevel() < 39)
 					htmltext = "30531-02.htm";
@@ -174,8 +173,9 @@ public class Q231_TestOfTheMaestro extends Quest
 							st.takeItems(RECOMMENDATION_OF_FILAUR, 1);
 							st.giveItems(MARK_OF_MAESTRO, 1);
 							st.rewardExpAndSp(46000, 5900);
+							player.broadcastPacket(new SocialAction(player, 3));
 							st.playSound(QuestState.SOUND_FINISH);
-							st.exitQuest(true);
+							st.exitQuest(false);
 						}
 						break;
 					
@@ -332,6 +332,10 @@ public class Q231_TestOfTheMaestro extends Quest
 							htmltext = "30673-05.htm";
 						break;
 				}
+				break;
+			
+			case STATE_COMPLETED:
+				htmltext = getAlreadyCompletedMsg();
 				break;
 		}
 		

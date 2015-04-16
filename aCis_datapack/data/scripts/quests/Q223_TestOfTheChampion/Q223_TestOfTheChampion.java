@@ -20,6 +20,7 @@ import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.base.ClassId;
 import net.sf.l2j.gameserver.model.quest.Quest;
 import net.sf.l2j.gameserver.model.quest.QuestState;
+import net.sf.l2j.gameserver.network.serverpackets.SocialAction;
 import net.sf.l2j.util.Rnd;
 
 public class Q223_TestOfTheChampion extends Quest
@@ -157,7 +158,7 @@ public class Q223_TestOfTheChampion extends Quest
 		{
 			case STATE_CREATED:
 				final ClassId classId = player.getClassId();
-				if ((classId != ClassId.warrior && classId != ClassId.orcRaider) || st.hasQuestItems(MARK_OF_CHAMPION))
+				if (classId != ClassId.warrior && classId != ClassId.orcRaider)
 					htmltext = "30624-01.htm";
 				else if (player.getLevel() < 39)
 					htmltext = "30624-02.htm";
@@ -192,8 +193,9 @@ public class Q223_TestOfTheChampion extends Quest
 							st.takeItems(MOUEN_LETTER, 1);
 							st.giveItems(MARK_OF_CHAMPION, 1);
 							st.rewardExpAndSp(117454, 25000);
+							player.broadcastPacket(new SocialAction(player, 3));
 							st.playSound(QuestState.SOUND_FINISH);
-							st.exitQuest(true);
+							st.exitQuest(false);
 						}
 						break;
 					
@@ -261,6 +263,10 @@ public class Q223_TestOfTheChampion extends Quest
 							htmltext = "30196-09.htm";
 						break;
 				}
+				break;
+			
+			case STATE_COMPLETED:
+				htmltext = getAlreadyCompletedMsg();
 				break;
 		}
 		

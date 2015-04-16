@@ -17,6 +17,7 @@ import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.base.Race;
 import net.sf.l2j.gameserver.model.quest.Quest;
 import net.sf.l2j.gameserver.model.quest.QuestState;
+import net.sf.l2j.gameserver.network.serverpackets.SocialAction;
 
 public class Q219_TestimonyOfFate extends Quest
 {
@@ -180,9 +181,7 @@ public class Q219_TestimonyOfFate extends Quest
 		switch (st.getState())
 		{
 			case STATE_CREATED:
-				if (st.hasQuestItems(MARK_OF_FATE))
-					htmltext = getAlreadyCompletedMsg();
-				else if (player.getRace() != Race.DarkElf)
+				if (player.getRace() != Race.DarkElf)
 					htmltext = "30476-02.htm";
 				else if (player.getLevel() < 37 || player.getClassId().level() != 1)
 					htmltext = "30476-01.htm";
@@ -351,8 +350,9 @@ public class Q219_TestimonyOfFate extends Quest
 							st.takeItems(ARKENIA_LETTER, 1);
 							st.giveItems(MARK_OF_FATE, 1);
 							st.rewardExpAndSp(68183, 1750);
+							player.broadcastPacket(new SocialAction(player, 3));
 							st.playSound(QuestState.SOUND_FINISH);
-							st.exitQuest(true);
+							st.exitQuest(false);
 						}
 						break;
 					
@@ -418,6 +418,10 @@ public class Q219_TestimonyOfFate extends Quest
 							htmltext = "31850-05.htm";
 						break;
 				}
+				break;
+			
+			case STATE_COMPLETED:
+				htmltext = getAlreadyCompletedMsg();
 				break;
 		}
 		

@@ -17,6 +17,7 @@ import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.base.ClassId;
 import net.sf.l2j.gameserver.model.quest.Quest;
 import net.sf.l2j.gameserver.model.quest.QuestState;
+import net.sf.l2j.gameserver.network.serverpackets.SocialAction;
 
 public class Q214_TrialOfTheScholar extends Quest
 {
@@ -311,9 +312,7 @@ public class Q214_TrialOfTheScholar extends Quest
 		switch (st.getState())
 		{
 			case STATE_CREATED:
-				if (st.hasQuestItems(MARK_OF_SCHOLAR))
-					htmltext = getAlreadyCompletedMsg();
-				else if (player.getClassId() != ClassId.wizard && player.getClassId() != ClassId.elvenWizard && player.getClassId() != ClassId.darkWizard)
+				if (player.getClassId() != ClassId.wizard && player.getClassId() != ClassId.elvenWizard && player.getClassId() != ClassId.darkWizard)
 					htmltext = "30461-01.htm";
 				else if (player.getLevel() < 35)
 					htmltext = "30461-02.htm";
@@ -368,8 +367,9 @@ public class Q214_TrialOfTheScholar extends Quest
 							st.takeItems(SYMBOL_OF_CRONOS, 1);
 							st.giveItems(MARK_OF_SCHOLAR, 1);
 							st.rewardExpAndSp(80265, 30000);
+							player.broadcastPacket(new SocialAction(player, 3));
 							st.playSound(QuestState.SOUND_FINISH);
-							st.exitQuest(true);
+							st.exitQuest(false);
 						}
 						break;
 					
@@ -627,6 +627,10 @@ public class Q214_TrialOfTheScholar extends Quest
 							htmltext = "30612-08.htm";
 						break;
 				}
+				break;
+			
+			case STATE_COMPLETED:
+				htmltext = getAlreadyCompletedMsg();
 				break;
 		}
 		

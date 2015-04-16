@@ -18,6 +18,7 @@ import net.sf.l2j.gameserver.model.base.ClassId;
 import net.sf.l2j.gameserver.model.itemcontainer.Inventory;
 import net.sf.l2j.gameserver.model.quest.Quest;
 import net.sf.l2j.gameserver.model.quest.QuestState;
+import net.sf.l2j.gameserver.network.serverpackets.SocialAction;
 import net.sf.l2j.util.Rnd;
 
 public class Q212_TrialOfDuty extends Quest
@@ -101,9 +102,7 @@ public class Q212_TrialOfDuty extends Quest
 		switch (st.getState())
 		{
 			case STATE_CREATED:
-				if (st.hasQuestItems(MARK_OF_DUTY))
-					htmltext = getAlreadyCompletedMsg();
-				else if (player.getClassId() != ClassId.knight && player.getClassId() != ClassId.elvenKnight && player.getClassId() != ClassId.palusKnight)
+				if (player.getClassId() != ClassId.knight && player.getClassId() != ClassId.elvenKnight && player.getClassId() != ClassId.palusKnight)
 					htmltext = "30109-02.htm";
 				else if (player.getLevel() < 35)
 					htmltext = "30109-01.htm";
@@ -122,8 +121,9 @@ public class Q212_TrialOfDuty extends Quest
 							st.takeItems(LETTER_OF_DUSTIN, 1);
 							st.giveItems(MARK_OF_DUTY, 1);
 							st.rewardExpAndSp(79832, 3750);
+							player.broadcastPacket(new SocialAction(player, 3));
 							st.playSound(QuestState.SOUND_FINISH);
-							st.exitQuest(true);
+							st.exitQuest(false);
 						}
 						else
 							htmltext = "30109-04a.htm";
@@ -263,6 +263,10 @@ public class Q212_TrialOfDuty extends Quest
 							htmltext = "30311-02.htm";
 						break;
 				}
+				break;
+			
+			case STATE_COMPLETED:
+				htmltext = getAlreadyCompletedMsg();
 				break;
 		}
 		

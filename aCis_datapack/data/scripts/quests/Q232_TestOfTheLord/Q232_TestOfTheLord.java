@@ -18,6 +18,7 @@ import net.sf.l2j.gameserver.model.base.ClassId;
 import net.sf.l2j.gameserver.model.base.Race;
 import net.sf.l2j.gameserver.model.quest.Quest;
 import net.sf.l2j.gameserver.model.quest.QuestState;
+import net.sf.l2j.gameserver.network.serverpackets.SocialAction;
 
 public class Q232_TestOfTheLord extends Quest
 {
@@ -184,9 +185,6 @@ public class Q232_TestOfTheLord extends Quest
 		switch (st.getState())
 		{
 			case STATE_CREATED:
-				if (st.hasQuestItems(MARK_LORD))
-					return getAlreadyCompletedMsg();
-				
 				if (player.getRace() != Race.Orc)
 					htmltext = "30565-01.htm";
 				else if (player.getClassId() != ClassId.orcShaman)
@@ -422,9 +420,9 @@ public class Q232_TestOfTheLord extends Quest
 							st.takeItems(IMMORTAL_FLAME, 1);
 							st.giveItems(MARK_LORD, 1);
 							st.rewardExpAndSp(92955, 16250);
-							
+							player.broadcastPacket(new SocialAction(player, 3));
 							st.playSound(QuestState.SOUND_FINISH);
-							st.exitQuest(true);
+							st.exitQuest(false);
 						}
 						break;
 					
@@ -457,6 +455,10 @@ public class Q232_TestOfTheLord extends Quest
 							htmltext = "30643-03.htm";
 						break;
 				}
+				break;
+			
+			case STATE_COMPLETED:
+				htmltext = getAlreadyCompletedMsg();
 				break;
 		}
 		

@@ -19,6 +19,7 @@ import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.base.ClassId;
 import net.sf.l2j.gameserver.model.quest.Quest;
 import net.sf.l2j.gameserver.model.quest.QuestState;
+import net.sf.l2j.gameserver.network.serverpackets.SocialAction;
 import net.sf.l2j.util.Rnd;
 
 public class Q215_TrialOfThePilgrim extends Quest
@@ -140,9 +141,7 @@ public class Q215_TrialOfThePilgrim extends Quest
 		switch (st.getState())
 		{
 			case STATE_CREATED:
-				if (st.hasQuestItems(MARK_OF_PILGRIM))
-					htmltext = getAlreadyCompletedMsg();
-				else if (player.getClassId() != ClassId.cleric && player.getClassId() != ClassId.oracle && player.getClassId() != ClassId.shillienOracle && player.getClassId() != ClassId.orcShaman)
+				if (player.getClassId() != ClassId.cleric && player.getClassId() != ClassId.oracle && player.getClassId() != ClassId.shillienOracle && player.getClassId() != ClassId.orcShaman)
 					htmltext = "30648-02.htm";
 				else if (player.getLevel() < 35)
 					htmltext = "30648-01.htm";
@@ -163,8 +162,9 @@ public class Q215_TrialOfThePilgrim extends Quest
 							st.takeItems(BOOK_OF_SAGE, 1);
 							st.giveItems(MARK_OF_PILGRIM, 1);
 							st.rewardExpAndSp(77382, 16000);
+							player.broadcastPacket(new SocialAction(player, 3));
 							st.playSound(QuestState.SOUND_FINISH);
-							st.exitQuest(true);
+							st.exitQuest(false);
 						}
 						break;
 					
@@ -318,6 +318,10 @@ public class Q215_TrialOfThePilgrim extends Quest
 							htmltext = "30612-02.htm";
 						break;
 				}
+				break;
+			
+			case STATE_COMPLETED:
+				htmltext = getAlreadyCompletedMsg();
 				break;
 		}
 		

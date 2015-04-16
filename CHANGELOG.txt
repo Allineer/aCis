@@ -1,4 +1,21 @@
 ====================================================================================================
+Changeset 317 @ 2014.01.11
+
+Quests, Misc
+
+Quests
+    - Cleaning up to Q360.
+        - Numerous drop rate edits.
+        - Fix one HTM not correctly shown on Q354 (case where QItems are superior to 100).
+        - Fix class change quests to be not repeatable, and add the socialAction packet.
+        - Fix Q357 reward system, and some HTM typos.
+    - Addition of Q211, Q213 - ty roko91.
+
+Misc
+    - Drop SkillsEngine singleton; those different methods are now handled directly on concerned sections (ItemTable and SkillTable).
+    - Split npcs.xml into multiple files, following Pauler (L2JPes) method (it was commited into a single big file because I didn't find a valid splitting method).
+
+====================================================================================================
 Changeset 316 @ 2014.01.05
 
 Quests, Misc
