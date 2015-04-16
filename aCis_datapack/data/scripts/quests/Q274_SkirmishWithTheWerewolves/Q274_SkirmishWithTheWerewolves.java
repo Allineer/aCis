@@ -35,11 +35,7 @@ public class Q274_SkirmishWithTheWerewolves extends Quest
 	{
 		super(274, qn, "Skirmish with the Werewolves");
 		
-		questItemIds = new int[]
-		{
-			MARAKU_WEREWOLF_HEAD,
-			MARAKU_WOLFMEN_TOTEM
-		};
+		setItemsIds(MARAKU_WEREWOLF_HEAD, MARAKU_WOLFMEN_TOTEM);
 		
 		addStartNpc(30569);
 		addTalkId(30569);
@@ -80,7 +76,7 @@ public class Q274_SkirmishWithTheWerewolves extends Quest
 					htmltext = "30569-00.htm";
 				else if (player.getLevel() < 9)
 					htmltext = "30569-01.htm";
-				else if (st.hasQuestItems(NECKLACE_OF_COURAGE) || st.hasQuestItems(NECKLACE_OF_VALOR))
+				else if (st.hasAtLeastOneQuestItem(NECKLACE_OF_COURAGE, NECKLACE_OF_VALOR))
 					htmltext = "30569-02.htm";
 				else
 					htmltext = "30569-07.htm";

@@ -35,10 +35,7 @@ public class Q338_AlligatorHunter extends Quest
 	{
 		super(questId, name, descr);
 		
-		questItemIds = new int[]
-		{
-			ALLIGATOR_PELTS
-		};
+		setItemsIds(ALLIGATOR_PELTS);
 		
 		addStartNpc(ENVERUN);
 		addTalkId(ENVERUN);

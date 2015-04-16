@@ -45,16 +45,7 @@ public class Q345_MethodToRaiseTheDead extends Quest
 	{
 		super(questId, name, descr);
 		
-		questItemIds = new int[]
-		{
-			VICTIMS_ARM_BONE,
-			VICTIMS_THIGH_BONE,
-			VICTIMS_SKULL,
-			VICTIMS_RIB_BONE,
-			VICTIMS_SPINE,
-			POWDER_TO_SUMMON_DEAD_SOULS,
-			USELESS_BONE_PIECES
-		};
+		setItemsIds(VICTIMS_ARM_BONE, VICTIMS_THIGH_BONE, VICTIMS_SKULL, VICTIMS_RIB_BONE, VICTIMS_SPINE, POWDER_TO_SUMMON_DEAD_SOULS, USELESS_BONE_PIECES);
 		
 		addStartNpc(Dorothy);
 		addTalkId(Dorothy, Xenovia, Medium_Jar, Orpheus);

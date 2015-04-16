@@ -1016,9 +1016,9 @@ public class Siege implements Siegable
 		setNextSiegeDate(); // Set the next set date for 2 weeks from now
 		
 		// Schedule Time registration end
-		getTimeRegistrationOverDate().setTimeInMillis(Calendar.getInstance().getTimeInMillis());
-		getTimeRegistrationOverDate().add(Calendar.DAY_OF_MONTH, 1);
-		getCastle().setIsTimeRegistrationOver(false);
+		getSiegeRegistrationEndDate().setTimeInMillis(Calendar.getInstance().getTimeInMillis());
+		getSiegeRegistrationEndDate().add(Calendar.DAY_OF_MONTH, 1);
+		getCastle().setTimeRegistrationOver(false);
 		
 		saveSiegeDate(); // Save the new date
 		startAutoTask(); // Prepare auto start siege and end registration
@@ -1037,8 +1037,8 @@ public class Siege implements Siegable
 		{
 			PreparedStatement statement = con.prepareStatement("UPDATE castle SET siegeDate = ?, regTimeEnd = ?, regTimeOver = ?  WHERE id = ?");
 			statement.setLong(1, getSiegeDate().getTimeInMillis());
-			statement.setLong(2, getTimeRegistrationOverDate().getTimeInMillis());
-			statement.setString(3, String.valueOf(getIsTimeRegistrationOver()));
+			statement.setLong(2, getSiegeRegistrationEndDate().getTimeInMillis());
+			statement.setString(3, String.valueOf(isTimeRegistrationOver()));
 			statement.setInt(4, getCastle().getCastleId());
 			statement.execute();
 		}
@@ -1330,9 +1330,9 @@ public class Siege implements Siegable
 		return _isRegistrationOver;
 	}
 	
-	public final boolean getIsTimeRegistrationOver()
+	public final boolean isTimeRegistrationOver()
 	{
-		return getCastle().getIsTimeRegistrationOver();
+		return getCastle().isTimeRegistrationOver();
 	}
 	
 	@Override
@@ -1341,14 +1341,14 @@ public class Siege implements Siegable
 		return getCastle().getSiegeDate();
 	}
 	
-	public final Calendar getTimeRegistrationOverDate()
+	public final Calendar getSiegeRegistrationEndDate()
 	{
-		return getCastle().getTimeRegistrationOverDate();
+		return getCastle().getSiegeRegistrationEndDate();
 	}
 	
 	public void endTimeRegistration(boolean automatic)
 	{
-		getCastle().setIsTimeRegistrationOver(true);
+		getCastle().setTimeRegistrationOver(true);
 		if (!automatic)
 			saveSiegeDate();
 	}
@@ -1446,9 +1446,9 @@ public class Siege implements Siegable
 			
 			try
 			{
-				if (!getIsTimeRegistrationOver())
+				if (!isTimeRegistrationOver())
 				{
-					long regTimeRemaining = getTimeRegistrationOverDate().getTimeInMillis() - Calendar.getInstance().getTimeInMillis();
+					long regTimeRemaining = getSiegeRegistrationEndDate().getTimeInMillis() - Calendar.getInstance().getTimeInMillis();
 					if (regTimeRemaining > 0)
 					{
 						_scheduledStartSiegeTask = ThreadPoolManager.getInstance().scheduleGeneral(new ScheduleStartSiegeTask(_castleInst), regTimeRemaining);

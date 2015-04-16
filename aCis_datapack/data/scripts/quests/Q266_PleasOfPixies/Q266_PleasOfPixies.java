@@ -36,10 +36,7 @@ public class Q266_PleasOfPixies extends Quest
 	{
 		super(266, qn, "Pleas of Pixies");
 		
-		questItemIds = new int[]
-		{
-			PREDATOR_FANG
-		};
+		setItemsIds(PREDATOR_FANG);
 		
 		addStartNpc(31852); // Murika
 		addTalkId(31852);

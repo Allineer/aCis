@@ -35,11 +35,7 @@ public class Q275_DarkWingedSpies extends Quest
 	{
 		super(275, qn, "Dark Winged Spies");
 		
-		questItemIds = new int[]
-		{
-			DARKWING_BAT_FANG,
-			VARANGKA_PARASITE
-		};
+		setItemsIds(DARKWING_BAT_FANG, VARANGKA_PARASITE);
 		
 		addStartNpc(30567); // Tantus
 		addTalkId(30567);

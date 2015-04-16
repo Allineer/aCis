@@ -37,12 +37,7 @@ public class Q351_BlackSwan extends Quest
 	{
 		super(questId, name, descr);
 		
-		questItemIds = new int[]
-		{
-			ORDER_OF_GOSTA,
-			BARREL_OF_LEAGUE,
-			LIZARD_FANG
-		};
+		setItemsIds(ORDER_OF_GOSTA, BARREL_OF_LEAGUE, LIZARD_FANG);
 		
 		addStartNpc(GOSTA);
 		addTalkId(GOSTA, IASON_HEINE, ROMAN);

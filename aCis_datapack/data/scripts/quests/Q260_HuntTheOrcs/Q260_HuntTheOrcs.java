@@ -42,11 +42,7 @@ public class Q260_HuntTheOrcs extends Quest
 	{
 		super(260, qn, "Hunt the Orcs");
 		
-		questItemIds = new int[]
-		{
-			ORC_AMULET,
-			ORC_NECKLACE
-		};
+		setItemsIds(ORC_AMULET, ORC_NECKLACE);
 		
 		addStartNpc(RAYEN);
 		addTalkId(RAYEN);

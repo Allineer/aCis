@@ -37,11 +37,7 @@ public class Q356_DigUpTheSeaOfSpores extends Quest
 	{
 		super(questId, name, descr);
 		
-		questItemIds = new int[]
-		{
-			HERB_SPORE,
-			CARN_SPORE
-		};
+		setItemsIds(HERB_SPORE, CARN_SPORE);
 		
 		addStartNpc(GAUEN);
 		addTalkId(GAUEN);

@@ -1,4 +1,22 @@
 ====================================================================================================
+Changeset 315 @ 2013.11.03
+
+Quests, Misc
+
+Quests
+    - Cleanup up to q330.
+    - Add setItemIds() method to replace questItemsIds = new int {}.
+    - Add hasQuestItems(int...) to avoid "hasQuestItems(int) && hasQuestItems(int) && hasQuestItems(int) &&..."
+    - Add hasAtLeastOneQuestItem(int...) to avoid "hasQuestItems(int) || hasQuestItems(int) || hasQuestItems(int) &&..."
+
+Misc
+    - Castles
+        - Sieges loading is reverted back (was messing in different points)
+        - Castles loading is only processed in CastleManager (avoid to split the loading on multiple sections).
+    - L2DatabaseFactory is cleaned up, we dropped msSQL support and ConnectionCloser (handled by "try ()" Java 7 system).
+    - Update the different libs up to latest (drop the debug message from C3P0).
+
+====================================================================================================
 Changeset 314 @ 2013.10.27
 
 Sieges (part II), Extractable, Misc

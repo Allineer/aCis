@@ -61,8 +61,7 @@ public class Castle
 	private static final String CASTLE_UPDATE_CROP = "UPDATE castle_manor_procure SET can_buy=? WHERE crop_id=? AND castle_id=? AND period=?";
 	private static final String CASTLE_UPDATE_SEED = "UPDATE castle_manor_production SET can_produce=? WHERE seed_id=? AND castle_id=? AND period=?";
 	
-	private final int _castleId;
-	
+	private int _castleId;
 	private String _name;
 	private int _ownerId;
 	private L2Clan _formerOwner;
@@ -75,10 +74,10 @@ public class Castle
 	
 	private final List<L2DoorInstance> _doors = new ArrayList<>();
 	
-	private final Siege _siege;
+	private Siege _siege;
 	private Calendar _siegeDate;
 	private boolean _isTimeRegistrationOver = true;
-	private Calendar _siegeTimeRegistrationEndDate;
+	private Calendar _siegeRegistrationEndDate;
 	
 	private int _taxPercent;
 	private double _taxRate;
@@ -90,15 +89,8 @@ public class Castle
 	
 	private final List<L2ArtefactInstance> _artefacts = new ArrayList<>(1);
 	
-	public Castle(int castleId)
+	public Castle()
 	{
-		_castleId = castleId;
-		
-		// Load generic data.
-		load();
-		
-		// Initialize a Siege object linked to that castle.
-		_siege = new Siege(this);
 	}
 	
 	public synchronized void engrave(L2Clan clan, L2Object target)
@@ -391,25 +383,28 @@ public class Castle
 			return;
 		}
 		
-		setTaxPercent(taxPercent);
+		setTaxPercent(taxPercent, true);
 		activeChar.sendMessage(_name + " castle tax changed to " + taxPercent + "%.");
 	}
 	
-	public void setTaxPercent(int taxPercent)
+	public void setTaxPercent(int taxPercent, boolean save)
 	{
 		_taxPercent = taxPercent;
 		_taxRate = _taxPercent / 100.0;
 		
-		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
+		if (save)
 		{
-			PreparedStatement statement = con.prepareStatement("UPDATE castle SET taxPercent = ? WHERE id = ?");
-			statement.setInt(1, taxPercent);
-			statement.setInt(2, _castleId);
-			statement.execute();
-			statement.close();
-		}
-		catch (Exception e)
-		{
+			try (Connection con = L2DatabaseFactory.getInstance().getConnection())
+			{
+				PreparedStatement statement = con.prepareStatement("UPDATE castle SET taxPercent = ? WHERE id = ?");
+				statement.setInt(1, taxPercent);
+				statement.setInt(2, _castleId);
+				statement.execute();
+				statement.close();
+			}
+			catch (Exception e)
+			{
+			}
 		}
 	}
 	
@@ -471,57 +466,6 @@ public class Castle
 			{
 				_log.log(Level.WARNING, "Exception: saveDoorUpgrade(int doorId, int hp): " + e.getMessage(), e);
 			}
-		}
-	}
-	
-	/**
-	 * Load castles properties.
-	 */
-	private void load()
-	{
-		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
-		{
-			PreparedStatement statement = con.prepareStatement("SELECT * FROM castle WHERE id = ?");
-			statement.setInt(1, _castleId);
-			ResultSet rs = statement.executeQuery();
-			
-			while (rs.next())
-			{
-				_name = rs.getString("name");
-				_siegeDate = Calendar.getInstance();
-				_siegeDate.setTimeInMillis(rs.getLong("siegeDate"));
-				_siegeTimeRegistrationEndDate = Calendar.getInstance();
-				_siegeTimeRegistrationEndDate.setTimeInMillis(rs.getLong("regTimeEnd"));
-				_isTimeRegistrationOver = rs.getBoolean("regTimeOver");
-				_taxPercent = rs.getInt("taxPercent");
-				_treasury = rs.getLong("treasury");
-			}
-			rs.close();
-			statement.close();
-			
-			_taxRate = _taxPercent / 100.0;
-			
-			statement = con.prepareStatement("SELECT clan_id FROM clan_data WHERE hasCastle = ?");
-			statement.setInt(1, _castleId);
-			rs = statement.executeQuery();
-			
-			while (rs.next())
-				_ownerId = rs.getInt("clan_id");
-			
-			if (_ownerId > 0)
-			{
-				// Try to find clan instance
-				L2Clan clan = ClanTable.getInstance().getClan(_ownerId);
-				
-				// Schedule owner tasks to start running
-				ThreadPoolManager.getInstance().scheduleGeneral(new CastleUpdater(clan, 1), 3600000);
-			}
-			rs.close();
-			statement.close();
-		}
-		catch (Exception e)
-		{
-			_log.log(Level.WARNING, "Exception: loadCastleData(): " + e.getMessage(), e);
 		}
 	}
 	
@@ -607,12 +551,17 @@ public class Castle
 		}
 	}
 	
-	public final int getCastleId()
+	public int getCastleId()
 	{
 		return _castleId;
 	}
 	
-	public final L2DoorInstance getDoor(int doorId)
+	public void setCastleId(int id)
+	{
+		_castleId = id;
+	}
+	
+	public L2DoorInstance getDoor(int doorId)
 	{
 		for (L2DoorInstance door : _doors)
 		{
@@ -622,61 +571,87 @@ public class Castle
 		return null;
 	}
 	
-	public final List<L2DoorInstance> getDoors()
+	public List<L2DoorInstance> getDoors()
 	{
 		return _doors;
 	}
 	
-	public final String getName()
+	public String getName()
 	{
 		return _name;
 	}
 	
-	public final int getOwnerId()
+	public void setName(String name)
+	{
+		_name = name;
+	}
+	
+	public int getOwnerId()
 	{
 		return _ownerId;
 	}
 	
-	public final Siege getSiege()
+	public void setOwnerId(int ownerId)
 	{
+		_ownerId = ownerId;
+	}
+	
+	public Siege getSiege()
+	{
+		if (_siege == null)
+			_siege = new Siege(this);
+		
 		return _siege;
 	}
 	
-	public final Calendar getSiegeDate()
+	public Calendar getSiegeDate()
 	{
 		return _siegeDate;
 	}
 	
-	public boolean getIsTimeRegistrationOver()
+	public void setSiegeDate(Calendar siegeDate)
+	{
+		_siegeDate = siegeDate;
+	}
+	
+	public boolean isTimeRegistrationOver()
 	{
 		return _isTimeRegistrationOver;
 	}
 	
-	public void setIsTimeRegistrationOver(boolean val)
+	public void setTimeRegistrationOver(boolean val)
 	{
 		_isTimeRegistrationOver = val;
 	}
 	
-	public Calendar getTimeRegistrationOverDate()
+	public Calendar getSiegeRegistrationEndDate()
 	{
-		if (_siegeTimeRegistrationEndDate == null)
-			_siegeTimeRegistrationEndDate = Calendar.getInstance();
-		return _siegeTimeRegistrationEndDate;
+		return _siegeRegistrationEndDate;
 	}
 	
-	public final int getTaxPercent()
+	public void setSiegeRegistrationEndDate(Calendar siegeRegistrationEndDate)
+	{
+		_siegeRegistrationEndDate = siegeRegistrationEndDate;
+	}
+	
+	public int getTaxPercent()
 	{
 		return _taxPercent;
 	}
 	
-	public final double getTaxRate()
+	public double getTaxRate()
 	{
 		return _taxRate;
 	}
 	
-	public final long getTreasury()
+	public long getTreasury()
 	{
 		return _treasury;
+	}
+	
+	public void setTreasury(long treasury)
+	{
+		_treasury = treasury;
 	}
 	
 	public List<SeedProduction> getSeedProduction(int period)

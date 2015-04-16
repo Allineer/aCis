@@ -77,21 +77,7 @@ public class Q348_AnArrogantSearch extends Quest
 	{
 		super(questId, name, descr);
 		
-		questItemIds = new int[]
-		{
-			TitansPowerstone,
-			Hanellins1stLetter,
-			Hanellins2ndLetter,
-			Hanellins3rdLetter,
-			FirstKeyOfArk,
-			SecondKeyOfArk,
-			ThirdKeyOfArk,
-			BookOfSaint,
-			BloodOfSaint,
-			BoughOfSaint,
-			WhiteFabricPlatinumTribe,
-			WhiteFabricAngels
-		};
+		setItemsIds(TitansPowerstone, Hanellins1stLetter, Hanellins2ndLetter, Hanellins3rdLetter, FirstKeyOfArk, SecondKeyOfArk, ThirdKeyOfArk, BookOfSaint, BloodOfSaint, BoughOfSaint, WhiteFabricPlatinumTribe, WhiteFabricAngels);
 		
 		addStartNpc(Hanellin);
 		addTalkId(Hanellin, ClaudiaAthebalt, Martien, Harne, HolyArkOfSecrecy1, HolyArkOfSecrecy2, HolyArkOfSecrecy3, ArkGuardiansCorpse, GustavAthebaldt, Hardin, IasonHeine);
@@ -486,7 +472,7 @@ public class Q348_AnArrogantSearch extends Quest
 									st.takeItems(FirstKeyOfArk, 1);
 									st.giveItems(BloodOfSaint, 1);
 									
-									if (st.hasQuestItems(BookOfSaint) && st.hasQuestItems(BoughOfSaint))
+									if (st.hasQuestItems(BookOfSaint, BoughOfSaint))
 										st.set("cond", "21");
 								}
 								else
@@ -517,7 +503,7 @@ public class Q348_AnArrogantSearch extends Quest
 									st.takeItems(SecondKeyOfArk, 1);
 									st.giveItems(BookOfSaint, 1);
 									
-									if (st.hasQuestItems(BloodOfSaint) && st.hasQuestItems(BoughOfSaint))
+									if (st.hasQuestItems(BloodOfSaint, BoughOfSaint))
 										st.set("cond", "21");
 								}
 							}
@@ -546,7 +532,7 @@ public class Q348_AnArrogantSearch extends Quest
 									st.takeItems(ThirdKeyOfArk, 1);
 									st.giveItems(BoughOfSaint, 1);
 									
-									if (st.hasQuestItems(BloodOfSaint) && st.hasQuestItems(BookOfSaint))
+									if (st.hasQuestItems(BloodOfSaint, BookOfSaint))
 										st.set("cond", "21");
 								}
 							}

@@ -35,11 +35,7 @@ public class Q276_TotemOfTheHestui extends Quest
 	{
 		super(276, qn, "Totem of the Hestui");
 		
-		questItemIds = new int[]
-		{
-			KASHA_PARASITE,
-			KASHA_CRYSTAL
-		};
+		setItemsIds(KASHA_PARASITE, KASHA_CRYSTAL);
 		
 		addStartNpc(30571); // Tanapi
 		addTalkId(30571);

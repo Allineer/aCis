@@ -34,11 +34,7 @@ public class Q354_ConquestOfAlligatorIsland extends Quest
 	{
 		super(questId, name, descr);
 		
-		questItemIds = new int[]
-		{
-			ALLIGATOR_TOOTH,
-			TORN_MAP_FRAGMENT
-		};
+		setItemsIds(ALLIGATOR_TOOTH, TORN_MAP_FRAGMENT);
 		
 		addStartNpc(KLUCK);
 		addTalkId(KLUCK);

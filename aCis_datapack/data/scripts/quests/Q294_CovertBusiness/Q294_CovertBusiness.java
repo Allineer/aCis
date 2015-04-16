@@ -33,10 +33,7 @@ public class Q294_CovertBusiness extends Quest
 	{
 		super(294, qn, "Covert Business");
 		
-		questItemIds = new int[]
-		{
-			BAT_FANG
-		};
+		setItemsIds(BAT_FANG);
 		
 		addStartNpc(30534); // Keef
 		addTalkId(30534);

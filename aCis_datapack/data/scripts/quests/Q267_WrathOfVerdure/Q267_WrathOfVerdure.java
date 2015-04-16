@@ -33,10 +33,7 @@ public class Q267_WrathOfVerdure extends Quest
 	{
 		super(267, qn, "Wrath of Verdure");
 		
-		questItemIds = new int[]
-		{
-			GOBLIN_CLUB
-		};
+		setItemsIds(GOBLIN_CLUB);
 		
 		addStartNpc(31853); // Bremec
 		addTalkId(31853);

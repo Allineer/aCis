@@ -37,10 +37,7 @@ public class Q264_KeenClaws extends Quest
 	{
 		super(264, qn, "Keen Claws");
 		
-		questItemIds = new int[]
-		{
-			WOLF_CLAW
-		};
+		setItemsIds(WOLF_CLAW);
 		
 		addStartNpc(30136); // Payne
 		addTalkId(30136);

@@ -34,12 +34,7 @@ public class Q360_PlunderTheirSupplies extends Quest
 	{
 		super(questId, name, descr);
 		
-		questItemIds = new int[]
-		{
-			RECIPE_OF_SUPPLY,
-			SUPPLY_ITEM,
-			SUSPICIOUS_DOCUMENT
-		};
+		setItemsIds(RECIPE_OF_SUPPLY, SUPPLY_ITEM, SUSPICIOUS_DOCUMENT);
 		
 		addStartNpc(COLEMAN);
 		addTalkId(COLEMAN);

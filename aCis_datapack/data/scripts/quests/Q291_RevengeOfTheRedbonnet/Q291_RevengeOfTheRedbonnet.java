@@ -36,10 +36,7 @@ public class Q291_RevengeOfTheRedbonnet extends Quest
 	{
 		super(291, qn, "Revenge of the Redbonnet");
 		
-		questItemIds = new int[]
-		{
-			BLACK_WOLF_PELT
-		};
+		setItemsIds(BLACK_WOLF_PELT);
 		
 		addStartNpc(30553); // Maryse Redbonnet
 		addTalkId(30553);

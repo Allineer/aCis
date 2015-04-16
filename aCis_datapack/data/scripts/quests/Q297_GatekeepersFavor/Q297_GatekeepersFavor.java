@@ -31,10 +31,7 @@ public class Q297_GatekeepersFavor extends Quest
 	{
 		super(297, qn, "Gatekeeper's Favor");
 		
-		questItemIds = new int[]
-		{
-			STARSTONE
-		};
+		setItemsIds(STARSTONE);
 		
 		addStartNpc(30540); // Wirphy
 		addTalkId(30540);

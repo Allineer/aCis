@@ -28,10 +28,7 @@ public class Q261_CollectorsDream extends Quest
 	{
 		super(261, qn, "Collector's Dream");
 		
-		questItemIds = new int[]
-		{
-			GIANT_SPIDER_LEG
-		};
+		setItemsIds(GIANT_SPIDER_LEG);
 		
 		addStartNpc(30222); // Alshupes
 		addTalkId(30222);

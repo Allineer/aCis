@@ -34,12 +34,7 @@ public class Q298_LizardmensConspiracy extends Quest
 	{
 		super(298, qn, "Lizardmen's Conspiracy");
 		
-		questItemIds = new int[]
-		{
-			PATROL_REPORT,
-			WHITE_GEM,
-			RED_GEM
-		};
+		setItemsIds(PATROL_REPORT, WHITE_GEM, RED_GEM);
 		
 		addStartNpc(PRAGA);
 		addTalkId(PRAGA, ROHMER);

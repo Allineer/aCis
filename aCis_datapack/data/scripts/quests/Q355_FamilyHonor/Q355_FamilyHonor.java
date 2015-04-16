@@ -38,10 +38,7 @@ public class Q355_FamilyHonor extends Quest
 	{
 		super(questId, name, descr);
 		
-		questItemIds = new int[]
-		{
-			GALIBREDO_BUST
-		};
+		setItemsIds(GALIBREDO_BUST);
 		
 		addStartNpc(GALIBREDO);
 		addTalkId(GALIBREDO, PATRIN);

@@ -35,10 +35,7 @@ public class Q357_WarehouseKeepersAmbition extends Quest
 	{
 		super(questId, name, descr);
 		
-		questItemIds = new int[]
-		{
-			JADE_CRYSTAL
-		};
+		setItemsIds(JADE_CRYSTAL);
 		
 		addStartNpc(SILVA);
 		addTalkId(SILVA);

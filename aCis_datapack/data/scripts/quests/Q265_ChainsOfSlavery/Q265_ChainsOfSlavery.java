@@ -33,10 +33,7 @@ public class Q265_ChainsOfSlavery extends Quest
 	{
 		super(265, qn, "Chains of Slavery");
 		
-		questItemIds = new int[]
-		{
-			SHACKLE
-		};
+		setItemsIds(SHACKLE);
 		
 		addStartNpc(30357); // Kristin
 		addTalkId(30357);

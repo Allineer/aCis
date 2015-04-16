@@ -45,10 +45,7 @@ public class Q359_ForSleeplessDeadmen extends Quest
 	{
 		super(questId, name, descr);
 		
-		questItemIds = new int[]
-		{
-			REMAINS
-		};
+		setItemsIds(REMAINS);
 		
 		addStartNpc(ORVEN);
 		addTalkId(ORVEN);

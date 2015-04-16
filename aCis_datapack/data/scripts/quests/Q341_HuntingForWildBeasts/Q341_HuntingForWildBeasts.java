@@ -31,10 +31,7 @@ public class Q341_HuntingForWildBeasts extends Quest
 	{
 		super(questId, name, descr);
 		
-		questItemIds = new int[]
-		{
-			BEAR_SKIN
-		};
+		setItemsIds(BEAR_SKIN);
 		
 		addStartNpc(PANO);
 		addTalkId(PANO);

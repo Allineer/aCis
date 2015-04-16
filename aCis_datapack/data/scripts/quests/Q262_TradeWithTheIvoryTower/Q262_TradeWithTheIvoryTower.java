@@ -28,10 +28,7 @@ public class Q262_TradeWithTheIvoryTower extends Quest
 	{
 		super(262, qn, "Trade with the Ivory Tower");
 		
-		questItemIds = new int[]
-		{
-			FUNGUS_SAC
-		};
+		setItemsIds(FUNGUS_SAC);
 		
 		addStartNpc(30137); // Vollodos
 		addTalkId(30137);

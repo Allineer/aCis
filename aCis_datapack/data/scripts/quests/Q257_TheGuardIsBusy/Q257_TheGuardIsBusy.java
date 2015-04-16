@@ -36,13 +36,7 @@ public class Q257_TheGuardIsBusy extends Quest
 	{
 		super(257, qn, "The Guard Is Busy");
 		
-		questItemIds = new int[]
-		{
-			ORC_AMULET,
-			ORC_NECKLACE,
-			WEREWOLF_FANG,
-			GLUDIO_LORD_MARK
-		};
+		setItemsIds(ORC_AMULET, ORC_NECKLACE, WEREWOLF_FANG, GLUDIO_LORD_MARK);
 		
 		addStartNpc(30039); // Gilbert
 		addTalkId(30039);

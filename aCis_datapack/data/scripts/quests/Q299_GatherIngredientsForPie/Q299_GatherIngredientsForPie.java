@@ -35,12 +35,7 @@ public class Q299_GatherIngredientsForPie extends Quest
 	{
 		super(299, qn, "Gather Ingredients for Pie");
 		
-		questItemIds = new int[]
-		{
-			FRUIT_BASKET,
-			AVELLAN_SPICE,
-			HONEY_POUCH
-		};
+		setItemsIds(FRUIT_BASKET, AVELLAN_SPICE, HONEY_POUCH);
 		
 		addStartNpc(EMILY);
 		addTalkId(EMILY, LARA, BRIGHT);

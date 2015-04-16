@@ -29,10 +29,7 @@ public class Q272_WrathOfAncestors extends Quest
 	{
 		super(272, qn, "Wrath of Ancestors");
 		
-		questItemIds = new int[]
-		{
-			GRAVE_ROBBERS_HEAD
-		};
+		setItemsIds(GRAVE_ROBBERS_HEAD);
 		
 		addStartNpc(30572); // Livina
 		addTalkId(30572);

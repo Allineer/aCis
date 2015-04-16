@@ -72,7 +72,7 @@ public class Quest extends ManagedScript
 	private final String _name;
 	private final String _descr;
 	private boolean _onEnterWorld;
-	protected int[] questItemIds = null;
+	private int[] _itemsIds;
 	
 	/**
 	 * (Constructor)Add values to class variables and put the quest in HashMaps.
@@ -141,9 +141,18 @@ public class Quest extends ManagedScript
 	 * Return registered quest items.
 	 * @return int[]
 	 */
-	int[] getRegisteredItemIds()
+	public int[] getItemsIds()
 	{
-		return questItemIds;
+		return _itemsIds;
+	}
+	
+	/**
+	 * Registers all items that have to be destroyed in case player abort the quest or finish it.
+	 * @param itemIds
+	 */
+	public void setItemsIds(int... itemIds)
+	{
+		_itemsIds = itemIds;
 	}
 	
 	/**

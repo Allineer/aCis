@@ -32,10 +32,7 @@ public class Q353_PowerOfDarkness extends Quest
 	{
 		super(questId, name, descr);
 		
-		questItemIds = new int[]
-		{
-			STONE
-		};
+		setItemsIds(STONE);
 		
 		addStartNpc(GALMAN);
 		addTalkId(GALMAN);

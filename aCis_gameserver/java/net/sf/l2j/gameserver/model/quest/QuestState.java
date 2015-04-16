@@ -27,6 +27,7 @@ import net.sf.l2j.gameserver.cache.HtmCache;
 import net.sf.l2j.gameserver.model.L2DropData;
 import net.sf.l2j.gameserver.model.L2ItemInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
+import net.sf.l2j.gameserver.model.itemcontainer.PcInventory;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.ExShowQuestMark;
 import net.sf.l2j.gameserver.network.serverpackets.InventoryUpdate;
@@ -191,7 +192,7 @@ public final class QuestState
 		_vars.clear();
 		
 		// Remove registered quest items.
-		int[] itemIdList = _quest.getRegisteredItemIds();
+		int[] itemIdList = _quest.getItemsIds();
 		if (itemIdList != null)
 		{
 			for (int itemId : itemIdList)
@@ -458,12 +459,39 @@ public final class QuestState
 	}
 	
 	/**
-	 * @param itemId : ID of the item you're looking for
-	 * @return true if item exists in player's inventory, false - if not
+	 * Check for an item in player's inventory.
+	 * @param itemId the ID of the item to check for
+	 * @return {@code true} if the item exists in player's inventory, {@code false} otherwise
 	 */
 	public boolean hasQuestItems(int itemId)
 	{
 		return _player.getInventory().getItemByItemId(itemId) != null;
+	}
+	
+	/**
+	 * Check for multiple items in player's inventory.
+	 * @param itemIds a list of item IDs to check for
+	 * @return {@code true} if all items exist in player's inventory, {@code false} otherwise
+	 */
+	public boolean hasQuestItems(int... itemIds)
+	{
+		final PcInventory inv = _player.getInventory();
+		for (int itemId : itemIds)
+		{
+			if (inv.getItemByItemId(itemId) == null)
+				return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * Check if player possesses at least one given item.
+	 * @param itemIds a list of item IDs to check for
+	 * @return {@code true} if at least one item exists in player's inventory, {@code false} otherwise
+	 */
+	public boolean hasAtLeastOneQuestItem(int... itemIds)
+	{
+		return _player.getInventory().hasAtLeastOneItem(itemIds);
 	}
 	
 	/**

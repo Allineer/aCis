@@ -36,10 +36,7 @@ public class Q258_BringWolfPelts extends Quest
 	{
 		super(258, qn, "Bring Wolf Pelts");
 		
-		questItemIds = new int[]
-		{
-			WOLF_PELT
-		};
+		setItemsIds(WOLF_PELT);
 		
 		addStartNpc(30001); // Lector
 		addTalkId(30001);

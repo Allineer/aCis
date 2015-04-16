@@ -29,10 +29,7 @@ public class Q300_HuntingLetoLizardman extends Quest
 	{
 		super(300, qn, "Hunting Leto Lizardman");
 		
-		questItemIds = new int[]
-		{
-			BRACELET
-		};
+		setItemsIds(BRACELET);
 		
 		addStartNpc(30126); // Rath
 		addTalkId(30126);

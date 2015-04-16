@@ -202,12 +202,12 @@ public class GameServer
 		Util.printSection("World Bosses");
 		GrandBossManager.init();
 		
+		Util.printSection("Castles");
+		CastleManager.getInstance().load();
+		
 		Util.printSection("Seven Signs");
 		SevenSigns.getInstance().spawnSevenSignsNPC();
 		SevenSignsFestival.getInstance();
-		
-		Util.printSection("Castles");
-		CastleManager.getInstance().load();
 		
 		Util.printSection("Sieges");
 		SiegeManager.getInstance();

@@ -496,7 +496,6 @@ public final class Config
 	public static String GAME_SERVER_LOGIN_HOST;
 	
 	/** Access to database */
-	public static String DATABASE_DRIVER;
 	public static String DATABASE_URL;
 	public static String DATABASE_LOGIN;
 	public static String DATABASE_PASSWORD;
@@ -1106,7 +1105,6 @@ public final class Config
 			REQUEST_ID = server.getProperty("RequestServerID", 0);
 			ACCEPT_ALTERNATE_ID = server.getProperty("AcceptAlternateID", true);
 			
-			DATABASE_DRIVER = server.getProperty("Driver", "com.mysql.jdbc.Driver");
 			DATABASE_URL = server.getProperty("URL", "jdbc:mysql://localhost/acis");
 			DATABASE_LOGIN = server.getProperty("Login", "root");
 			DATABASE_PASSWORD = server.getProperty("Password", "");
@@ -1266,7 +1264,6 @@ public final class Config
 			INTERNAL_HOSTNAME = server.getProperty("InternalHostname", "localhost");
 			EXTERNAL_HOSTNAME = server.getProperty("ExternalHostname", "localhost");
 			
-			DATABASE_DRIVER = server.getProperty("Driver", "com.mysql.jdbc.Driver");
 			DATABASE_URL = server.getProperty("URL", "jdbc:mysql://localhost/acis");
 			DATABASE_LOGIN = server.getProperty("Login", "root");
 			DATABASE_PASSWORD = server.getProperty("Password", "");

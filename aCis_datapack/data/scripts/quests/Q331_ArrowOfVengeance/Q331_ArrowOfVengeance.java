@@ -34,12 +34,7 @@ public class Q331_ArrowOfVengeance extends Quest
 	{
 		super(questId, name, descr);
 		
-		questItemIds = new int[]
-		{
-			HARPY_FEATHER,
-			MEDUSA_VENOM,
-			WYRMS_TOOTH
-		};
+		setItemsIds(HARPY_FEATHER, MEDUSA_VENOM, WYRMS_TOOTH);
 		
 		addStartNpc(BELTON);
 		addTalkId(BELTON);

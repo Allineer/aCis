@@ -107,13 +107,7 @@ public class Q039_RedEyedInvaders extends Quest
 	{
 		super(39, qn, "Red-Eyed Invaders");
 		
-		questItemIds = new int[]
-		{
-			BLACK_BONE_NECKLACE,
-			RED_BONE_NECKLACE,
-			INCENSE_POUCH,
-			GEM_OF_MAILLE
-		};
+		setItemsIds(BLACK_BONE_NECKLACE, RED_BONE_NECKLACE, INCENSE_POUCH, GEM_OF_MAILLE);
 		
 		addStartNpc(BABENCO);
 		addTalkId(BABENCO, BATHIS);

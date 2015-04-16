@@ -34,11 +34,7 @@ public class Q273_InvadersOfTheHolyLand extends Quest
 	{
 		super(273, qn, "Invaders of the Holy Land");
 		
-		questItemIds = new int[]
-		{
-			BLACK_SOULSTONE,
-			RED_SOULSTONE
-		};
+		setItemsIds(BLACK_SOULSTONE, RED_SOULSTONE);
 		
 		addStartNpc(30566); // Varkees
 		addTalkId(30566);

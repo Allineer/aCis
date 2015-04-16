@@ -29,17 +29,14 @@ public class Q347_GoGetTheCalculator extends Quest
 	
 	// Items
 	private static final int GEMSTONE_BEAST_CRYSTAL = 4286;
-	private static final int CALCULATOR_Q = 4285;
+	private static final int CALCULATOR_QUEST = 4285;
 	private static final int CALCULATOR_REAL = 4393;
 	
 	public Q347_GoGetTheCalculator(int questId, String name, String descr)
 	{
 		super(questId, name, descr);
 		
-		questItemIds = new int[]
-		{
-			4286
-		};
+		setItemsIds(GEMSTONE_BEAST_CRYSTAL, CALCULATOR_QUEST);
 		
 		addStartNpc(BRUNON);
 		addTalkId(BRUNON, SILVERA, SPIRON, BALANKI);
@@ -87,14 +84,14 @@ public class Q347_GoGetTheCalculator extends Quest
 		}
 		else if (event.equalsIgnoreCase("30526-08.htm"))
 		{
-			st.takeItems(CALCULATOR_Q, -1);
+			st.takeItems(CALCULATOR_QUEST, -1);
 			st.giveItems(CALCULATOR_REAL, 1);
 			st.playSound(QuestState.SOUND_FINISH);
 			st.exitQuest(true);
 		}
 		else if (event.equalsIgnoreCase("30526-09.htm"))
 		{
-			st.takeItems(CALCULATOR_Q, -1);
+			st.takeItems(CALCULATOR_QUEST, -1);
 			st.rewardItems(57, 1000);
 			st.playSound(QuestState.SOUND_FINISH);
 			st.exitQuest(true);
@@ -125,10 +122,7 @@ public class Q347_GoGetTheCalculator extends Quest
 				switch (npc.getNpcId())
 				{
 					case BRUNON:
-						if (st.getQuestItemsCount(CALCULATOR_Q) == 0)
-							htmltext = "30526-06.htm";
-						else
-							htmltext = "30526-07.htm";
+						htmltext = (!st.hasQuestItems(CALCULATOR_QUEST)) ? "30526-06.htm" : "30526-07.htm";
 						break;
 					
 					case SPIRON:
@@ -161,7 +155,7 @@ public class Q347_GoGetTheCalculator extends Quest
 								htmltext = "30527-03.htm";
 								st.set("cond", "6");
 								st.takeItems(GEMSTONE_BEAST_CRYSTAL, -1);
-								st.giveItems(CALCULATOR_Q, 1);
+								st.giveItems(CALCULATOR_QUEST, 1);
 								st.playSound(QuestState.SOUND_MIDDLE);
 							}
 							else

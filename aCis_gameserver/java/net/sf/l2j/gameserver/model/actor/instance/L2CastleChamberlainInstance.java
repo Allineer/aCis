@@ -424,9 +424,9 @@ public class L2CastleChamberlainInstance extends L2MerchantInstance
 			if (!validatePrivileges(player, L2Clan.CP_CS_MANAGE_SIEGE))
 				return;
 			
-			if (castle.getSiege().getTimeRegistrationOverDate().getTimeInMillis() < Calendar.getInstance().getTimeInMillis())
+			if (castle.getSiege().getSiegeRegistrationEndDate().getTimeInMillis() < Calendar.getInstance().getTimeInMillis())
 				sendFileMessage(player, "data/html/chamberlain/siegetime1.htm");
-			else if (castle.getSiege().getIsTimeRegistrationOver())
+			else if (castle.getSiege().isTimeRegistrationOver())
 				sendFileMessage(player, "data/html/chamberlain/siegetime2.htm");
 			else
 				sendFileMessage(player, "data/html/chamberlain/siegetime3.htm");

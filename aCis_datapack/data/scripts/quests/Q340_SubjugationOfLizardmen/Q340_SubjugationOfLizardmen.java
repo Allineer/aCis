@@ -37,13 +37,7 @@ public class Q340_SubjugationOfLizardmen extends Quest
 	{
 		super(questId, name, descr);
 		
-		questItemIds = new int[]
-		{
-			CARGO,
-			HOLY,
-			ROSARY,
-			TOTEM
-		};
+		setItemsIds(CARGO, HOLY, ROSARY, TOTEM);
 		
 		addStartNpc(WEISZ);
 		addTalkId(WEISZ, ADONIUS, LEVIAN, CHEST);
@@ -150,7 +144,7 @@ public class Q340_SubjugationOfLizardmen extends Quest
 							htmltext = "30375-01.htm";
 						else if (cond == 3)
 						{
-							if (st.hasQuestItems(ROSARY) && st.hasQuestItems(HOLY))
+							if (st.hasQuestItems(ROSARY, HOLY))
 							{
 								htmltext = "30375-04.htm";
 								st.set("cond", "4");

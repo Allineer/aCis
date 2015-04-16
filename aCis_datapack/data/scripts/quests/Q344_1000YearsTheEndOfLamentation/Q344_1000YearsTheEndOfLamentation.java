@@ -40,14 +40,7 @@ public class Q344_1000YearsTheEndOfLamentation extends Quest
 	{
 		super(questId, name, descr);
 		
-		questItemIds = new int[]
-		{
-			ARTICLES_DEAD_HEROES,
-			OLD_KEY,
-			OLD_HILT,
-			OLD_TOTEM,
-			CRUCIFIX
-		};
+		setItemsIds(ARTICLES_DEAD_HEROES, OLD_KEY, OLD_HILT, OLD_TOTEM, CRUCIFIX);
 		
 		addStartNpc(GILMORE);
 		addTalkId(GILMORE, RODEMAI, ORVEN, GARVARENTZ, KAIEN);

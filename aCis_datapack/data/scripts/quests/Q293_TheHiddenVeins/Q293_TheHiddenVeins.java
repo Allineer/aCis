@@ -59,12 +59,7 @@ public class Q293_TheHiddenVeins extends Quest
 	{
 		super(293, qn, "The Hidden Veins");
 		
-		questItemIds = new int[]
-		{
-			CHRYSOLITE_ORE,
-			TORN_MAP_FRAGMENT,
-			HIDDEN_VEIN_MAP
-		};
+		setItemsIds(CHRYSOLITE_ORE, TORN_MAP_FRAGMENT, HIDDEN_VEIN_MAP);
 		
 		addStartNpc(FILAUR);
 		addTalkId(FILAUR, CHINCHIRIN);

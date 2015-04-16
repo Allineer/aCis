@@ -32,10 +32,7 @@ public class Q295_DreamingOfTheSkies extends Quest
 	{
 		super(295, qn, "Dreaming of the Skies");
 		
-		questItemIds = new int[]
-		{
-			FLOATING_STONE
-		};
+		setItemsIds(FLOATING_STONE);
 		
 		addStartNpc(30536); // Arin
 		addTalkId(30536);

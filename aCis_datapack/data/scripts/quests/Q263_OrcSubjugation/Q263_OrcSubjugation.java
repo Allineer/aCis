@@ -31,11 +31,7 @@ public class Q263_OrcSubjugation extends Quest
 	{
 		super(263, qn, "Orc Subjugation");
 		
-		questItemIds = new int[]
-		{
-			ORC_AMULET,
-			ORC_NECKLACE
-		};
+		setItemsIds(ORC_AMULET, ORC_NECKLACE);
 		
 		addStartNpc(30346); // Kayleen
 		addTalkId(30346);

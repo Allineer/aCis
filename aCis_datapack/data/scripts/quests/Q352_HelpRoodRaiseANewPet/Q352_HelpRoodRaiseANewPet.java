@@ -33,11 +33,7 @@ public class Q352_HelpRoodRaiseANewPet extends Quest
 	{
 		super(questId, name, descr);
 		
-		questItemIds = new int[]
-		{
-			LIENRIK_EGG_1,
-			LIENRIK_EGG_2
-		};
+		setItemsIds(LIENRIK_EGG_1, LIENRIK_EGG_2);
 		
 		addStartNpc(ROOD);
 		addTalkId(ROOD);

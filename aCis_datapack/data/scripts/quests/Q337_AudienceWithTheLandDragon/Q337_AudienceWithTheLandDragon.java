@@ -175,23 +175,7 @@ public class Q337_AudienceWithTheLandDragon extends Quest
 	{
 		super(questId, name, descr);
 		
-		questItemIds = new int[]
-		{
-			FEATHER_OF_GABRIELLE,
-			MARK_OF_WATCHMAN,
-			REMAINS_OF_SACRIFIED,
-			TOTEM_OF_LAND_DRAGON,
-			KRANROT_SKIN,
-			HAMRUT_LEG,
-			MARSH_DRAKE_TALONS,
-			MARSH_STALKER_HORN,
-			FIRST_FRAGMENT_OF_ABYSS_JEWEL,
-			MARA_FANG,
-			SECOND_FRAGMENT_OF_ABYSS_JEWEL,
-			MUSFEL_FANG,
-			HERALD_OF_SLAYER,
-			THIRD_FRAGMENT_OF_ABYSS_JEWEL
-		};
+		setItemsIds(FEATHER_OF_GABRIELLE, MARK_OF_WATCHMAN, REMAINS_OF_SACRIFIED, TOTEM_OF_LAND_DRAGON, KRANROT_SKIN, HAMRUT_LEG, MARSH_DRAKE_TALONS, MARSH_STALKER_HORN, FIRST_FRAGMENT_OF_ABYSS_JEWEL, MARA_FANG, SECOND_FRAGMENT_OF_ABYSS_JEWEL, MUSFEL_FANG, HERALD_OF_SLAYER, THIRD_FRAGMENT_OF_ABYSS_JEWEL);
 		
 		addStartNpc(GABRIELLE);
 		addTalkId(GABRIELLE, ORVEN, KENDRA, CHAKIRIS, KAIENA, MOKE, HELTON, GILMORE, THEODRIC);
@@ -348,7 +332,7 @@ public class Q337_AudienceWithTheLandDragon extends Quest
 						if (cond == 1)
 						{
 							if (st.getInt(drop + 3) == 1)
-								if (st.hasQuestItems(KRANROT_SKIN) && st.hasQuestItems(HAMRUT_LEG))
+								if (st.hasQuestItems(KRANROT_SKIN, HAMRUT_LEG))
 								{
 									st.takeItems(KRANROT_SKIN, 1);
 									st.takeItems(HAMRUT_LEG, 1);
@@ -370,7 +354,7 @@ public class Q337_AudienceWithTheLandDragon extends Quest
 						if (cond == 1)
 						{
 							if (st.getInt(drop + 4) == 1)
-								if (st.hasQuestItems(MARSH_DRAKE_TALONS) && st.hasQuestItems(MARSH_STALKER_HORN))
+								if (st.hasQuestItems(MARSH_DRAKE_TALONS, MARSH_STALKER_HORN))
 								{
 									st.takeItems(MARSH_DRAKE_TALONS, 1);
 									st.takeItems(MARSH_STALKER_HORN, 1);
@@ -398,7 +382,7 @@ public class Q337_AudienceWithTheLandDragon extends Quest
 									htmltext = "30498-01.htm";
 									break;
 								case 1:
-									if (st.hasQuestItems(FIRST_FRAGMENT_OF_ABYSS_JEWEL) && st.hasQuestItems(MARA_FANG))
+									if (st.hasQuestItems(FIRST_FRAGMENT_OF_ABYSS_JEWEL, MARA_FANG))
 									{
 										st.takeItems(FIRST_FRAGMENT_OF_ABYSS_JEWEL, 1);
 										st.takeItems(MARA_FANG, 1);
@@ -430,7 +414,7 @@ public class Q337_AudienceWithTheLandDragon extends Quest
 									htmltext = "30678-01.htm";
 									break;
 								case 1:
-									if (st.hasQuestItems(SECOND_FRAGMENT_OF_ABYSS_JEWEL) && st.hasQuestItems(MUSFEL_FANG))
+									if (st.hasQuestItems(SECOND_FRAGMENT_OF_ABYSS_JEWEL, MUSFEL_FANG))
 									{
 										st.takeItems(SECOND_FRAGMENT_OF_ABYSS_JEWEL, 1);
 										st.takeItems(MUSFEL_FANG, 1);

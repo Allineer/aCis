@@ -42,10 +42,7 @@ public class Q358_IllegitimateChildOfAGoddess extends Quest
 	{
 		super(questId, name, descr);
 		
-		questItemIds = new int[]
-		{
-			SCALE
-		};
+		setItemsIds(SCALE);
 		
 		addStartNpc(30862); // Oltlin
 		addTalkId(30862);

@@ -38,11 +38,7 @@ public class Q296_TarantulasSpiderSilk extends Quest
 	{
 		super(296, qn, "Tarantula's Spider Silk");
 		
-		questItemIds = new int[]
-		{
-			TARANTULA_SPIDER_SILK,
-			TARANTULA_SPINNERETTE
-		};
+		setItemsIds(TARANTULA_SPIDER_SILK, TARANTULA_SPINNERETTE);
 		
 		addStartNpc(MION);
 		addTalkId(MION, DEFENDER_NATHAN);
@@ -60,7 +56,7 @@ public class Q296_TarantulasSpiderSilk extends Quest
 		
 		if (event.equalsIgnoreCase("30519-03.htm"))
 		{
-			if (st.hasQuestItems(RING_OF_RACCOON) || st.hasQuestItems(RING_OF_FIREFLY))
+			if (st.hasAtLeastOneQuestItem(RING_OF_RACCOON, RING_OF_FIREFLY))
 			{
 				st.setState(STATE_STARTED);
 				st.set("cond", "1");

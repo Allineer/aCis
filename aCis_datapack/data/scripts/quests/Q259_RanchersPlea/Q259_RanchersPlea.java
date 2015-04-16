@@ -42,10 +42,7 @@ public class Q259_RanchersPlea extends Quest
 	{
 		super(259, qn, "Rancher's Plea");
 		
-		questItemIds = new int[]
-		{
-			GIANT_SPIDER_SKIN
-		};
+		setItemsIds(GIANT_SPIDER_SKIN);
 		
 		addStartNpc(EDMOND);
 		addTalkId(EDMOND, MARIUS);

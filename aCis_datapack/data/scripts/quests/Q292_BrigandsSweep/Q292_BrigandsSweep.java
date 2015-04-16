@@ -44,14 +44,7 @@ public class Q292_BrigandsSweep extends Quest
 	{
 		super(292, qn, "Brigands Sweep");
 		
-		questItemIds = new int[]
-		{
-			GOBLIN_NECKLACE,
-			GOBLIN_PENDANT,
-			GOBLIN_LORD_PENDANT,
-			SUSPICIOUS_MEMO,
-			SUSPICIOUS_CONTRACT
-		};
+		setItemsIds(GOBLIN_NECKLACE, GOBLIN_PENDANT, GOBLIN_LORD_PENDANT, SUSPICIOUS_MEMO, SUSPICIOUS_CONTRACT);
 		
 		addStartNpc(SPIRON);
 		addTalkId(SPIRON, BALANKI);
