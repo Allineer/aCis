@@ -41,7 +41,6 @@ import net.sf.l2j.gameserver.network.serverpackets.ActionFailed;
 import net.sf.l2j.gameserver.network.serverpackets.ConfirmDlg;
 import net.sf.l2j.gameserver.network.serverpackets.DoorInfo;
 import net.sf.l2j.gameserver.network.serverpackets.DoorStatusUpdate;
-import net.sf.l2j.gameserver.network.serverpackets.MyTargetSelected;
 import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 import net.sf.l2j.gameserver.skills.funcs.FuncGatesMDefMod;
@@ -374,15 +373,10 @@ public class L2DoorInstance extends L2Character
 	@Override
 	public void onAction(L2PcInstance player)
 	{
-		// Check if the L2PcInstance already target the L2Npc
+		// Set the target of the L2PcInstance player
 		if (player.getTarget() != this)
 		{
-			// Set the target of the L2PcInstance player
 			player.setTarget(this);
-			
-			// Send MyTargetSelected to the L2PcInstance player
-			player.sendPacket(new MyTargetSelected(getObjectId(), 0));
-			
 			player.sendPacket(new DoorStatusUpdate(this, player));
 		}
 		else
@@ -445,7 +439,6 @@ public class L2DoorInstance extends L2Character
 		if (player.getTarget() != this)
 		{
 			player.setTarget(this);
-			player.sendPacket(new MyTargetSelected(getObjectId(), 0));
 			
 			if (isAutoAttackable(player))
 				player.sendPacket(new DoorStatusUpdate(this, player));

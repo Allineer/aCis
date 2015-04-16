@@ -7,6 +7,7 @@ DROP TABLE IF EXISTS bookmarks;
 DROP TABLE IF EXISTS castle_doorupgrade;
 DROP TABLE IF EXISTS castle_manor_procure;
 DROP TABLE IF EXISTS castle_manor_production;
+DROP TABLE IF EXISTS castle_trapupgrade;
 DROP TABLE IF EXISTS character_friends;
 DROP TABLE IF EXISTS character_hennas;
 DROP TABLE IF EXISTS character_macroses;

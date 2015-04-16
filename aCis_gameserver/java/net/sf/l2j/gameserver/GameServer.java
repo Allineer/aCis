@@ -211,6 +211,7 @@ public class GameServer
 		SevenSignsFestival.getInstance();
 		
 		Util.printSection("Sieges");
+		SiegeManager.getInstance();
 		SiegeManager.getSieges();
 		MercTicketManager.getInstance();
 		

@@ -17,11 +17,9 @@ package net.sf.l2j.gameserver.model.zone.type;
 import java.util.concurrent.Future;
 
 import net.sf.l2j.gameserver.ThreadPoolManager;
-import net.sf.l2j.gameserver.instancemanager.CastleManager;
 import net.sf.l2j.gameserver.model.actor.L2Character;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
-import net.sf.l2j.gameserver.model.entity.Castle;
-import net.sf.l2j.gameserver.model.zone.L2ZoneType;
+import net.sf.l2j.gameserver.model.zone.L2CastleZoneType;
 import net.sf.l2j.gameserver.model.zone.ZoneId;
 import net.sf.l2j.gameserver.network.serverpackets.EtcStatusUpdate;
 import net.sf.l2j.gameserver.skills.Stats;
@@ -30,13 +28,10 @@ import net.sf.l2j.gameserver.skills.Stats;
  * A damage zone
  * @author durgus
  */
-public class L2DamageZone extends L2ZoneType
+public class L2DamageZone extends L2CastleZoneType
 {
-	private int _damageHPPerSec;
+	private int _hpDps;
 	private Future<?> _task;
-	
-	private int _castleId;
-	private Castle _castle;
 	
 	private int _startTask;
 	private int _reuseTask;
@@ -47,7 +42,7 @@ public class L2DamageZone extends L2ZoneType
 	{
 		super(id);
 		
-		_damageHPPerSec = 100; // setup default damage
+		_hpDps = 100; // setup default damage
 		
 		// Setup default start / reuse time
 		_startTask = 10;
@@ -58,9 +53,7 @@ public class L2DamageZone extends L2ZoneType
 	public void setParameter(String name, String value)
 	{
 		if (name.equals("dmgSec"))
-			_damageHPPerSec = Integer.parseInt(value);
-		else if (name.equals("castleId"))
-			_castleId = Integer.parseInt(value);
+			_hpDps = Integer.parseInt(value);
 		else if (name.equalsIgnoreCase("initialDelay"))
 			_startTask = Integer.parseInt(value);
 		else if (name.equalsIgnoreCase("reuse"))
@@ -91,14 +84,11 @@ public class L2DamageZone extends L2ZoneType
 	@Override
 	protected void onEnter(L2Character character)
 	{
-		if (_task == null && _damageHPPerSec != 0)
+		if (_task == null && _hpDps != 0)
 		{
-			L2PcInstance player = character.getActingPlayer();
-			
-			// Castle zone, siege and no defender
-			if (getCastle() != null)
-				if (!(getCastle().getSiege().isInProgress() && player != null && player.getSiegeState() != 2))
-					return;
+			// Castle traps are active only during siege, or if they're activated.
+			if (getCastle() != null && (!isEnabled() || !getCastle().getSiege().isInProgress()))
+				return;
 			
 			synchronized (this)
 			{
@@ -128,9 +118,9 @@ public class L2DamageZone extends L2ZoneType
 		}
 	}
 	
-	protected int getHPDamagePerSecond()
+	protected int getHpDps()
 	{
-		return _damageHPPerSec;
+		return _hpDps;
 	}
 	
 	protected void stopTask()
@@ -142,68 +132,30 @@ public class L2DamageZone extends L2ZoneType
 		}
 	}
 	
-	protected Castle getCastle()
-	{
-		if (_castleId > 0 && _castle == null)
-			_castle = CastleManager.getInstance().getCastleById(_castleId);
-		
-		return _castle;
-	}
-	
 	class ApplyDamage implements Runnable
 	{
 		private final L2DamageZone _dmgZone;
-		private final Castle _castleZone;
 		
 		ApplyDamage(L2DamageZone zone)
 		{
 			_dmgZone = zone;
-			_castleZone = zone.getCastle();
 		}
 		
 		@Override
 		public void run()
 		{
-			boolean siege = false;
-			
-			if (_castleZone != null)
+			// Cancels the task if config has changed, if castle isn't in siege anymore, or if zone isn't enabled.
+			if (_dmgZone.getHpDps() <= 0 || (_dmgZone.getCastle() != null && (!_dmgZone.isEnabled() || !_dmgZone.getCastle().getSiege().isInProgress())))
 			{
-				// castle zones active only during siege
-				siege = _castleZone.getSiege().isInProgress();
-				if (!siege)
-				{
-					_dmgZone.stopTask();
-					return;
-				}
+				_dmgZone.stopTask();
+				return;
 			}
 			
 			for (L2Character temp : _dmgZone.getCharactersInside())
 			{
 				if (temp != null && !temp.isDead())
-				{
-					if (siege)
-					{
-						// during siege defenders not affected
-						final L2PcInstance player = temp.getActingPlayer();
-						if (player != null && player.isInSiege() && player.getSiegeState() == 2)
-							continue;
-					}
-					
-					double multiplier = 1 + (temp.calcStat(Stats.DAMAGE_ZONE_VULN, 0, null, null) / 100);
-					if (getHPDamagePerSecond() != 0)
-						temp.reduceCurrentHp(_dmgZone.getHPDamagePerSecond() * multiplier, null, null);
-				}
+					temp.reduceCurrentHp(_dmgZone.getHpDps() * (1 + (temp.calcStat(Stats.DAMAGE_ZONE_VULN, 0, null, null) / 100)), null, null);
 			}
 		}
-	}
-	
-	@Override
-	public void onDieInside(L2Character character)
-	{
-	}
-	
-	@Override
-	public void onReviveInside(L2Character character)
-	{
 	}
 }

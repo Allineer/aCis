@@ -2681,14 +2681,9 @@ public final class L2PcInstance extends L2Playable
 			else if (CursedWeaponsManager.getInstance().isCursed(newitem.getItemId()))
 				CursedWeaponsManager.getInstance().activate(this, newitem);
 			
-			// If you pickup arrows.
-			if (item.getItem().getItemType() == L2EtcItemType.ARROW)
-			{
-				// If a bow is equipped, try to equip them if no arrows is currently equipped.
-				L2Weapon currentWeapon = getActiveWeaponItem();
-				if (currentWeapon != null && currentWeapon.getItemType() == L2WeaponType.BOW && getInventory().getPaperdollItem(Inventory.PAPERDOLL_LHAND) == null)
-					checkAndEquipArrows();
-			}
+			// If you pickup arrows and a bow is equipped, try to equip them if no arrows is currently equipped.
+			if (item.getItem().getItemType() == L2EtcItemType.ARROW && getAttackType() == L2WeaponType.BOW && getInventory().getPaperdollItem(Inventory.PAPERDOLL_LHAND) == null)
+				checkAndEquipArrows();
 		}
 	}
 	
@@ -3307,15 +3302,9 @@ public final class L2PcInstance extends L2Playable
 	@Override
 	public void onAction(L2PcInstance player)
 	{
-		// Check if the player already target this L2PcInstance
+		// Set the target of the player
 		if (player.getTarget() != this)
-		{
-			// Set the target of the player
 			player.setTarget(this);
-			
-			// Send MyTargetSelected to the player
-			player.sendPacket(new MyTargetSelected(getObjectId(), 0));
-		}
 		else
 		{
 			// Check if this L2PcInstance has a Private Store
@@ -3864,7 +3853,25 @@ public final class L2PcInstance extends L2Playable
 		// Add the L2PcInstance to the _statusListener of the new target if it's a L2Character
 		if (newTarget instanceof L2Character)
 		{
-			((L2Character) newTarget).addStatusListener(this);
+			final L2Character target = (L2Character) newTarget;
+			
+			target.addStatusListener(this);
+			
+			// Show the client his new target.
+			if (target.isAutoAttackable(this))
+			{
+				// Show the client his new target.
+				sendPacket(new MyTargetSelected(target.getObjectId(), getLevel() - target.getLevel()));
+				
+				// Send max/current hp.
+				final StatusUpdate su = new StatusUpdate(target);
+				su.addAttribute(StatusUpdate.MAX_HP, target.getMaxHp());
+				su.addAttribute(StatusUpdate.CUR_HP, (int) target.getCurrentHp());
+				sendPacket(su);
+			}
+			else
+				sendPacket(new MyTargetSelected(target.getObjectId(), 0));
+			
 			Broadcast.toKnownPlayers(this, new TargetSelected(getObjectId(), newTarget.getObjectId(), getX(), getY(), getZ()));
 		}
 		

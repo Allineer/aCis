@@ -71,8 +71,8 @@ public class SiegeStatus implements IUserCommandHandler
 				
 				NpcHtmlMessage html = new NpcHtmlMessage(0);
 				html.setFile("data/html/siege_status.htm");
-				html.replace("%kills%", String.valueOf(clan.getSiegeKills()));
-				html.replace("%deaths%", String.valueOf(clan.getSiegeDeaths()));
+				html.replace("%kills%", clan.getSiegeKills());
+				html.replace("%deaths%", clan.getSiegeDeaths());
 				html.replace("%content%", content.toString());
 				activeChar.sendPacket(html);
 				return true;

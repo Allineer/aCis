@@ -1,4 +1,53 @@
 ====================================================================================================
+Changeset 313 @ 2013.10.13
+
+Quests, Spawnlist, Sieges (part I), Misc
+
+Quests
+    - Cleanup up to Q300.
+    - Fix an error on Q300 (missed a cond).
+    - Add dropMultipleItems() method (used on Q108 && Q293 for the moment), ty Ailierynn.
+
+Spawnlist
+    - Add back artifacts spawns.
+    - Add back 32030 spawn (Leopard's Dead Carcass).
+    - Move 32090 spawn (Garden Sculpture, from Leopard's Dead Carcass location to guessed Broken Labyrinth location).
+
+Sieges
+    - SiegeManager
+        - Drop the map storing artefacts and associated config (unused).
+        - Use Config.java format for sieges configs (public static, no getters, THAT_WRITING_STYLE).
+    - L2CastleChamberlain
+        - Money for doors / traps is now took from player inventory, not clan warehouse.
+        - Proper HTM for adena check on Castle Chamberlain (for doors /traps upgrades).
+        - Drop of a double YOU_NOT_ENOUGH_ADENA message (already handled by reduceAdena()).
+    - Rework Flame and Control systems (avoid to null/re-create maps, drop old SiegeSpawn class for TowerSpawn).
+    - L2SwampZone && L2DamageZone inherits from a new zone, named L2CastleZoneType (inheriting itself from L2ZoneType).
+        - L2DamageZone task is cleaned up (notably will cancel if value <= 0 instead of for looping doing nothing like an idiot).
+    - Implements castle traps system.
+        - You have to pay for activation.
+        - Destroying a Flame Tower desactivates trap controlled by that Flame Tower.
+        - Traps affect defenders aswell ("Once activated, the flames do not distinguish friend from foe.").
+
+Misc
+    - Fix AdminCreateItem handler (KaL you're fat), ty meX for report.
+    - Rework setTarget(), in order it automatically sends MyTargetSelected (and StatusUpdate if the target can been isAutoAttackable()).
+    - Fix splitting damage if you got a shield but are unarmed (should be considered as one handed, not fist), ty raphaelfersan.
+    - Add 9 missing skilltypes in L2NpcTemplate addSkill(, meaning monsters will now use their whole skillset, ty xblx.
+    - Cleanup almost all getSkillsArray() uses to use proper "skilltypes" maps when possible. Reduce the number of checks needed aswell.
+    - Don't reward adenas in party if you're already maxed + slight method cleanup, ty xblx (didn't reuse the whole fix).
+    - Fix guards behavior when they're under attack (you're supposed to be able to speak with them while fighting, n/c), ty Kenrix.
+    - Fix next intention unlock while using a bow (must occur at 50% gauge). Didn't fix yet the casting intention (probably can be made editing intentions, instead of forcing it via a timed task).
+    - Fix ShopPreviewInfo packet, ty Ailierynn.
+    - More uses of getAttackType(), which reduces generated code (when only L2WeaponType was required).
+    - Addition of replace(String, int/long/double) methods in NpcHtmlMessage packet (which avoids a lot of visual long code).
+
+PS: new SQL table for traps.
+PS2: zones XMLs are edited as traps zones need dedicated id. 70000 and 71000 ids are used.
+
+IMOPRTANT: Some stuff are still bugged. More to be done / fixed / polished in next rev.
+
+====================================================================================================
 Changeset 312 @ 2013.09.28
 
 Quests, Community Board, Misc

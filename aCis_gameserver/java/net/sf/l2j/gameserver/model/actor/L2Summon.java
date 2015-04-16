@@ -44,7 +44,6 @@ import net.sf.l2j.gameserver.network.serverpackets.AbstractNpcInfo.SummonInfo;
 import net.sf.l2j.gameserver.network.serverpackets.ActionFailed;
 import net.sf.l2j.gameserver.network.serverpackets.L2GameServerPacket;
 import net.sf.l2j.gameserver.network.serverpackets.MoveToPawn;
-import net.sf.l2j.gameserver.network.serverpackets.MyTargetSelected;
 import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
 import net.sf.l2j.gameserver.network.serverpackets.PetDelete;
 import net.sf.l2j.gameserver.network.serverpackets.PetInfo;
@@ -179,12 +178,10 @@ public abstract class L2Summon extends L2Playable
 	@Override
 	public void onAction(L2PcInstance player)
 	{
+		// Set the target of the L2PcInstance player
 		if (player.getTarget() != this)
-		{
 			player.setTarget(this);
-			player.sendPacket(new MyTargetSelected(getObjectId(), player.getLevel() - getLevel()));
-		}
-		else if (player == _owner && player.getTarget() == this)
+		else if (player == _owner)
 		{
 			// Calculate the distance between the L2PcInstance and the L2Npc
 			if (!canInteract(player))

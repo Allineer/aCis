@@ -37,10 +37,12 @@ import net.sf.l2j.gameserver.instancemanager.CastleManager;
 import net.sf.l2j.gameserver.instancemanager.CastleManorManager;
 import net.sf.l2j.gameserver.instancemanager.CastleManorManager.CropProcure;
 import net.sf.l2j.gameserver.instancemanager.CastleManorManager.SeedProduction;
+import net.sf.l2j.gameserver.instancemanager.SiegeManager;
 import net.sf.l2j.gameserver.instancemanager.ZoneManager;
 import net.sf.l2j.gameserver.model.L2Clan;
 import net.sf.l2j.gameserver.model.L2Manor;
 import net.sf.l2j.gameserver.model.L2Object;
+import net.sf.l2j.gameserver.model.TowerSpawn;
 import net.sf.l2j.gameserver.model.actor.instance.L2ArtefactInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2DoorInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
@@ -1149,5 +1151,66 @@ public class Castle
 	public L2Clan getInitialCastleOwner()
 	{
 		return _formerOwner;
+	}
+	
+	/**
+	 * @param towerIndex : The index to check on.
+	 * @return the trap upgrade level for a dedicated tower index.
+	 */
+	public int getTrapUpgradeLevel(int towerIndex)
+	{
+		final TowerSpawn spawn = SiegeManager.getInstance().getFlameTowers(_castleId).get(towerIndex);
+		return (spawn != null) ? spawn.getUpgradeLevel() : 0;
+	}
+	
+	/**
+	 * Save properties of a Flame Tower.
+	 * @param towerIndex : The tower to affect.
+	 * @param level : The new level of update.
+	 * @param save : Should it be saved on database or not.
+	 */
+	public void setTrapUpgrade(int towerIndex, int level, boolean save)
+	{
+		if (save)
+		{
+			try (Connection con = L2DatabaseFactory.getInstance().getConnection())
+			{
+				PreparedStatement statement = con.prepareStatement("REPLACE INTO castle_trapupgrade (castleId, towerIndex, level) values (?,?,?)");
+				statement.setInt(1, _castleId);
+				statement.setInt(2, towerIndex);
+				statement.setInt(3, level);
+				statement.execute();
+				statement.close();
+			}
+			catch (Exception e)
+			{
+				_log.log(Level.WARNING, "Exception: setTrapUpgradeLevel(int towerIndex, int level, int castleId): " + e.getMessage(), e);
+			}
+		}
+		
+		final TowerSpawn spawn = SiegeManager.getInstance().getFlameTowers(_castleId).get(towerIndex);
+		if (spawn != null)
+			spawn.setUpgradeLevel(level);
+	}
+	
+	/**
+	 * Delete all traps informations for a single castle.
+	 */
+	public void removeTrapUpgrade()
+	{
+		for (TowerSpawn ts : SiegeManager.getInstance().getFlameTowers(_castleId))
+			ts.setUpgradeLevel(0);
+		
+		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
+		{
+			PreparedStatement statement = con.prepareStatement("DELETE FROM castle_trapupgrade WHERE castleId=?");
+			statement.setInt(1, _castleId);
+			statement.execute();
+			statement.close();
+		}
+		catch (Exception e)
+		{
+			_log.log(Level.WARNING, "Exception: removeDoorUpgrade(): " + e.getMessage(), e);
+		}
 	}
 }

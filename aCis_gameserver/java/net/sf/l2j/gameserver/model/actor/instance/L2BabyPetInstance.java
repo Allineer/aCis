@@ -20,6 +20,7 @@ import net.sf.l2j.gameserver.ThreadPoolManager;
 import net.sf.l2j.gameserver.ai.CtrlIntention;
 import net.sf.l2j.gameserver.model.L2ItemInstance;
 import net.sf.l2j.gameserver.model.L2Skill;
+import net.sf.l2j.gameserver.model.L2Skill.SkillTargetType;
 import net.sf.l2j.gameserver.model.actor.L2Character;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
@@ -55,33 +56,30 @@ public final class L2BabyPetInstance extends L2PetInstance
 		
 		double healPower = 0;
 		int skillLevel;
-		for (L2Skill skill : getTemplate().getSkillsArray())
+		for (L2Skill skill : getTemplate().getHealSkills())
 		{
-			if (skill.isActive() && (skill.getTargetType() == L2Skill.SkillTargetType.TARGET_OWNER_PET))
+			if (skill.getTargetType() != SkillTargetType.TARGET_OWNER_PET || skill.getSkillType() != L2SkillType.HEAL)
+				continue;
+			
+			// The skill level is calculated on the fly. Template got an skill level of 1.
+			skillLevel = getSkillLevel(skill.getId());
+			if (skillLevel <= 0)
+				continue;
+			
+			if (healPower == 0)
 			{
-				if (skill.getSkillType() == L2SkillType.HEAL)
-				{
-					// The skill level is calculated on the fly. Template got an skill level of 1.
-					skillLevel = getSkillLevel(skill.getId());
-					if (skillLevel <= 0)
-						continue;
-					
-					if (healPower == 0)
-					{
-						// set both heal types to the same skill
-						_majorHeal = new SkillHolder(skill.getId(), skillLevel);
-						_minorHeal = _majorHeal;
-						healPower = skill.getPower();
-					}
-					else
-					{
-						// another heal skill found - search for most powerful
-						if (skill.getPower() > healPower)
-							_majorHeal = new SkillHolder(skill.getId(), skillLevel);
-						else
-							_minorHeal = new SkillHolder(skill.getId(), skillLevel);
-					}
-				}
+				// set both heal types to the same skill
+				_majorHeal = new SkillHolder(skill.getId(), skillLevel);
+				_minorHeal = _majorHeal;
+				healPower = skill.getPower();
+			}
+			else
+			{
+				// another heal skill found - search for most powerful
+				if (skill.getPower() > healPower)
+					_majorHeal = new SkillHolder(skill.getId(), skillLevel);
+				else
+					_minorHeal = new SkillHolder(skill.getId(), skillLevel);
 			}
 		}
 		startCastTask();

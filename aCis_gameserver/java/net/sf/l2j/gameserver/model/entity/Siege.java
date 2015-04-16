@@ -30,21 +30,20 @@ import net.sf.l2j.gameserver.Announcements;
 import net.sf.l2j.gameserver.SevenSigns;
 import net.sf.l2j.gameserver.ThreadPoolManager;
 import net.sf.l2j.gameserver.datatables.ClanTable;
-import net.sf.l2j.gameserver.datatables.MapRegionTable;
 import net.sf.l2j.gameserver.datatables.MapRegionTable.TeleportWhereType;
 import net.sf.l2j.gameserver.datatables.NpcTable;
-import net.sf.l2j.gameserver.idfactory.IdFactory;
 import net.sf.l2j.gameserver.instancemanager.CastleManager;
 import net.sf.l2j.gameserver.instancemanager.MercTicketManager;
 import net.sf.l2j.gameserver.instancemanager.SiegeGuardManager;
 import net.sf.l2j.gameserver.instancemanager.SiegeManager;
-import net.sf.l2j.gameserver.instancemanager.SiegeManager.SiegeSpawn;
 import net.sf.l2j.gameserver.model.L2Clan;
 import net.sf.l2j.gameserver.model.L2ClanMember;
 import net.sf.l2j.gameserver.model.L2Object;
 import net.sf.l2j.gameserver.model.L2SiegeClan;
 import net.sf.l2j.gameserver.model.L2SiegeClan.SiegeClanType;
 import net.sf.l2j.gameserver.model.L2Spawn;
+import net.sf.l2j.gameserver.model.Location;
+import net.sf.l2j.gameserver.model.TowerSpawn;
 import net.sf.l2j.gameserver.model.actor.L2Npc;
 import net.sf.l2j.gameserver.model.actor.instance.L2ControlTowerInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2FlameTowerInstance;
@@ -54,7 +53,6 @@ import net.sf.l2j.gameserver.network.serverpackets.PlaySound;
 import net.sf.l2j.gameserver.network.serverpackets.SiegeInfo;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 import net.sf.l2j.gameserver.network.serverpackets.UserInfo;
-import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
 import net.sf.l2j.gameserver.util.Broadcast;
 
 public class Siege implements Siegable
@@ -76,9 +74,6 @@ public class Siege implements Siegable
 	}
 	
 	private int _controlTowerCount;
-	private int _controlTowerMaxCount;
-	private int _flameTowerCount;
-	private int _flameTowerMaxCount;
 	
 	public class ScheduleEndSiegeTask implements Runnable
 	{
@@ -197,8 +192,8 @@ public class Siege implements Siegable
 	private final List<L2SiegeClan> _defenderWaitingClans = new ArrayList<>();
 	
 	// Castle setting
-	private List<L2ControlTowerInstance> _controlTowers = new ArrayList<>();
-	private List<L2FlameTowerInstance> _flameTowers = new ArrayList<>();
+	private final List<L2ControlTowerInstance> _controlTowers = new ArrayList<>();
+	private final List<L2FlameTowerInstance> _flameTowers = new ArrayList<>();
 	private final Castle[] _castle;
 	private boolean _isInProgress = false;
 	private boolean _isNormalSide = true; // true = Atk is Atk, false = Atk is Def
@@ -272,16 +267,15 @@ public class Siege implements Siegable
 			getCastle().updateClansReputation();
 			removeFlags(); // Removes all flags. Note: Remove flag before teleporting players
 			
-			teleportPlayer(Siege.TeleportWhoType.Attacker, MapRegionTable.TeleportWhereType.Town);
-			teleportPlayer(Siege.TeleportWhoType.DefenderNotOwner, MapRegionTable.TeleportWhereType.Town);
-			teleportPlayer(Siege.TeleportWhoType.Spectator, MapRegionTable.TeleportWhereType.Town);
+			teleportPlayer(TeleportWhoType.Attacker, TeleportWhereType.Town);
+			teleportPlayer(TeleportWhoType.DefenderNotOwner, TeleportWhereType.Town);
+			teleportPlayer(TeleportWhoType.Spectator, TeleportWhereType.Town);
 			
 			_isInProgress = false; // Flag so that siege instance can be started
 			updatePlayerSiegeStateFlags(true);
 			saveCastleSiege(); // Save castle specific data
 			clearSiegeClan(); // Clear siege clan from db
-			removeControlTower(); // Remove all control towers from this castle
-			removeFlameTower(); // Remove all flame towers from this castle
+			removeTowers(); // Remove all towers from this castle
 			_siegeGuardManager.unspawnSiegeGuard(); // Remove all spawned siege guard from this castle
 			
 			if (getCastle().getOwnerId() > 0)
@@ -401,23 +395,21 @@ public class Siege implements Siegable
 						}
 					}
 				}
-				teleportPlayer(Siege.TeleportWhoType.Attacker, MapRegionTable.TeleportWhereType.SiegeFlag); // Teleport to the second closest town
-				teleportPlayer(Siege.TeleportWhoType.Spectator, MapRegionTable.TeleportWhereType.Town); // Teleport to the second closest town
+				teleportPlayer(TeleportWhoType.Attacker, TeleportWhereType.SiegeFlag); // Teleport to the second closest town
+				teleportPlayer(TeleportWhoType.Spectator, TeleportWhereType.Town); // Teleport to the second closest town
 				
-				removeDefenderFlags(); // Removes defenders' flags
-				getCastle().removeDoorUpgrade(); // Remove all castle upgrade
-				getCastle().spawnDoors(true); // Respawn door to castle but make them weaker (50% hp)
+				removeDefenderFlags(); // Removes defenders' flags.
+				getCastle().removeDoorUpgrade(); // Remove all castle doors upgrades.
+				getCastle().removeTrapUpgrade(); // Remove all castle traps upgrades.
+				getCastle().spawnDoors(true); // Respawn door to castle but make them weaker (50% hp).
 				
-				removeControlTower(); // Remove all CTs from this castle
-				removeFlameTower();
+				removeTowers(); // Remove all towers from this castle.
 				
-				_controlTowerCount = 0; // Each new siege midvictory CT are completely respawned.
-				_controlTowerMaxCount = 0;
-				_flameTowerCount = 0;
-				_flameTowerMaxCount = 0;
+				_controlTowerCount = 0;// Each new siege midvictory CT are completely respawned.
 				
-				spawnControlTower(getCastle().getCastleId());
-				spawnFlameTower(getCastle().getCastleId());
+				spawnControlTowers();
+				spawnFlameTowers();
+				
 				updatePlayerSiegeStateFlags(false);
 			}
 		}
@@ -449,13 +441,12 @@ public class Siege implements Siegable
 			
 			loadSiegeClan(); // Load siege clan from db
 			updatePlayerSiegeStateFlags(false);
-			teleportPlayer(Siege.TeleportWhoType.Attacker, MapRegionTable.TeleportWhereType.Town); // Teleport to the closest town
+			teleportPlayer(TeleportWhoType.Attacker, TeleportWhereType.Town); // Teleport to the closest town
 			
 			_controlTowerCount = 0;
-			_controlTowerMaxCount = 0;
 			
-			spawnControlTower(getCastle().getCastleId()); // Spawn control tower
-			spawnFlameTower(getCastle().getCastleId()); // Spawn flame tower
+			spawnControlTowers(); // Spawn control towers
+			spawnFlameTowers(); // Spawn flame towers
 			getCastle().spawnDoors(); // Spawn door
 			spawnSiegeGuard(); // Spawn siege guard
 			MercTicketManager.getInstance().deleteTickets(getCastle().getCastleId()); // remove the tickets from the ground
@@ -465,7 +456,7 @@ public class Siege implements Siegable
 			
 			// Schedule a task to prepare auto siege end
 			_siegeEndDate = Calendar.getInstance();
-			_siegeEndDate.add(Calendar.MINUTE, SiegeManager.getInstance().getSiegeLength());
+			_siegeEndDate.add(Calendar.MINUTE, SiegeManager.SIEGE_LENGTH);
 			ThreadPoolManager.getInstance().scheduleGeneral(new ScheduleEndSiegeTask(getCastle()), 1000);
 			
 			Announcements.announceToAll(SystemMessage.getSystemMessage(SystemMessageId.SIEGE_OF_S1_HAS_STARTED).addString(getCastle().getName()));
@@ -910,7 +901,7 @@ public class Siege implements Siegable
 		if (_scheduledStartSiegeTask != null)
 			_scheduledStartSiegeTask.cancel(false);
 		
-		_scheduledStartSiegeTask = ThreadPoolManager.getInstance().scheduleGeneral(new Siege.ScheduleStartSiegeTask(getCastle()), 1000);
+		_scheduledStartSiegeTask = ThreadPoolManager.getInstance().scheduleGeneral(new ScheduleStartSiegeTask(getCastle()), 1000);
 	}
 	
 	/**
@@ -998,7 +989,7 @@ public class Siege implements Siegable
 			sm = SystemMessage.getSystemMessage(SystemMessageId.DEADLINE_FOR_SIEGE_S1_PASSED).addString(getCastle().getName());
 		else if (isInProgress())
 			sm = SystemMessage.getSystemMessage(SystemMessageId.NOT_SIEGE_REGISTRATION_TIME2);
-		else if (player.getClan() == null || player.getClan().getLevel() < SiegeManager.getInstance().getSiegeClanMinLevel())
+		else if (player.getClan() == null || player.getClan().getLevel() < SiegeManager.MINIMUM_CLAN_LEVEL)
 			sm = SystemMessage.getSystemMessage(SystemMessageId.ONLY_CLAN_LEVEL_4_ABOVE_MAY_SIEGE);
 		else if (player.getClan().hasCastle())
 			sm = SystemMessage.getSystemMessage(SystemMessageId.CLAN_THAT_OWNS_CASTLE_CANNOT_PARTICIPATE_OTHER_SIEGE);
@@ -1008,9 +999,9 @@ public class Siege implements Siegable
 			sm = SystemMessage.getSystemMessage(SystemMessageId.ALREADY_REQUESTED_SIEGE_BATTLE);
 		else if (checkIfAlreadyRegisteredForSameDay(player.getClan()))
 			sm = SystemMessage.getSystemMessage(SystemMessageId.APPLICATION_DENIED_BECAUSE_ALREADY_SUBMITTED_A_REQUEST_FOR_ANOTHER_SIEGE_BATTLE);
-		else if ((typeId == ATTACKER) && (getAttackerClans().size() >= SiegeManager.getInstance().getAttackerMaxClans()))
+		else if (typeId == ATTACKER && getAttackerClans().size() >= SiegeManager.MAX_ATTACKERS_NUMBER)
 			sm = SystemMessage.getSystemMessage(SystemMessageId.ATTACKER_SIDE_FULL);
-		else if ((typeId == DEFENDER || typeId == DEFENDER_NOT_APPROVED || typeId == OWNER) && (getDefenderClans().size() + getDefenderWaitingClans().size() >= SiegeManager.getInstance().getDefenderMaxClans()))
+		else if ((typeId == DEFENDER || typeId == DEFENDER_NOT_APPROVED || typeId == OWNER) && (getDefenderClans().size() + getDefenderWaitingClans().size() >= SiegeManager.MAX_DEFENDERS_NUMBER))
 			sm = SystemMessage.getSystemMessage(SystemMessageId.DEFENDER_SIDE_FULL);
 		else
 			return true;
@@ -1091,36 +1082,17 @@ public class Siege implements Siegable
 		}
 	}
 	
-	/** Remove all control tower spawned. */
-	private void removeControlTower()
+	/** Remove all spawned towers. */
+	private void removeTowers()
 	{
-		if (_controlTowers != null && !_controlTowers.isEmpty())
-		{
-			// Remove all instances of control tower for this castle
-			for (L2ControlTowerInstance ct : _controlTowers)
-			{
-				if (ct != null)
-					ct.deleteMe();
-			}
-			_controlTowers.clear();
-			_controlTowers = null;
-		}
-	}
-	
-	/** Remove all flame towers spawned. */
-	private void removeFlameTower()
-	{
-		if (_flameTowers != null && !_flameTowers.isEmpty())
-		{
-			// Remove all instances of control tower for this castle
-			for (L2FlameTowerInstance ct : _flameTowers)
-			{
-				if (ct != null)
-					ct.deleteMe();
-			}
-			_flameTowers.clear();
-			_flameTowers = null;
-		}
+		for (L2FlameTowerInstance ct : _flameTowers)
+			ct.deleteMe();
+		
+		for (L2ControlTowerInstance ct : _controlTowers)
+			ct.deleteMe();
+		
+		_flameTowers.clear();
+		_controlTowers.clear();
 	}
 	
 	/** Remove all flags. */
@@ -1168,7 +1140,7 @@ public class Siege implements Siegable
 		if (_scheduledStartSiegeTask != null)
 		{
 			_scheduledStartSiegeTask.cancel(true);
-			_scheduledStartSiegeTask = ThreadPoolManager.getInstance().scheduleGeneral(new Siege.ScheduleStartSiegeTask(getCastle()), 1000);
+			_scheduledStartSiegeTask = ThreadPoolManager.getInstance().scheduleGeneral(new ScheduleStartSiegeTask(getCastle()), 1000);
 		}
 		
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
@@ -1201,12 +1173,12 @@ public class Siege implements Siegable
 		{
 			if (typeId == DEFENDER || typeId == DEFENDER_NOT_APPROVED || typeId == OWNER)
 			{
-				if (getDefenderClans().size() + getDefenderWaitingClans().size() >= SiegeManager.getInstance().getDefenderMaxClans())
+				if (getDefenderClans().size() + getDefenderWaitingClans().size() >= SiegeManager.MAX_DEFENDERS_NUMBER)
 					return;
 			}
 			else
 			{
-				if (getAttackerClans().size() >= SiegeManager.getInstance().getAttackerMaxClans())
+				if (getAttackerClans().size() >= SiegeManager.MAX_ATTACKERS_NUMBER)
 					return;
 			}
 			
@@ -1282,59 +1254,57 @@ public class Siege implements Siegable
 	}
 	
 	/**
-	 * Spawn control tower.<BR>
-	 * Create the array which will contain all CTs of that castle if not existing.
-	 * @param id The castle identifier of that spawnlist.
+	 * Spawn control towers.
 	 */
-	private void spawnControlTower(int id)
+	private void spawnControlTowers()
 	{
-		if (_controlTowers == null)
-			_controlTowers = new ArrayList<>();
-		
-		for (SiegeSpawn sp : SiegeManager.getInstance().getControlTowerSpawnList(id))
+		for (TowerSpawn ts : SiegeManager.getInstance().getControlTowers(getCastle().getCastleId()))
 		{
-			L2NpcTemplate template = NpcTable.getInstance().getTemplate(sp.getNpcId());
-			if (template != null)
+			try
 			{
-				L2ControlTowerInstance ct = new L2ControlTowerInstance(IdFactory.getInstance().getNextId(), template);
-				ct.setCurrentHpMp(sp.getHp(), ct.getMaxMp());
-				ct.spawnMe(sp.getLocation().getX(), sp.getLocation().getY(), sp.getLocation().getZ() + 20);
+				final L2Spawn spawn = new L2Spawn(NpcTable.getInstance().getTemplate(ts.getId()));
 				
-				_controlTowerCount++;
-				_controlTowerMaxCount++;
-				_controlTowers.add(ct);
+				final Location loc = ts.getLocation(); // TODO : implements spawn via Location.
+				spawn.setLocx(loc.getX());
+				spawn.setLocy(loc.getY());
+				spawn.setLocz(loc.getZ());
+				
+				_controlTowers.add((L2ControlTowerInstance) spawn.doSpawn());
+			}
+			catch (Exception e)
+			{
+				_log.warning(getClass().getName() + ": Cannot spawn control tower! " + e);
 			}
 		}
+		_controlTowerCount = _controlTowers.size();
 	}
 	
 	/**
-	 * Spawn flame tower.
-	 * @param Id
+	 * Spawn flame towers.
 	 */
-	private void spawnFlameTower(int Id)
+	private void spawnFlameTowers()
 	{
-		// Set control tower array size if one does not exist
-		if (_flameTowers == null)
-			_flameTowers = new ArrayList<>();
-		
-		for (SiegeSpawn _sp : SiegeManager.getInstance().getFlameTowerSpawnList(Id))
+		for (TowerSpawn ts : SiegeManager.getInstance().getFlameTowers(getCastle().getCastleId()))
 		{
-			L2NpcTemplate template = NpcTable.getInstance().getTemplate(_sp.getNpcId());
-			if (template != null)
+			try
 			{
-				L2FlameTowerInstance ct = new L2FlameTowerInstance(IdFactory.getInstance().getNextId(), template);
+				final L2Spawn spawn = new L2Spawn(NpcTable.getInstance().getTemplate(ts.getId()));
 				
-				ct.setCurrentHpMp(_sp.getHp(), ct.getMaxMp());
-				ct.spawnMe(_sp.getLocation().getX(), _sp.getLocation().getY(), _sp.getLocation().getZ() + 20);
+				final Location loc = ts.getLocation(); // TODO : implements spawn via Location.
+				spawn.setLocx(loc.getX());
+				spawn.setLocy(loc.getY());
+				spawn.setLocz(loc.getZ());
 				
-				_flameTowerCount++;
-				_flameTowerMaxCount++;
-				_flameTowers.add(ct);
+				final L2FlameTowerInstance tower = (L2FlameTowerInstance) spawn.doSpawn();
+				tower.setUpgradeLevel(ts.getUpgradeLevel());
+				tower.setZoneList(ts.getZoneList());
+				_flameTowers.add(tower);
+			}
+			catch (Exception e)
+			{
+				_log.warning(getClass().getName() + ": Cannot spawn flame tower! " + e);
 			}
 		}
-		
-		if (_flameTowerCount == 0) // TODO: temp fix until flame towers are assigned in config
-			_flameTowerCount = 1;
 	}
 	
 	/**
@@ -1406,11 +1376,6 @@ public class Siege implements Siegable
 	public final List<L2SiegeClan> getAttackerClans()
 	{
 		return (_isNormalSide) ? _attackerClans : _defenderClans;
-	}
-	
-	public final static int getAttackerRespawnDelay()
-	{
-		return SiegeManager.getInstance().getAttackerRespawnDelay();
 	}
 	
 	public final Castle getCastle()
@@ -1524,31 +1489,5 @@ public class Siege implements Siegable
 	public int getControlTowerCount()
 	{
 		return _controlTowerCount;
-	}
-	
-	/**
-	 * @return the max count of control type towers.
-	 */
-	public int getControlTowerMaxCount()
-	{
-		return _controlTowerMaxCount;
-	}
-	
-	/**
-	 * @return the max count of flame type towers.
-	 */
-	public int getFlameTowerMaxCount()
-	{
-		return _flameTowerMaxCount;
-	}
-	
-	public void disableTraps()
-	{
-		_flameTowerCount--;
-	}
-	
-	public boolean isTrapsActive()
-	{
-		return _flameTowerCount > 0;
 	}
 }

@@ -26,7 +26,6 @@ import net.sf.l2j.gameserver.model.quest.QuestState;
 import net.sf.l2j.gameserver.model.zone.ZoneId;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.ActionFailed;
-import net.sf.l2j.gameserver.network.serverpackets.MyTargetSelected;
 import net.sf.l2j.gameserver.templates.chars.L2CharTemplate;
 import net.sf.l2j.gameserver.templates.skills.L2EffectFlag;
 import net.sf.l2j.gameserver.templates.skills.L2EffectType;
@@ -96,10 +95,7 @@ public abstract class L2Playable extends L2Character
 	public void onActionShift(L2PcInstance player)
 	{
 		if (player.getTarget() != this)
-		{
 			player.setTarget(this);
-			player.sendPacket(new MyTargetSelected(getObjectId(), (this instanceof L2Summon) ? player.getLevel() - getLevel() : 0));
-		}
 		else
 			player.sendPacket(ActionFailed.STATIC_PACKET);
 	}

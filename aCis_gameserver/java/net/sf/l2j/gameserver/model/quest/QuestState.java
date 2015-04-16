@@ -691,6 +691,100 @@ public final class QuestState
 	}
 	
 	/**
+	 * Drop multiple items to the player's inventory. Rate and amount is affected by DIVMOD of Config.RATE_QUEST_DROP.
+	 * @param rewardsInfos : Infos regarding drops (itemId, count, neededCount, dropChance).
+	 * @return boolean : Indicating whether item quantity has been reached.
+	 */
+	public boolean dropMultipleItems(int[][] rewardsInfos)
+	{
+		return dropMultipleItems(rewardsInfos, DROP_DIVMOD);
+	}
+	
+	/**
+	 * Drop items to the player's inventory.
+	 * @param rewardsInfos : Infos regarding drops (itemId, count, neededCount, dropChance).
+	 * @param type : Item drop behavior: DROP_DIVMOD (rate and), DROP_FIXED_RATE, DROP_FIXED_COUNT or DROP_FIXED_BOTH
+	 * @return boolean : Indicating whether item quantity has been reached.
+	 */
+	public boolean dropMultipleItems(int[][] rewardsInfos, byte type)
+	{
+		// Used for the sound.
+		boolean sendSound = false;
+		
+		// Used for the reached state.
+		boolean reached = true;
+		
+		// For each reward type, calculate the probability of drop.
+		for (int[] info : rewardsInfos)
+		{
+			final int itemId = info[0];
+			final int currentCount = getQuestItemsCount(itemId);
+			final int neededCount = info[2];
+			
+			// Required amount reached already?
+			if (neededCount > 0 && currentCount >= neededCount)
+				continue;
+			
+			final int count = info[1];
+			
+			int dropChance = info[3];
+			int amount = 0;
+			
+			switch (type)
+			{
+				case DROP_DIVMOD:
+					dropChance *= Config.RATE_QUEST_DROP;
+					amount = count * (dropChance / L2DropData.MAX_CHANCE);
+					if (Rnd.get(L2DropData.MAX_CHANCE) < dropChance % L2DropData.MAX_CHANCE)
+						amount += count;
+					break;
+				
+				case DROP_FIXED_RATE:
+					if (Rnd.get(L2DropData.MAX_CHANCE) < dropChance)
+						amount = (int) (count * Config.RATE_QUEST_DROP);
+					break;
+				
+				case DROP_FIXED_COUNT:
+					if (Rnd.get(L2DropData.MAX_CHANCE) < dropChance * Config.RATE_QUEST_DROP)
+						amount = count;
+					break;
+				
+				case DROP_FIXED_BOTH:
+					if (Rnd.get(L2DropData.MAX_CHANCE) < dropChance)
+						amount = count;
+					break;
+			}
+			
+			if (amount > 0)
+			{
+				// Limit count to reach required amount.
+				if (neededCount > 0)
+					amount = ((currentCount + amount) >= neededCount) ? neededCount - currentCount : amount;
+				
+				// Inventory slot check.
+				if (!_player.getInventory().validateCapacityByItemId(itemId))
+					continue;
+				
+				// Give items to the player.
+				giveItems(itemId, amount, 0);
+				
+				// Send sound.
+				sendSound = true;
+				
+				// Illimited needed count or current count being inferior to needed count means the state isn't reached.
+				if (neededCount <= 0 || ((currentCount + amount) < neededCount))
+					reached = false;
+			}
+		}
+		
+		// Play the sound.
+		if (sendSound)
+			playSound((reached) ? SOUND_MIDDLE : SOUND_ITEMGET);
+		
+		return reached;
+	}
+	
+	/**
 	 * Reward player with items. The amount is affected by Config.RATE_QUEST_REWARD or Config.RATE_QUEST_REWARD_ADENA.
 	 * @param itemId : Identifier of the item.
 	 * @param itemCount : Quantity of item to reward before applying multiplier.

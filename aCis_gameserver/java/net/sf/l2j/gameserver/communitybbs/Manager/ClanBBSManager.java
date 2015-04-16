@@ -145,7 +145,7 @@ public class ClanBBSManager extends BaseBBSManager
 		}
 		
 		String content = HtmCache.getInstance().getHtm(CB_PATH + "clan/clanhome-mail.htm");
-		content = content.replaceAll("%clanid%", String.valueOf(clanId));
+		content = content.replaceAll("%clanid%", Integer.toString(clanId));
 		content = content.replaceAll("%clanName%", clan.getName());
 		separateAndSend(content, activeChar);
 	}
@@ -164,7 +164,7 @@ public class ClanBBSManager extends BaseBBSManager
 		}
 		
 		String content = HtmCache.getInstance().getHtm(CB_PATH + "clan/clanhome-management.htm");
-		content = content.replaceAll("%clanid%", String.valueOf(clan.getClanId()));
+		content = content.replaceAll("%clanid%", Integer.toString(clan.getClanId()));
 		send1001(content, activeChar);
 		send1002(activeChar, clan.getIntroduction(), "", "");
 	}
@@ -183,7 +183,7 @@ public class ClanBBSManager extends BaseBBSManager
 		}
 		
 		String content = HtmCache.getInstance().getHtm(CB_PATH + "clan/clanhome-notice.htm");
-		content = content.replaceAll("%clanid%", String.valueOf(clan.getClanId()));
+		content = content.replaceAll("%clanid%", Integer.toString(clan.getClanId()));
 		content = content.replace("%enabled%", "[" + String.valueOf(clan.isNoticeEnabled()) + "]");
 		content = content.replace("%flag%", String.valueOf(!clan.isNoticeEnabled()));
 		send1001(content, activeChar);
@@ -273,7 +273,7 @@ public class ClanBBSManager extends BaseBBSManager
 		else
 			content = HtmCache.getInstance().getHtm(CB_PATH + "clan/clanhome-member.htm");
 		
-		content = content.replaceAll("%clanid%", String.valueOf(clan.getClanId()));
+		content = content.replaceAll("%clanid%", Integer.toString(clan.getClanId()));
 		content = content.replace("%clanIntro%", clan.getIntroduction());
 		content = content.replace("%clanName%", clan.getName());
 		content = content.replace("%clanLvL%", Integer.toString(clan.getLevel()));

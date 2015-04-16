@@ -1309,8 +1309,7 @@ public final class Formulas
 		byte shldSuccess = SHIELD_DEFENSE_FAILED;
 		
 		// if attacker use bow and target wear shield, shield block rate is multiplied by 1.3 (30%)
-		L2Weapon at_weapon = attacker.getActiveWeaponItem();
-		if (at_weapon != null && at_weapon.getItemType() == L2WeaponType.BOW)
+		if (attacker.getAttackType() == L2WeaponType.BOW)
 			shldRate *= 1.3;
 		
 		if (shldRate > 0 && 100 - Config.ALT_PERFECT_SHLD_BLOCK < Rnd.get(100))

@@ -20,7 +20,6 @@ import net.sf.l2j.gameserver.model.actor.L2Character;
 import net.sf.l2j.gameserver.skills.Calculator;
 import net.sf.l2j.gameserver.skills.Env;
 import net.sf.l2j.gameserver.skills.Stats;
-import net.sf.l2j.gameserver.templates.item.L2Weapon;
 import net.sf.l2j.gameserver.templates.item.L2WeaponType;
 
 public class CharStat
@@ -456,11 +455,7 @@ public class CharStat
 		if (_activeChar == null)
 			return 1;
 		
-		L2Weapon weaponItem = _activeChar.getActiveWeaponItem();
-		if (weaponItem != null && weaponItem.getItemType() == L2WeaponType.POLE)
-			return (int) calcStat(Stats.POWER_ATTACK_RANGE, 66, null, null);
-		
-		return (int) calcStat(Stats.POWER_ATTACK_RANGE, _activeChar.getTemplate().getBaseAtkRange(), null, null);
+		return (int) calcStat(Stats.POWER_ATTACK_RANGE, (_activeChar.getAttackType() == L2WeaponType.POLE) ? 66 : _activeChar.getTemplate().getBaseAtkRange(), null, null);
 	}
 	
 	/**

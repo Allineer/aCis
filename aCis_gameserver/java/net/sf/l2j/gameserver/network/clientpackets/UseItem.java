@@ -31,7 +31,6 @@ import net.sf.l2j.gameserver.skills.SkillHolder;
 import net.sf.l2j.gameserver.templates.item.L2ActionType;
 import net.sf.l2j.gameserver.templates.item.L2EtcItemType;
 import net.sf.l2j.gameserver.templates.item.L2Item;
-import net.sf.l2j.gameserver.templates.item.L2Weapon;
 import net.sf.l2j.gameserver.templates.item.L2WeaponType;
 import net.sf.l2j.gameserver.templates.skills.L2SkillType;
 
@@ -231,8 +230,7 @@ public final class UseItem extends L2GameClientPacket
 			if (activeChar.isCastingNow() && !(item.isPotion() || item.isElixir()))
 				return;
 			
-			final L2Weapon weaponItem = activeChar.getActiveWeaponItem();
-			if (weaponItem != null && weaponItem.getItemType() == L2WeaponType.FISHINGROD && item.getItem().getItemType() == L2EtcItemType.LURE)
+			if (activeChar.getAttackType() == L2WeaponType.FISHINGROD && item.getItem().getItemType() == L2EtcItemType.LURE)
 			{
 				activeChar.getInventory().setPaperdollItem(Inventory.PAPERDOLL_LHAND, item);
 				activeChar.broadcastUserInfo();

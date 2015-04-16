@@ -314,11 +314,11 @@ public class FishingChampionshipManager
 		}
 		html.replace("%TABLE%", str);
 		html.replace("%prizeItem%", ItemTable.getInstance().getTemplate(Config.ALT_FISH_CHAMPIONSHIP_REWARD_ITEM).getName());
-		html.replace("%prizeFirst%", String.valueOf(Config.ALT_FISH_CHAMPIONSHIP_REWARD_1));
-		html.replace("%prizeTwo%", String.valueOf(Config.ALT_FISH_CHAMPIONSHIP_REWARD_2));
-		html.replace("%prizeThree%", String.valueOf(Config.ALT_FISH_CHAMPIONSHIP_REWARD_3));
-		html.replace("%prizeFour%", String.valueOf(Config.ALT_FISH_CHAMPIONSHIP_REWARD_4));
-		html.replace("%prizeFive%", String.valueOf(Config.ALT_FISH_CHAMPIONSHIP_REWARD_5));
+		html.replace("%prizeFirst%", Config.ALT_FISH_CHAMPIONSHIP_REWARD_1);
+		html.replace("%prizeTwo%", Config.ALT_FISH_CHAMPIONSHIP_REWARD_2);
+		html.replace("%prizeThree%", Config.ALT_FISH_CHAMPIONSHIP_REWARD_3);
+		html.replace("%prizeFour%", Config.ALT_FISH_CHAMPIONSHIP_REWARD_4);
+		html.replace("%prizeFive%", Config.ALT_FISH_CHAMPIONSHIP_REWARD_5);
 		pl.sendPacket(html);
 	}
 	
@@ -336,13 +336,13 @@ public class FishingChampionshipManager
 		}
 		html.replace("%TABLE%", str);
 		html.replace("%prizeItem%", ItemTable.getInstance().getTemplate(Config.ALT_FISH_CHAMPIONSHIP_REWARD_ITEM).getName());
-		html.replace("%prizeFirst%", String.valueOf(Config.ALT_FISH_CHAMPIONSHIP_REWARD_1));
-		html.replace("%prizeTwo%", String.valueOf(Config.ALT_FISH_CHAMPIONSHIP_REWARD_2));
-		html.replace("%prizeThree%", String.valueOf(Config.ALT_FISH_CHAMPIONSHIP_REWARD_3));
-		html.replace("%prizeFour%", String.valueOf(Config.ALT_FISH_CHAMPIONSHIP_REWARD_4));
-		html.replace("%prizeFive%", String.valueOf(Config.ALT_FISH_CHAMPIONSHIP_REWARD_5));
-		html.replace("%refresh%", String.valueOf(getTimeRemaining()));
-		html.replace("%objectId%", String.valueOf(npc.getObjectId()));
+		html.replace("%prizeFirst%", Config.ALT_FISH_CHAMPIONSHIP_REWARD_1);
+		html.replace("%prizeTwo%", Config.ALT_FISH_CHAMPIONSHIP_REWARD_2);
+		html.replace("%prizeThree%", Config.ALT_FISH_CHAMPIONSHIP_REWARD_3);
+		html.replace("%prizeFour%", Config.ALT_FISH_CHAMPIONSHIP_REWARD_4);
+		html.replace("%prizeFive%", Config.ALT_FISH_CHAMPIONSHIP_REWARD_5);
+		html.replace("%refresh%", getTimeRemaining());
+		html.replace("%objectId%", npc.getObjectId());
 		pl.sendPacket(html);
 	}
 	

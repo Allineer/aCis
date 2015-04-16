@@ -265,7 +265,7 @@ public class L2Clan
 		newLeader.setClan(this);
 		newLeader.setPledgeClass(L2ClanMember.calculatePledgeClass(newLeader));
 		newLeader.setClanPrivileges(L2Clan.CP_ALL);
-		if (_level >= SiegeManager.getInstance().getSiegeClanMinLevel())
+		if (_level >= SiegeManager.MINIMUM_CLAN_LEVEL)
 		{
 			SiegeManager.addSiegeSkills(newLeader);
 			

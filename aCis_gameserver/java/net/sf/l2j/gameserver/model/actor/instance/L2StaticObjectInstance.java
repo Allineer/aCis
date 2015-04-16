@@ -89,13 +89,9 @@ public class L2StaticObjectInstance extends L2Object
 			return;
 		}
 		
-		// Check if the L2PcInstance already target the L2Npc
+		// Set the target of the L2PcInstance player
 		if (player.getTarget() != this)
-		{
-			// Set the target of the L2PcInstance player
 			player.setTarget(this);
-			player.sendPacket(new MyTargetSelected(getObjectId(), 0));
-		}
 		else
 		{
 			// Calculate the distance between the L2PcInstance and the L2Npc
