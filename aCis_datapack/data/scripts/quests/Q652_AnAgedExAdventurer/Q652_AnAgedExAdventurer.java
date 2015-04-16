@@ -14,7 +14,7 @@ package quests.Q652_AnAgedExAdventurer;
 
 import net.sf.l2j.gameserver.ai.CtrlIntention;
 import net.sf.l2j.gameserver.model.L2CharPosition;
-import net.sf.l2j.gameserver.model.Location;
+import net.sf.l2j.gameserver.model.SpawnLocation;
 import net.sf.l2j.gameserver.model.actor.L2Npc;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.quest.Quest;
@@ -36,13 +36,13 @@ public class Q652_AnAgedExAdventurer extends Quest
 	private static final int ENCHANT_ARMOR_D = 956;
 	
 	// Table of possible spawns
-	private static final Location[] SPAWNS =
+	private static final SpawnLocation[] SPAWNS =
 	{
-		new Location(78355, -1325, -3659),
-		new Location(79890, -6132, -2922),
-		new Location(90012, -7217, -3085),
-		new Location(94500, -10129, -3290),
-		new Location(96534, -1237, -3677)
+		new SpawnLocation(78355, -1325, -3659, 0),
+		new SpawnLocation(79890, -6132, -2922, 0),
+		new SpawnLocation(90012, -7217, -3085, 0),
+		new SpawnLocation(94500, -10129, -3290, 0),
+		new SpawnLocation(96534, -1237, -3677, 0)
 	};
 	
 	// Current position

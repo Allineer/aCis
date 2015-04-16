@@ -12,7 +12,7 @@
  */
 package quests.Q653_WildMaiden;
 
-import net.sf.l2j.gameserver.model.Location;
+import net.sf.l2j.gameserver.model.SpawnLocation;
 import net.sf.l2j.gameserver.model.actor.L2Npc;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.quest.Quest;
@@ -32,12 +32,12 @@ public class Q653_WildMaiden extends Quest
 	private static final int SCROLL_OF_ESCAPE = 736;
 	
 	// Table of possible spawns
-	private static final Location[] SPAWNS =
+	private static final SpawnLocation[] SPAWNS =
 	{
-		new Location(66578, 72351, -3731, 0),
-		new Location(77189, 73610, -3708, 2555),
-		new Location(71809, 67377, -3675, 29130),
-		new Location(69166, 88825, -3447, 43886)
+		new SpawnLocation(66578, 72351, -3731, 0),
+		new SpawnLocation(77189, 73610, -3708, 2555),
+		new SpawnLocation(71809, 67377, -3675, 29130),
+		new SpawnLocation(69166, 88825, -3447, 43886)
 	};
 	
 	// Current position

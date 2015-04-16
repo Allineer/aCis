@@ -36,7 +36,7 @@ import net.sf.l2j.gameserver.datatables.NpcTable;
 import net.sf.l2j.gameserver.datatables.SpawnTable;
 import net.sf.l2j.gameserver.idfactory.IdFactory;
 import net.sf.l2j.gameserver.model.L2Spawn;
-import net.sf.l2j.gameserver.model.Location;
+import net.sf.l2j.gameserver.model.SpawnLocation;
 import net.sf.l2j.gameserver.model.actor.L2Npc;
 import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 import net.sf.l2j.util.Rnd;
@@ -382,7 +382,7 @@ public class AutoSpawnManager
 				if (!spawnInst.isSpawnActive())
 					return;
 				
-				Location[] locationList = spawnInst.getLocationList();
+				SpawnLocation[] locationList = spawnInst.getLocationList();
 				
 				// If there are no set co-ordinates, cancel the spawn task.
 				if (locationList.length == 0)
@@ -544,7 +544,7 @@ public class AutoSpawnManager
 		
 		private final List<L2Npc> _npcList = new ArrayList<>();
 		
-		private final List<Location> _locList = new ArrayList<>();
+		private final List<SpawnLocation> _locList = new ArrayList<>();
 		
 		private boolean _spawnActive;
 		
@@ -605,9 +605,9 @@ public class AutoSpawnManager
 			return _spawnCount;
 		}
 		
-		public Location[] getLocationList()
+		public SpawnLocation[] getLocationList()
 		{
-			return _locList.toArray(new Location[_locList.size()]);
+			return _locList.toArray(new SpawnLocation[_locList.size()]);
 		}
 		
 		public L2Npc[] getNPCInstanceList()
@@ -664,7 +664,7 @@ public class AutoSpawnManager
 		
 		public boolean addSpawnLocation(int x, int y, int z, int heading)
 		{
-			return _locList.add(new Location(x, y, z, heading));
+			return _locList.add(new SpawnLocation(x, y, z, heading));
 		}
 		
 		public boolean addSpawnLocation(int[] spawnLoc)
@@ -675,7 +675,7 @@ public class AutoSpawnManager
 			return addSpawnLocation(spawnLoc[0], spawnLoc[1], spawnLoc[2], -1);
 		}
 		
-		public Location removeSpawnLocation(int locIndex)
+		public SpawnLocation removeSpawnLocation(int locIndex)
 		{
 			try
 			{

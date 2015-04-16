@@ -20,9 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.GeoData;
 import net.sf.l2j.gameserver.ai.CtrlIntention;
 import net.sf.l2j.gameserver.datatables.SkillTable;
+import net.sf.l2j.gameserver.geoengine.PathFinding;
 import net.sf.l2j.gameserver.instancemanager.GrandBossManager;
 import net.sf.l2j.gameserver.model.L2Skill;
 import net.sf.l2j.gameserver.model.actor.L2Attackable;
@@ -427,7 +427,7 @@ public class Baium extends AbstractNpcAI
 		{
 			if (obj instanceof L2PcInstance)
 			{
-				if (obj.isDead() || !(GeoData.getInstance().canSeeTarget(npc, obj)))
+				if (obj.isDead() || !(PathFinding.getInstance().canSeeTarget(npc, obj)))
 					continue;
 				
 				if (((L2PcInstance) obj).isGM() && ((L2PcInstance) obj).getAppearance().getInvisible())

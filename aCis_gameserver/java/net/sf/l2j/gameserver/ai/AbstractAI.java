@@ -79,31 +79,20 @@ abstract class AbstractAI implements Ctrl
 		@Override
 		public void run()
 		{
-			if (_followTask == null)
-				return;
+			// get target
+			L2Character followTarget = _followTarget;
 			
-			L2Character followTarget = _followTarget; // copy to prevent NPE
-			if (followTarget == null)
+			// target does not exist or is out of max follow/attack/cast range
+			if (followTarget == null || !_actor.isInsideRadius(followTarget, 3000, true, false))
 			{
-				if (_actor instanceof L2Summon)
-					((L2Summon) _actor).setFollowStatus(false);
-				
 				setIntention(CtrlIntention.IDLE);
+				clientActionFailed();
 				return;
 			}
 			
+			// target is not in range, trigger proper AI
 			if (!_actor.isInsideRadius(followTarget, _range, true, false))
 			{
-				if (!_actor.isInsideRadius(followTarget, 3000, true, false))
-				{
-					// if the target is too far (maybe also teleported)
-					if (_actor instanceof L2Summon)
-						((L2Summon) _actor).setFollowStatus(false);
-					
-					setIntention(CtrlIntention.IDLE);
-					return;
-				}
-				
 				if (getIntention() == CtrlIntention.ATTACK || getIntention() == CtrlIntention.CAST)
 					onEvtThink();
 				else

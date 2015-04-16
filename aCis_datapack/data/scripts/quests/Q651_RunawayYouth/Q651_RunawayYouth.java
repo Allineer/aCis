@@ -12,7 +12,7 @@
  */
 package quests.Q651_RunawayYouth;
 
-import net.sf.l2j.gameserver.model.Location;
+import net.sf.l2j.gameserver.model.SpawnLocation;
 import net.sf.l2j.gameserver.model.actor.L2Npc;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.quest.Quest;
@@ -32,11 +32,11 @@ public class Q651_RunawayYouth extends Quest
 	private static final int SCROLL_OF_ESCAPE = 736;
 	
 	// Table of possible spawns
-	private static final Location[] SPAWNS =
+	private static final SpawnLocation[] SPAWNS =
 	{
-		new Location(118600, -161235, -1119),
-		new Location(108380, -150268, -2376),
-		new Location(123254, -148126, -3425)
+		new SpawnLocation(118600, -161235, -1119, 0),
+		new SpawnLocation(108380, -150268, -2376, 0),
+		new SpawnLocation(123254, -148126, -3425, 0)
 	};
 	
 	// Current position

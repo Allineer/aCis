@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.logging.Level;
 
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.GeoData;
 import net.sf.l2j.gameserver.ThreadPoolManager;
 import net.sf.l2j.gameserver.ai.CtrlIntention;
 import net.sf.l2j.gameserver.cache.HtmCache;
@@ -467,20 +466,17 @@ public class L2Npc extends L2Character
 			// Check if the player is attackable (without a forced attack) and isn't dead
 			if (isAutoAttackable(player))
 			{
-				if (Config.GEODATA == 0 || GeoData.getInstance().canSeeTarget(player, this))
+				if (!isAlikeDead())
+					player.getAI().setIntention(CtrlIntention.ATTACK, this);
+				else
 				{
-					if (!isAlikeDead())
-						player.getAI().setIntention(CtrlIntention.ATTACK, this);
-					else
-					{
-						// Rotate the player to face the instance
-						player.sendPacket(new MoveToPawn(player, this, L2Npc.INTERACTION_DISTANCE));
-						
-						// Send ActionFailed to the player in order to avoid he stucks
-						player.sendPacket(ActionFailed.STATIC_PACKET);
-						
-						player.getAI().setIntention(CtrlIntention.FOLLOW, this);
-					}
+					// Rotate the player to face the instance
+					player.sendPacket(new MoveToPawn(player, this, L2Npc.INTERACTION_DISTANCE));
+					
+					// Send ActionFailed to the player in order to avoid he stucks
+					player.sendPacket(ActionFailed.STATIC_PACKET);
+					
+					player.getAI().setIntention(CtrlIntention.FOLLOW, this);
 				}
 			}
 			else

@@ -20,9 +20,9 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
-import net.sf.l2j.gameserver.GeoData;
 import net.sf.l2j.gameserver.datatables.SkillTable;
 import net.sf.l2j.gameserver.datatables.SkillTreeTable;
+import net.sf.l2j.gameserver.geoengine.PathFinding;
 import net.sf.l2j.gameserver.model.actor.L2Attackable;
 import net.sf.l2j.gameserver.model.actor.L2Character;
 import net.sf.l2j.gameserver.model.actor.L2Npc;
@@ -1982,7 +1982,7 @@ public abstract class L2Skill implements IChanceSkillTrigger
 					if (target.isAlikeDead() || !target.isUndead())
 						continue;
 					
-					if (!GeoData.getInstance().canSeeTarget(activeChar, target))
+					if (!PathFinding.getInstance().canSeeTarget(activeChar, target))
 						continue;
 					
 					if (onlyFirst)
@@ -2110,7 +2110,7 @@ public abstract class L2Skill implements IChanceSkillTrigger
 			if (skill.isOffensive() && !target.isAutoAttackable(caster))
 				return false;
 		}
-		return GeoData.getInstance().canSeeTarget(caster, target);
+		return PathFinding.getInstance().canSeeTarget(caster, target);
 	}
 	
 	public static final boolean addSummon(L2Character caster, L2PcInstance owner, int radius, boolean isDead)

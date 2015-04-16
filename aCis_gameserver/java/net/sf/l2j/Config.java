@@ -29,6 +29,7 @@ import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
 import net.sf.l2j.commons.config.ExProperties;
+import net.sf.l2j.gameserver.geoengine.geodata.GeoFormat;
 import net.sf.l2j.gameserver.model.holder.BuffSkillHolder;
 import net.sf.l2j.gameserver.model.holder.ItemHolder;
 import net.sf.l2j.gameserver.util.FloodProtectorConfig;
@@ -47,6 +48,7 @@ public final class Config
 	public static final String CLANS_FILE = "./config/clans.properties";
 	public static final String EVENTS_FILE = "./config/events.properties";
 	public static final String FLOOD_PROTECTOR_FILE = "./config/floodprotector.properties";
+	public static final String GEOENGINE_FILE = "./config/geoengine.properties";
 	public static final String HEXID_FILE = "./config/hexid.txt";
 	public static final String LOGIN_CONFIGURATION_FILE = "./config/loginserver.properties";
 	public static final String NPCS_FILE = "./config/npcs.properties";
@@ -226,6 +228,30 @@ public final class Config
 	public static int ALT_FISH_CHAMPIONSHIP_REWARD_3;
 	public static int ALT_FISH_CHAMPIONSHIP_REWARD_4;
 	public static int ALT_FISH_CHAMPIONSHIP_REWARD_5;
+	
+	// --------------------------------------------------
+	// GeoEngine
+	// --------------------------------------------------
+	
+	/** Geodata */
+	public static int GEODATA;
+	public static String GEODATA_PATH;
+	public static GeoFormat GEODATA_FORMAT;
+	public static boolean GEODATA_DIAGONAL;
+	public static int COORD_SYNCHRONIZE;
+	
+	/** Path checking */
+	public static int PART_OF_CHARACTER_HEIGHT;
+	public static int MAX_OBSTACLE_HEIGHT;
+	
+	/** Path finding */
+	public static String PATHFIND_BUFFERS;
+	public static int BASE_WEIGHT;
+	public static int DIAGONAL_WEIGHT;
+	public static int HEURISTIC_WEIGHT;
+	public static int OBSTACLE_MULTIPLIER;
+	public static int MAX_ITERATIONS;
+	public static boolean DEBUG_PATH;
 	
 	// --------------------------------------------------
 	// HexID
@@ -629,21 +655,6 @@ public final class Config
 	public static boolean ENABLE_COMMUNITY_BOARD;
 	public static String BBS_DEFAULT;
 	
-	/** Geodata */
-	public static int COORD_SYNCHRONIZE;
-	public static int GEODATA;
-	public static boolean FORCE_GEODATA;
-	
-	public static boolean GEODATA_CELLFINDING;
-	public static String PATHFIND_BUFFERS;
-	public static double LOW_WEIGHT;
-	public static double MEDIUM_WEIGHT;
-	public static double HIGH_WEIGHT;
-	public static boolean ADVANCED_DIAGONAL_STRATEGY;
-	public static double DIAGONAL_WEIGHT;
-	public static int MAX_POSTFILTER_PASSES;
-	public static boolean DEBUG_PATH;
-	
 	/** Misc */
 	public static boolean L2WALKER_PROTECTION;
 	public static boolean AUTODELETE_INVALID_QUEST_DATA;
@@ -893,6 +904,24 @@ public final class Config
 			loadFloodProtectorConfig(security, FLOOD_PROTECTOR_MANOR, "Manor", "30");
 			loadFloodProtectorConfig(security, FLOOD_PROTECTOR_SENDMAIL, "SendMail", "100");
 			loadFloodProtectorConfig(security, FLOOD_PROTECTOR_CHARACTER_SELECT, "CharacterSelect", "30");
+			
+			// Geoengine
+			ExProperties geoengine = load(GEOENGINE_FILE);
+			GEODATA = geoengine.getProperty("GeoData", 0);
+			GEODATA_PATH = geoengine.getProperty("GeoDataPath", "./data/geodata/");
+			GEODATA_FORMAT = Enum.valueOf(GeoFormat.class, geoengine.getProperty("GeoDataFormat", GeoFormat.L2J.toString()));
+			COORD_SYNCHRONIZE = geoengine.getProperty("CoordSynchronize", -1);
+			
+			PART_OF_CHARACTER_HEIGHT = geoengine.getProperty("PartOfCharacterHeight", 75);
+			MAX_OBSTACLE_HEIGHT = geoengine.getProperty("MaxObstacleHeight", 32);
+			
+			PATHFIND_BUFFERS = geoengine.getProperty("PathFindBuffers", "100x6;128x6;192x6;256x4;320x4;384x4;500x2");
+			BASE_WEIGHT = geoengine.getProperty("BaseWeight", 10);
+			DIAGONAL_WEIGHT = geoengine.getProperty("DiagonalWeight", 14);
+			OBSTACLE_MULTIPLIER = geoengine.getProperty("ObstacleMultiplier", 10);
+			HEURISTIC_WEIGHT = geoengine.getProperty("HeuristicWeight", 20);
+			MAX_ITERATIONS = geoengine.getProperty("MaxIterations", 3500);
+			DEBUG_PATH = geoengine.getProperty("DebugPath", false);
 			
 			// HexID
 			ExProperties hexid = load(HEXID_FILE);
@@ -1240,20 +1269,6 @@ public final class Config
 			
 			ENABLE_COMMUNITY_BOARD = server.getProperty("EnableCommunityBoard", false);
 			BBS_DEFAULT = server.getProperty("BBSDefault", "_bbshome");
-			
-			COORD_SYNCHRONIZE = server.getProperty("CoordSynchronize", -1);
-			GEODATA = server.getProperty("GeoData", 0);
-			FORCE_GEODATA = server.getProperty("ForceGeoData", true);
-			
-			GEODATA_CELLFINDING = server.getProperty("CellPathFinding", false);
-			PATHFIND_BUFFERS = server.getProperty("PathFindBuffers", "100x6;128x6;192x6;256x4;320x4;384x4;500x2");
-			LOW_WEIGHT = server.getProperty("LowWeight", 0.5);
-			MEDIUM_WEIGHT = server.getProperty("MediumWeight", 2);
-			HIGH_WEIGHT = server.getProperty("HighWeight", 3);
-			ADVANCED_DIAGONAL_STRATEGY = server.getProperty("AdvancedDiagonalStrategy", true);
-			DIAGONAL_WEIGHT = server.getProperty("DiagonalWeight", 0.707);
-			MAX_POSTFILTER_PASSES = server.getProperty("MaxPostfilterPasses", 3);
-			DEBUG_PATH = server.getProperty("DebugPath", false);
 			
 			L2WALKER_PROTECTION = server.getProperty("L2WalkerProtection", false);
 			AUTODELETE_INVALID_QUEST_DATA = server.getProperty("AutoDeleteInvalidQuestData", false);

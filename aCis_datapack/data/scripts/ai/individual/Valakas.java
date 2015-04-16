@@ -17,9 +17,9 @@ package ai.individual;
 import ai.AbstractNpcAI;
 
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.GeoData;
 import net.sf.l2j.gameserver.ai.CtrlIntention;
 import net.sf.l2j.gameserver.datatables.SkillTable;
+import net.sf.l2j.gameserver.geoengine.PathFinding;
 import net.sf.l2j.gameserver.instancemanager.GrandBossManager;
 import net.sf.l2j.gameserver.model.L2CharPosition;
 import net.sf.l2j.gameserver.model.L2Skill;
@@ -464,7 +464,7 @@ public class Valakas extends AbstractNpcAI
 				int posX = x + Rnd.get(-1400, 1400);
 				int posY = y + Rnd.get(-1400, 1400);
 				
-				if (GeoData.getInstance().canMoveFromToTarget(x, y, z, posX, posY, z))
+				if (PathFinding.getInstance().canMoveToTarget(x, y, z, posX, posY, z))
 					npc.getAI().setIntention(CtrlIntention.MOVE_TO, new L2CharPosition(posX, posY, z, 0));
 			}
 			return;

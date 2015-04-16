@@ -26,6 +26,7 @@ import net.sf.l2j.gameserver.ThreadPoolManager;
 import net.sf.l2j.gameserver.datatables.SkillTable;
 import net.sf.l2j.gameserver.model.L2Effect;
 import net.sf.l2j.gameserver.model.L2Party.MessageType;
+import net.sf.l2j.gameserver.model.Location;
 import net.sf.l2j.gameserver.model.actor.L2Attackable;
 import net.sf.l2j.gameserver.model.actor.L2Character;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
@@ -36,7 +37,6 @@ import net.sf.l2j.gameserver.network.serverpackets.ExRedSky;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 import net.sf.l2j.gameserver.network.serverpackets.UserInfo;
 import net.sf.l2j.gameserver.util.Broadcast;
-import net.sf.l2j.util.Point3D;
 import net.sf.l2j.util.Rnd;
 
 public class CursedWeapon
@@ -845,7 +845,7 @@ public class CursedWeapon
 			player.sendMessage(_name + " isn't in the world.");
 	}
 	
-	public Point3D getWorldPosition()
+	public Location getWorldPosition()
 	{
 		if (_isActivated && _player != null)
 			return _player.getPosition().getWorldPosition();

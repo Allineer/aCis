@@ -16,10 +16,9 @@ package net.sf.l2j.gameserver.ai;
 
 import java.util.List;
 
-import net.sf.l2j.Config;
 import net.sf.l2j.gameserver.GameTimeController;
-import net.sf.l2j.gameserver.GeoData;
 import net.sf.l2j.gameserver.ThreadPoolManager;
+import net.sf.l2j.gameserver.geoengine.PathFinding;
 import net.sf.l2j.gameserver.model.L2CharPosition;
 import net.sf.l2j.gameserver.model.L2Object;
 import net.sf.l2j.gameserver.model.L2Skill;
@@ -77,7 +76,7 @@ public class L2SiegeGuardAI extends L2AttackableAI
 			return false;
 		
 		// Los Check Here
-		return (_actor.isAutoAttackable(target) && GeoData.getInstance().canSeeTarget(_actor, target));
+		return (_actor.isAutoAttackable(target) && PathFinding.getInstance().canSeeTarget(_actor, target));
 	}
 	
 	/**
@@ -236,7 +235,7 @@ public class L2SiegeGuardAI extends L2AttackableAI
 			
 			if (cha.getAI()._intention == CtrlIntention.IDLE || cha.getAI()._intention == CtrlIntention.ACTIVE)
 			{
-				if (attackTarget.isInsideRadius(cha, cha.getClanRange(), true, false) && GeoData.getInstance().canSeeTarget(cha, attackTarget))
+				if (attackTarget.isInsideRadius(cha, cha.getClanRange(), true, false) && PathFinding.getInstance().canSeeTarget(cha, attackTarget))
 				{
 					// Notify the L2Object AI with EVT_AGGRESSION
 					cha.getAI().notifyEvent(CtrlEvent.EVT_AGGRESSION, getTarget(), 1);
@@ -300,7 +299,7 @@ public class L2SiegeGuardAI extends L2AttackableAI
 				for (L2Character cha : actor.getKnownList().getKnownTypeInRadius(L2Character.class, 1000))
 				{
 					// Don't bother about dead, not visible, or healthy characters.
-					if (cha.isAlikeDead() || !GeoData.getInstance().canSeeTarget(actor, cha) || (cha.getCurrentHp() / cha.getMaxHp() > 0.75))
+					if (cha.isAlikeDead() || !PathFinding.getInstance().canSeeTarget(actor, cha) || (cha.getCurrentHp() / cha.getMaxHp() > 0.75))
 						continue;
 					
 					// Will affect only defenders or NPCs from same faction.
@@ -332,7 +331,7 @@ public class L2SiegeGuardAI extends L2AttackableAI
 					if (!checkSkillCastConditions(sk) || (sk.getCastRange() + range <= dist && !canAura(sk)))
 						continue;
 					
-					if (!GeoData.getInstance().canSeeTarget(actor, attackTarget))
+					if (!PathFinding.getInstance().canSeeTarget(actor, attackTarget))
 						continue;
 					
 					if (attackTarget.getFirstEffect(sk) == null)
@@ -412,7 +411,7 @@ public class L2SiegeGuardAI extends L2AttackableAI
 					if (!actor.isInsideRadius(newX, newY, actorCollision, false))
 					{
 						int newZ = actor.getZ() + 30;
-						if (Config.GEODATA == 0 || GeoData.getInstance().canMoveFromToTarget(actor.getX(), actor.getY(), actor.getZ(), newX, newY, newZ))
+						if (PathFinding.getInstance().canMoveToTarget(actor.getX(), actor.getY(), actor.getZ(), newX, newY, newZ))
 							moveTo(newX, newY, newZ);
 					}
 					return;
@@ -464,7 +463,7 @@ public class L2SiegeGuardAI extends L2AttackableAI
 							posY -= 300;
 					}
 					
-					if (Config.GEODATA == 0 || GeoData.getInstance().canMoveFromToTarget(actor.getX(), actor.getY(), actor.getZ(), posX, posY, posZ))
+					if (PathFinding.getInstance().canMoveToTarget(actor.getX(), actor.getY(), actor.getZ(), posX, posY, posZ))
 					{
 						setIntention(CtrlIntention.MOVE_TO, new L2CharPosition(posX, posY, posZ, 0));
 						return;

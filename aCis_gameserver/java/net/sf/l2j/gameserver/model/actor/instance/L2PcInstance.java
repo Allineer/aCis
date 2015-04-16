@@ -38,7 +38,6 @@ import java.util.logging.Level;
 import net.sf.l2j.Config;
 import net.sf.l2j.L2DatabaseFactory;
 import net.sf.l2j.gameserver.GameTimeController;
-import net.sf.l2j.gameserver.GeoData;
 import net.sf.l2j.gameserver.LoginServerThread;
 import net.sf.l2j.gameserver.ThreadPoolManager;
 import net.sf.l2j.gameserver.ai.CtrlEvent;
@@ -64,6 +63,7 @@ import net.sf.l2j.gameserver.datatables.RecipeTable;
 import net.sf.l2j.gameserver.datatables.SkillTable;
 import net.sf.l2j.gameserver.datatables.SkillTable.FrequentSkill;
 import net.sf.l2j.gameserver.datatables.SkillTreeTable;
+import net.sf.l2j.gameserver.geoengine.PathFinding;
 import net.sf.l2j.gameserver.handler.IItemHandler;
 import net.sf.l2j.gameserver.handler.ItemHandler;
 import net.sf.l2j.gameserver.instancemanager.CastleManager;
@@ -245,7 +245,6 @@ import net.sf.l2j.gameserver.templates.skills.L2SkillType;
 import net.sf.l2j.gameserver.util.Broadcast;
 import net.sf.l2j.gameserver.util.FloodProtectors;
 import net.sf.l2j.gameserver.util.Util;
-import net.sf.l2j.util.Point3D;
 import net.sf.l2j.util.Rnd;
 
 /**
@@ -441,7 +440,7 @@ public final class L2PcInstance extends L2Playable
 	private SystemMessageId _noDuelReason = SystemMessageId.THERE_IS_NO_OPPONENT_TO_RECEIVE_YOUR_CHALLENGE_FOR_A_DUEL;
 	
 	private L2Vehicle _vehicle = null;
-	private Point3D _inVehiclePosition;
+	private Location _inVehiclePosition;
 	
 	public ScheduledFuture<?> _taskforfish;
 	
@@ -464,7 +463,7 @@ public final class L2PcInstance extends L2Playable
 	private int _lastZ;
 	private boolean _observerMode = false;
 	
-	private final Point3D _lastServerPosition = new Point3D(0, 0, 0);
+	private final Location _lastServerPosition = new Location(0, 0, 0);
 	
 	private int _recomHave;
 	private int _recomLeft;
@@ -535,7 +534,7 @@ public final class L2PcInstance extends L2Playable
 	private final AtomicInteger _charges = new AtomicInteger();
 	private ScheduledFuture<?> _chargeTask = null;
 	
-	private Point3D _currentSkillWorldPosition;
+	private Location _currentSkillWorldPosition;
 	
 	private L2AccessLevel _accessLevel;
 	
@@ -3176,12 +3175,12 @@ public final class L2PcInstance extends L2Playable
 		}
 	}
 	
-	public Point3D getCurrentSkillWorldPosition()
+	public Location getCurrentSkillWorldPosition()
 	{
 		return _currentSkillWorldPosition;
 	}
 	
-	public void setCurrentSkillWorldPosition(Point3D worldPosition)
+	public void setCurrentSkillWorldPosition(Location worldPosition)
 	{
 		_currentSkillWorldPosition = worldPosition;
 	}
@@ -3274,7 +3273,7 @@ public final class L2PcInstance extends L2Playable
 					return;
 				}
 				
-				if (Config.GEODATA == 0 || GeoData.getInstance().canSeeTarget(player, this))
+				if (PathFinding.getInstance().canSeeTarget(player, this))
 				{
 					player.getAI().setIntention(CtrlIntention.ATTACK, this);
 					player.onActionRequest();
@@ -3285,7 +3284,7 @@ public final class L2PcInstance extends L2Playable
 				// avoids to stuck when clicking two or more times
 				player.sendPacket(ActionFailed.STATIC_PACKET);
 				
-				if (player != this && (Config.GEODATA == 0 || GeoData.getInstance().canSeeTarget(player, this)))
+				if (player != this && (PathFinding.getInstance().canSeeTarget(player, this)))
 					player.getAI().setIntention(CtrlIntention.FOLLOW, this);
 			}
 		}
@@ -6893,7 +6892,7 @@ public final class L2PcInstance extends L2Playable
 		// Create and set a L2Object containing the target of the skill
 		L2Object target = null;
 		SkillTargetType sklTargetType = skill.getTargetType();
-		Point3D worldPosition = getCurrentSkillWorldPosition();
+		Location worldPosition = getCurrentSkillWorldPosition();
 		
 		if (sklTargetType == SkillTargetType.TARGET_GROUND && worldPosition == null)
 		{
@@ -7195,14 +7194,14 @@ public final class L2PcInstance extends L2Playable
 		{
 			if (sklTargetType == SkillTargetType.TARGET_GROUND)
 			{
-				if (!GeoData.getInstance().canSeeTarget(this, worldPosition))
+				if (!PathFinding.getInstance().canSeeTarget(this, worldPosition))
 				{
 					sendPacket(SystemMessageId.CANT_SEE_TARGET);
 					sendPacket(ActionFailed.STATIC_PACKET);
 					return false;
 				}
 			}
-			else if (!GeoData.getInstance().canSeeTarget(this, target))
+			else if (!PathFinding.getInstance().canSeeTarget(this, target))
 			{
 				sendPacket(SystemMessageId.CANT_SEE_TARGET);
 				sendPacket(ActionFailed.STATIC_PACKET);
@@ -9070,12 +9069,12 @@ public final class L2PcInstance extends L2Playable
 		return _inCrystallize;
 	}
 	
-	public Point3D getInVehiclePosition()
+	public Location getInVehiclePosition()
 	{
 		return _inVehiclePosition;
 	}
 	
-	public void setInVehiclePosition(Point3D pt)
+	public void setInVehiclePosition(Location pt)
 	{
 		_inVehiclePosition = pt;
 	}

@@ -62,6 +62,8 @@ import net.sf.l2j.gameserver.datatables.SpellbookTable;
 import net.sf.l2j.gameserver.datatables.StaticObjects;
 import net.sf.l2j.gameserver.datatables.SummonItemsData;
 import net.sf.l2j.gameserver.datatables.TeleportLocationTable;
+import net.sf.l2j.gameserver.geoengine.GeoData;
+import net.sf.l2j.gameserver.geoengine.PathFinding;
 import net.sf.l2j.gameserver.handler.AdminCommandHandler;
 import net.sf.l2j.gameserver.handler.ChatHandler;
 import net.sf.l2j.gameserver.handler.ItemHandler;
@@ -102,7 +104,6 @@ import net.sf.l2j.gameserver.model.partymatching.PartyMatchRoomList;
 import net.sf.l2j.gameserver.model.partymatching.PartyMatchWaitingList;
 import net.sf.l2j.gameserver.network.L2GameClient;
 import net.sf.l2j.gameserver.network.L2GamePacketHandler;
-import net.sf.l2j.gameserver.pathfinding.PathFinding;
 import net.sf.l2j.gameserver.scripting.L2ScriptEngineManager;
 import net.sf.l2j.gameserver.taskmanager.ItemsAutoDestroyTaskManager;
 import net.sf.l2j.gameserver.taskmanager.KnownListUpdateTaskManager;
@@ -200,10 +201,9 @@ public class GameServer
 		AuctionManager.getInstance();
 		ClanHallManager.getInstance();
 		
-		Util.printSection("Geodata");
-		GeoData.getInstance();
-		if (Config.GEODATA == 2)
-			PathFinding.getInstance();
+		Util.printSection("Geodata & Pathfinding");
+		GeoData.initialize();
+		PathFinding.initialize();
 		
 		Util.printSection("World Bosses");
 		GrandBossManager.getInstance();

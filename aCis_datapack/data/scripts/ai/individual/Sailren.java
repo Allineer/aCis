@@ -22,7 +22,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import net.sf.l2j.Config;
 import net.sf.l2j.gameserver.ai.CtrlIntention;
 import net.sf.l2j.gameserver.instancemanager.GrandBossManager;
-import net.sf.l2j.gameserver.model.Location;
+import net.sf.l2j.gameserver.model.SpawnLocation;
 import net.sf.l2j.gameserver.model.actor.L2Npc;
 import net.sf.l2j.gameserver.model.actor.instance.L2GrandBossInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
@@ -52,7 +52,7 @@ public class Sailren extends AbstractNpcAI
 	
 	private static final long INTERVAL_CHECK = 600000L; // 10 minutes
 	
-	private static final Location SAILREN_LOC = new Location(27549, -6638, -2008);
+	private static final SpawnLocation SAILREN_LOC = new SpawnLocation(27549, -6638, -2008, 0);
 	
 	private final List<L2Npc> _mobs = new CopyOnWriteArrayList<>();
 	private static long _timeTracker;

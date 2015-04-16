@@ -21,38 +21,33 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import net.sf.l2j.gameserver.datatables.CharNameTable;
-import net.sf.l2j.gameserver.datatables.GmListTable;
 import net.sf.l2j.gameserver.model.actor.L2Playable;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2PetInstance;
-import net.sf.l2j.util.Point3D;
 
 public final class L2World
 {
 	private static Logger _log = Logger.getLogger(L2World.class.getName());
 	
-	public static final int SHIFT_BY = 12;
+	// Geodata min/max tiles
+	public static final int TILE_X_MIN = 16;
+	public static final int TILE_X_MAX = 26;
+	public static final int TILE_Y_MIN = 10;
+	public static final int TILE_Y_MAX = 25;
+	
+	// Map dimensions
 	private static final int TILE_SIZE = 32768;
+	public static final int WORLD_X_MIN = (TILE_X_MIN - 20) * TILE_SIZE;
+	public static final int WORLD_X_MAX = (TILE_X_MAX - 19) * TILE_SIZE;
+	public static final int WORLD_Y_MIN = (TILE_Y_MIN - 18) * TILE_SIZE;
+	public static final int WORLD_Y_MAX = (TILE_Y_MAX - 17) * TILE_SIZE;
 	
-	/** Geodata min/max tiles */
-	public static final int WORLD_X_MIN = 10;
-	public static final int WORLD_X_MAX = 26;
-	public static final int WORLD_Y_MIN = 10;
-	public static final int WORLD_Y_MAX = 26;
-	
-	/** Map dimensions */
-	public static final int MAP_MIN_X = (WORLD_X_MIN - 20) * TILE_SIZE;
-	public static final int MAP_MAX_X = (WORLD_X_MAX - 19) * TILE_SIZE;
-	public static final int MAP_MIN_Y = (WORLD_Y_MIN - 18) * TILE_SIZE;
-	public static final int MAP_MAX_Y = (WORLD_Y_MAX - 17) * TILE_SIZE;
-	
-	/** calculated offset used so top left region is 0,0 */
-	public static final int OFFSET_X = Math.abs(MAP_MIN_X >> SHIFT_BY);
-	public static final int OFFSET_Y = Math.abs(MAP_MIN_Y >> SHIFT_BY);
-	
-	/** number of regions */
-	private static final int REGIONS_X = (MAP_MAX_X >> SHIFT_BY) + OFFSET_X;
-	private static final int REGIONS_Y = (MAP_MAX_Y >> SHIFT_BY) + OFFSET_Y;
+	// Regions and offsets
+	private static final int REGION_SIZE = 4096;
+	private static final int REGIONS_X = (WORLD_X_MAX - WORLD_X_MIN) / REGION_SIZE;
+	private static final int REGIONS_Y = (WORLD_Y_MAX - WORLD_Y_MIN) / REGION_SIZE;
+	private static final int REGION_X_OFFSET = Math.abs(WORLD_X_MIN / REGION_SIZE);
+	private static final int REGION_Y_OFFSET = Math.abs(WORLD_Y_MIN / REGION_SIZE);
 	
 	private final Map<Integer, L2PcInstance> _allPlayers;
 	private final Map<Integer, L2Object> _allObjects;
@@ -75,6 +70,24 @@ public final class L2World
 	public static L2World getInstance()
 	{
 		return SingletonHolder._instance;
+	}
+	
+	/**
+	 * @param regionX
+	 * @return World X of given region X coordinate.
+	 */
+	public static final int getRegionX(int regionX)
+	{
+		return (regionX - REGION_X_OFFSET) * REGION_SIZE;
+	}
+	
+	/**
+	 * @param regionY
+	 * @return World Y of given region Y coordinate.
+	 */
+	public static final int getRegionY(int regionY)
+	{
+		return (regionY - REGION_Y_OFFSET) * REGION_SIZE;
 	}
 	
 	/**
@@ -122,14 +135,6 @@ public final class L2World
 	public final int getAllVisibleObjectsCount()
 	{
 		return _allObjects.size();
-	}
-	
-	/**
-	 * @return a table containing all GMs.
-	 */
-	public static List<L2PcInstance> getAllGMs()
-	{
-		return GmListTable.getInstance().getAllGms(true);
 	}
 	
 	/**
@@ -528,14 +533,14 @@ public final class L2World
 	 * @param point position of the object.
 	 * @return the current L2WorldRegion of the object according to its position (x,y).
 	 */
-	public L2WorldRegion getRegion(Point3D point)
+	public L2WorldRegion getRegion(Location point)
 	{
-		return _worldRegions[(point.getX() >> SHIFT_BY) + OFFSET_X][(point.getY() >> SHIFT_BY) + OFFSET_Y];
+		return getRegion(point.getX(), point.getY());
 	}
 	
 	public L2WorldRegion getRegion(int x, int y)
 	{
-		return _worldRegions[(x >> SHIFT_BY) + OFFSET_X][(y >> SHIFT_BY) + OFFSET_Y];
+		return _worldRegions[(x - WORLD_X_MIN) / REGION_SIZE][(y - WORLD_Y_MIN) / REGION_SIZE];
 	}
 	
 	/**

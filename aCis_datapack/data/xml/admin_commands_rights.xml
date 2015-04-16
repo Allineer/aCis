@@ -174,14 +174,10 @@
 	<aCar name="admin_remove_exp_sp" accessLevel="1" />
 
 	<!-- GEODATA -->
-	<aCar name="admin_geo_z" accessLevel="1" />
-	<aCar name="admin_geo_type" accessLevel="1" />
-	<aCar name="admin_geo_nswe" accessLevel="1" />
-	<aCar name="admin_geo_los" accessLevel="1" />
-	<aCar name="admin_geo_position" accessLevel="1" />
 	<aCar name="admin_geo_bug" accessLevel="1" />
-	<aCar name="admin_geo_load" accessLevel="1" />
-	<aCar name="admin_geo_unload" accessLevel="1" />
+	<aCar name="admin_geo_pos" accessLevel="1" />
+	<aCar name="admin_geo_can_see" accessLevel="1" />
+	<aCar name="admin_geo_can_move_beeline" accessLevel="1" />
 
 	<!-- GM -->
 	<aCar name="admin_gm" accessLevel="1" />
@@ -264,9 +260,6 @@
 	
 	<!-- PATHNODE -->
 	<aCar name="admin_pn_info" accessLevel="1" />
-	<aCar name="admin_show_path" accessLevel="1" />
-	<aCar name="admin_path_debug" accessLevel="1" />
-	<aCar name="admin_show_pn" accessLevel="1" />
 	<aCar name="admin_find_path" accessLevel="1" />
 
 	<!-- PETITION -->

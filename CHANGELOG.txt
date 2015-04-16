@@ -1,3 +1,88 @@
+================================================================================
+Changeset 334 @ 2014.12.25
+
+GeoEngine rework - a big thanks to Hasha for this awesome piece of code!
+
+The Readme.txt on "data/geodata" is updated with numerous important informations regarding geodata types && configurations. Consider to read it!
+
+General
+    - Moved all geoengine related stuff to one package.
+    - Massive cleanup/split/rework of all geoengine classes.
+    - Created geoengine.properties config file, removed unnecessary variables.
+    - Certain variables merged with L2World.
+
+GeoData
+    - Removed unnecessary interface and SingletonHolder, pure inheritance is used now.
+    - Dropped canEnterDirection() methods and Direction class, as replacement added getNSWE(...) method, which returns directly geocell NSWE byte (four flags) loaded from geodata files -> avoid getting same geocell data multiple times.
+    - Regions are loaded according to config file definition.
+    - Added posibility to load L2J and L2OFF geodata.
+    - Implemented new geodriver with new geodata storage approach (kept in Blocks).
+    - Removed method concerning LoS and movement, now geodata contains only physical description of the terrain.
+    - Point3D and Location cleanup, NodeLoc now extends Location... for better usage in future.
+    - Spawn Z coord is now compared with geo Z. When it differs too much, use spawn Z instead of geo Z -> fix spawn problems.
+    - Slight rework of geodrivers, now they differ between each other only in storage system.
+    - Geodata type is set by config, each geodriver loads correct geodata regardless geodata type.
+    - Added geodata path to config (you can move them to specific folder, not only /data/geodata).
+    - GeoDriverArray is fastest geodata container at the moment. Kept GeoDriverBlock for some test purposes. Both work just fine.
+
+GeoDataConverter
+    - Added native support for geodata converter.
+    - Creates diagonal (*.L2D) geodata files from L2J (*.L2J) or L2OFF (*_conv.DAT) ones.
+    - Converter can be launched using "GeoDataConverter.bat/sh" after pack building.
+
+PathChecker
+    - Various scrapes of code put together to create PathChecker class.
+    - Additionally reworked, less code - better performance.
+    - Performs "see" or "can move" checks for movement, attack and spelluse systems.
+    - Splitted "see" and "can move" checks. "see" is way easier and faster.
+    - Added Z coord calculations -> fixed problem with seeing over flat obstacles and floors.
+    - PathPointChecker merged with into PathFinding package (more logical, better for future changes).
+    - Recoded LoS checks, more durable, during one iteration checking both LoS directions.
+    - LoS now taking object height in consideration, added 2 configs for LoS checks (percent of height of the object, where starts the LoS check line and max obstackle height, which can exceed this virtual line).
+    - Using this inheritance structure Pathfinding -> PatchChecker -> CellPathFinding depending on geodata setting (GeoData: 0..door checks, 1..door and geodata checks, 2..door and geodata checks and pathfinding.
+    - Big rework of canSee check, should be faster, more transparent and also fixes several wrong evaluated cases (thank you guys for report).
+    - PathChecker is loaded correctly according to the config setting (standard/diagonal).
+
+PathFinding
+    - Removed GeoPathFinding classes, CellPathFinding is used as default.
+    - Removed SingletonHolder, added support to load own pathfinding system.
+    - All buffers are loaded during initialization.
+    - Cleaned up path post-filter -> fixed famous NPE error, no javolution needed.
+    - Equation for A* node weight corrected -> leads to getting better optimized path.
+    - Fixed weird movement between path nodes.
+    - PathFinding using same loading model as GeoData (Null... or Cell...), provides better usage of PathFinding (no need to check GeoData config setting everytime you access PathFinding).
+    - Since we are in beta, remove debug system.out messages.
+    - Slight adjustment of post filter when the path is calculated...should make now no world->geo->world->geo coordinates calculations
+    - Big rework of coordinate containers. Point3D transformed to Location (world XYZ); Location transformed to SpawnLocation (world XYZ, heading); NodeLoc transformed to GeoLocation (geo XYZ, nswe); all are using inheritance, all can be combined together.
+    - PathFinding is loaded correctly according to the config setting (standard/diagonal).
+    - Reverted back a part of code, which causing path to lead 1 cell away of obstacle (helps to avoid corners), added new config "ObstacleMultiplier" to multiply weight of such cell by X.
+    - Improved path post-filter to do all steps in one iteration -> cleaner, faster and drop of "MaxPostfilterPasses" config.
+    - Created new A* pathfinding algorithm (CellPathFindingDiagNew), it uses dynamic lists, it is possible to construct path in difficult/multilayer terrains, available only for DIAG geodata now, though bit slower than current 2D array A* -> deserves cleanup/rework to gain better speed.
+    - Created new JPS pathfinding algorithm (CellPathFindingJps), which is basicly A* with hefty rules. BE AWARE, it is for test purpose only, since it is semi-functional (only short and "easy" distances are OK) and available only for DIAG geodata. Possible to improve in the future.
+    - Character no longer stop moving, but continue in execution of the path, when you click to un-reachable destination.
+    - CellPathFindingNewDiag: now calculates estimated minimal size of open-list buffer and set it as initial value...should lead to less array resize.
+    - Reworked several configs and config file.
+
+AdminCommands
+    - Following commands dissapear:
+        - admin_show_path
+        - admin_path_debug
+        - admin_show_pn
+        - admin_geo_z
+        - admin_geo_type
+        - admin_geo_nswe
+        - admin_geo_los
+        - admin_geo_position
+    - Following commands appear:
+        - admin_geo_pos
+        - admin_geo_can_see
+        - admin_geo_can_move_beeline
+    - server_menu.htm ("Server" tab from //admin) is edited to reflect changes on geodata commands.
+
+Misc
+    - Updated the geodata Readme.txt with important informations.
+    - Added a map with blocks names, and unsupported blocks (ty RooT).
+
 ====================================================================================================
 Changeset 333 @ 2014.11.23
 

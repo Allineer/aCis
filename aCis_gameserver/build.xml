@@ -36,6 +36,7 @@
 			<fileset dir="dist">
 				<include name="GameServer_loop.sh" />
 				<include name="startGameServer.*" />
+				<include name="GeoDataConverter.*" />
 			</fileset>
 		</copy>
 		<fixcrlf srcdir="${build.dist.game}" eol="lf" eof="remove" includes="**/*.sh" />

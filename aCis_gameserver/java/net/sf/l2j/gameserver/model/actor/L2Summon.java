@@ -15,11 +15,11 @@
 package net.sf.l2j.gameserver.model.actor;
 
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.GeoData;
 import net.sf.l2j.gameserver.ai.CtrlIntention;
 import net.sf.l2j.gameserver.ai.L2CharacterAI;
 import net.sf.l2j.gameserver.ai.L2SummonAI;
 import net.sf.l2j.gameserver.datatables.ItemTable;
+import net.sf.l2j.gameserver.geoengine.PathFinding;
 import net.sf.l2j.gameserver.handler.IItemHandler;
 import net.sf.l2j.gameserver.handler.ItemHandler;
 import net.sf.l2j.gameserver.model.L2Object;
@@ -204,7 +204,7 @@ public abstract class L2Summon extends L2Playable
 		{
 			if (isAutoAttackable(player))
 			{
-				if (Config.GEODATA == 0 || GeoData.getInstance().canSeeTarget(player, this))
+				if (PathFinding.getInstance().canSeeTarget(player, this))
 				{
 					player.getAI().setIntention(CtrlIntention.ATTACK, this);
 					player.onActionRequest();
@@ -218,7 +218,7 @@ public abstract class L2Summon extends L2Playable
 				// Send ActionFailed to the player in order to avoid he stucks
 				player.sendPacket(ActionFailed.STATIC_PACKET);
 				
-				if (Config.GEODATA == 0 || GeoData.getInstance().canSeeTarget(player, this))
+				if (PathFinding.getInstance().canSeeTarget(player, this))
 					player.getAI().setIntention(CtrlIntention.FOLLOW, this);
 			}
 		}
