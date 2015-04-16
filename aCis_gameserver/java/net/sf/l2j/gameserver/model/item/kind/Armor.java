@@ -12,16 +12,17 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.l2j.gameserver.templates.item;
+package net.sf.l2j.gameserver.model.item.kind;
 
+import net.sf.l2j.gameserver.model.item.type.ArmorType;
 import net.sf.l2j.gameserver.templates.StatsSet;
 
 /**
  * This class is dedicated to the management of armors.
  */
-public final class L2Armor extends L2Item
+public final class Armor extends Item
 {
-	private L2ArmorType _type;
+	private ArmorType _type;
 	
 	/**
 	 * Constructor for Armor.<BR>
@@ -29,35 +30,35 @@ public final class L2Armor extends L2Item
 	 * <U><I>Variables filled :</I></U><BR>
 	 * <LI>_avoidModifier</LI> <LI>_pDef & _mDef</LI> <LI>_mpBonus & _hpBonus</LI>
 	 * @param set : StatsSet designating the set of couples (key,value) caracterizing the armor
-	 * @see L2Item constructor
+	 * @see Item constructor
 	 */
-	public L2Armor(StatsSet set)
+	public Armor(StatsSet set)
 	{
 		super(set);
-		_type = L2ArmorType.valueOf(set.getString("armor_type", "none").toUpperCase());
+		_type = ArmorType.valueOf(set.getString("armor_type", "none").toUpperCase());
 		
 		int _bodyPart = getBodyPart();
-		if (_bodyPart == L2Item.SLOT_NECK || _bodyPart == L2Item.SLOT_FACE || _bodyPart == L2Item.SLOT_HAIR || _bodyPart == L2Item.SLOT_HAIRALL || (_bodyPart & L2Item.SLOT_L_EAR) != 0 || (_bodyPart & L2Item.SLOT_L_FINGER) != 0 || (_bodyPart & L2Item.SLOT_BACK) != 0)
+		if (_bodyPart == Item.SLOT_NECK || _bodyPart == Item.SLOT_FACE || _bodyPart == Item.SLOT_HAIR || _bodyPart == Item.SLOT_HAIRALL || (_bodyPart & Item.SLOT_L_EAR) != 0 || (_bodyPart & Item.SLOT_L_FINGER) != 0 || (_bodyPart & Item.SLOT_BACK) != 0)
 		{
-			_type1 = L2Item.TYPE1_WEAPON_RING_EARRING_NECKLACE;
-			_type2 = L2Item.TYPE2_ACCESSORY;
+			_type1 = Item.TYPE1_WEAPON_RING_EARRING_NECKLACE;
+			_type2 = Item.TYPE2_ACCESSORY;
 		}
 		else
 		{
-			if (_type == L2ArmorType.NONE && getBodyPart() == L2Item.SLOT_L_HAND) // retail define shield as NONE
-				_type = L2ArmorType.SHIELD;
+			if (_type == ArmorType.NONE && getBodyPart() == Item.SLOT_L_HAND) // retail define shield as NONE
+				_type = ArmorType.SHIELD;
 			
-			_type1 = L2Item.TYPE1_SHIELD_ARMOR;
-			_type2 = L2Item.TYPE2_SHIELD_ARMOR;
+			_type1 = Item.TYPE1_SHIELD_ARMOR;
+			_type2 = Item.TYPE2_SHIELD_ARMOR;
 		}
 	}
 	
 	/**
 	 * Returns the type of the armor.
-	 * @return L2ArmorType
+	 * @return ArmorType
 	 */
 	@Override
-	public L2ArmorType getItemType()
+	public ArmorType getItemType()
 	{
 		return _type;
 	}

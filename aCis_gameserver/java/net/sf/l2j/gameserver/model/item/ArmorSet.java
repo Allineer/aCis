@@ -12,15 +12,16 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.l2j.gameserver.model;
+package net.sf.l2j.gameserver.model.item;
 
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
+import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.model.itemcontainer.Inventory;
 
 /**
  * @author Luno
  */
-public final class L2ArmorSet
+public final class ArmorSet
 {
 	private final int _chest;
 	private final int _legs;
@@ -34,7 +35,7 @@ public final class L2ArmorSet
 	
 	private final int _enchant6Skill;
 	
-	public L2ArmorSet(int chest, int legs, int head, int gloves, int feet, int skillId, int shield, int shieldSkillId, int enchant6skill)
+	public ArmorSet(int chest, int legs, int head, int gloves, int feet, int skillId, int shield, int shieldSkillId, int enchant6skill)
 	{
 		_chest = chest;
 		_legs = legs;
@@ -63,28 +64,28 @@ public final class L2ArmorSet
 		int gloves = 0;
 		int feet = 0;
 		
-		final L2ItemInstance legsItem = inv.getPaperdollItem(Inventory.PAPERDOLL_LEGS);
+		final ItemInstance legsItem = inv.getPaperdollItem(Inventory.PAPERDOLL_LEGS);
 		if (legsItem != null)
 			legs = legsItem.getItemId();
 		
 		if (_legs != 0 && _legs != legs)
 			return false;
 		
-		final L2ItemInstance headItem = inv.getPaperdollItem(Inventory.PAPERDOLL_HEAD);
+		final ItemInstance headItem = inv.getPaperdollItem(Inventory.PAPERDOLL_HEAD);
 		if (headItem != null)
 			head = headItem.getItemId();
 		
 		if (_head != 0 && _head != head)
 			return false;
 		
-		final L2ItemInstance glovesItem = inv.getPaperdollItem(Inventory.PAPERDOLL_GLOVES);
+		final ItemInstance glovesItem = inv.getPaperdollItem(Inventory.PAPERDOLL_GLOVES);
 		if (glovesItem != null)
 			gloves = glovesItem.getItemId();
 		
 		if (_gloves != 0 && _gloves != gloves)
 			return false;
 		
-		final L2ItemInstance feetItem = inv.getPaperdollItem(Inventory.PAPERDOLL_FEET);
+		final ItemInstance feetItem = inv.getPaperdollItem(Inventory.PAPERDOLL_FEET);
 		if (feetItem != null)
 			feet = feetItem.getItemId();
 		
@@ -125,7 +126,7 @@ public final class L2ArmorSet
 	
 	public boolean containShield(L2PcInstance player)
 	{
-		final L2ItemInstance shieldItem = player.getInventory().getPaperdollItem(Inventory.PAPERDOLL_LHAND);
+		final ItemInstance shieldItem = player.getInventory().getPaperdollItem(Inventory.PAPERDOLL_LHAND);
 		if (shieldItem != null && shieldItem.getItemId() == _shield)
 			return true;
 		
@@ -159,7 +160,7 @@ public final class L2ArmorSet
 	{
 		final Inventory inv = player.getInventory();
 		
-		final L2ItemInstance chestItem = inv.getPaperdollItem(Inventory.PAPERDOLL_CHEST);
+		final ItemInstance chestItem = inv.getPaperdollItem(Inventory.PAPERDOLL_CHEST);
 		if (chestItem.getEnchantLevel() < 6)
 			return false;
 		
@@ -168,28 +169,28 @@ public final class L2ArmorSet
 		int gloves = 0;
 		int feet = 0;
 		
-		final L2ItemInstance legsItem = inv.getPaperdollItem(Inventory.PAPERDOLL_LEGS);
+		final ItemInstance legsItem = inv.getPaperdollItem(Inventory.PAPERDOLL_LEGS);
 		if (legsItem != null && legsItem.getEnchantLevel() > 5)
 			legs = legsItem.getItemId();
 		
 		if (_legs != 0 && _legs != legs)
 			return false;
 		
-		final L2ItemInstance headItem = inv.getPaperdollItem(Inventory.PAPERDOLL_HEAD);
+		final ItemInstance headItem = inv.getPaperdollItem(Inventory.PAPERDOLL_HEAD);
 		if (headItem != null && headItem.getEnchantLevel() > 5)
 			head = headItem.getItemId();
 		
 		if (_head != 0 && _head != head)
 			return false;
 		
-		final L2ItemInstance glovesItem = inv.getPaperdollItem(Inventory.PAPERDOLL_GLOVES);
+		final ItemInstance glovesItem = inv.getPaperdollItem(Inventory.PAPERDOLL_GLOVES);
 		if (glovesItem != null && glovesItem.getEnchantLevel() > 5)
 			gloves = glovesItem.getItemId();
 		
 		if (_gloves != 0 && _gloves != gloves)
 			return false;
 		
-		final L2ItemInstance feetItem = inv.getPaperdollItem(Inventory.PAPERDOLL_FEET);
+		final ItemInstance feetItem = inv.getPaperdollItem(Inventory.PAPERDOLL_FEET);
 		if (feetItem != null && feetItem.getEnchantLevel() > 5)
 			feet = feetItem.getItemId();
 		

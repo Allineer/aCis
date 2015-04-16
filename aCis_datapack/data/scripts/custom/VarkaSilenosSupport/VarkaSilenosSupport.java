@@ -16,7 +16,6 @@ package custom.VarkaSilenosSupport;
 
 import net.sf.l2j.gameserver.datatables.SkillTable;
 import net.sf.l2j.gameserver.datatables.SkillTable.FrequentSkill;
-import net.sf.l2j.gameserver.model.L2ItemInstance;
 import net.sf.l2j.gameserver.model.L2Object;
 import net.sf.l2j.gameserver.model.L2Skill;
 import net.sf.l2j.gameserver.model.actor.L2Attackable;
@@ -24,6 +23,7 @@ import net.sf.l2j.gameserver.model.actor.L2Character;
 import net.sf.l2j.gameserver.model.actor.L2Npc;
 import net.sf.l2j.gameserver.model.actor.L2Playable;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
+import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.model.itemcontainer.PcInventory;
 import net.sf.l2j.gameserver.model.quest.Quest;
 import net.sf.l2j.gameserver.model.quest.QuestState;
@@ -396,7 +396,7 @@ public class VarkaSilenosSupport extends Quest
 			// Drop by 1 the level of that alliance (symbolized by a quest item).
 			for (int i = 7225; i >= 7221; i--)
 			{
-				L2ItemInstance item = inventory.getItemByItemId(i);
+				ItemInstance item = inventory.getItemByItemId(i);
 				if (item != null)
 				{
 					// Destroy the badge.

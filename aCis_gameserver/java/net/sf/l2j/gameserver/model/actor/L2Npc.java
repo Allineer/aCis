@@ -22,7 +22,6 @@ import java.util.logging.Level;
 
 import net.sf.l2j.Config;
 import net.sf.l2j.gameserver.GeoData;
-import net.sf.l2j.gameserver.SevenSigns;
 import net.sf.l2j.gameserver.ThreadPoolManager;
 import net.sf.l2j.gameserver.ai.CtrlIntention;
 import net.sf.l2j.gameserver.cache.HtmCache;
@@ -36,9 +35,9 @@ import net.sf.l2j.gameserver.idfactory.IdFactory;
 import net.sf.l2j.gameserver.instancemanager.CastleManager;
 import net.sf.l2j.gameserver.instancemanager.DimensionalRiftManager;
 import net.sf.l2j.gameserver.instancemanager.QuestManager;
+import net.sf.l2j.gameserver.instancemanager.SevenSigns;
 import net.sf.l2j.gameserver.instancemanager.games.Lottery;
 import net.sf.l2j.gameserver.model.L2Clan;
-import net.sf.l2j.gameserver.model.L2ItemInstance;
 import net.sf.l2j.gameserver.model.L2Multisell;
 import net.sf.l2j.gameserver.model.L2Object;
 import net.sf.l2j.gameserver.model.L2Skill;
@@ -55,6 +54,9 @@ import net.sf.l2j.gameserver.model.actor.knownlist.NpcKnownList;
 import net.sf.l2j.gameserver.model.actor.stat.NpcStat;
 import net.sf.l2j.gameserver.model.actor.status.NpcStatus;
 import net.sf.l2j.gameserver.model.entity.Castle;
+import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
+import net.sf.l2j.gameserver.model.item.kind.Item;
+import net.sf.l2j.gameserver.model.item.kind.Weapon;
 import net.sf.l2j.gameserver.model.quest.Quest;
 import net.sf.l2j.gameserver.model.quest.QuestEventType;
 import net.sf.l2j.gameserver.model.quest.QuestState;
@@ -78,8 +80,6 @@ import net.sf.l2j.gameserver.taskmanager.DecayTaskManager;
 import net.sf.l2j.gameserver.templates.L2HelperBuff;
 import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
 import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate.AIType;
-import net.sf.l2j.gameserver.templates.item.L2Item;
-import net.sf.l2j.gameserver.templates.item.L2Weapon;
 import net.sf.l2j.gameserver.templates.skills.L2SkillType;
 import net.sf.l2j.gameserver.util.Broadcast;
 import net.sf.l2j.util.Rnd;
@@ -965,17 +965,16 @@ public class L2Npc extends L2Character
 	 * <BR>
 	 */
 	@Override
-	public L2ItemInstance getActiveWeaponInstance()
+	public ItemInstance getActiveWeaponInstance()
 	{
 		return null;
 	}
 	
 	/**
-	 * Return the weapon item equipped in the right hand of the L2Npc or null.<BR>
-	 * <BR>
+	 * Return the weapon item equipped in the right hand of the L2Npc or null.
 	 */
 	@Override
-	public L2Weapon getActiveWeaponItem()
+	public Weapon getActiveWeaponItem()
 	{
 		// Get the weapon identifier equipped in the right hand of the L2Npc
 		int weaponId = getTemplate().getRightHand();
@@ -983,29 +982,27 @@ public class L2Npc extends L2Character
 			return null;
 		
 		// Get the weapon item equipped in the right hand of the L2Npc
-		L2Item item = ItemTable.getInstance().getTemplate(weaponId);
-		if (!(item instanceof L2Weapon))
+		Item item = ItemTable.getInstance().getTemplate(weaponId);
+		if (!(item instanceof Weapon))
 			return null;
 		
-		return (L2Weapon) item;
+		return (Weapon) item;
 	}
 	
 	/**
-	 * Return null (regular NPCs don't have weapons instancies).<BR>
-	 * <BR>
+	 * Return null (regular NPCs don't have weapons instancies).
 	 */
 	@Override
-	public L2ItemInstance getSecondaryWeaponInstance()
+	public ItemInstance getSecondaryWeaponInstance()
 	{
 		return null;
 	}
 	
 	/**
-	 * Return the item equipped in the left hand of the L2Npc or null.<BR>
-	 * <BR>
+	 * Return the item equipped in the left hand of the L2Npc or null.
 	 */
 	@Override
-	public L2Item getSecondaryWeaponItem()
+	public Item getSecondaryWeaponItem()
 	{
 		// Get the weapon identifier equipped in the right hand of the L2Npc
 		int itemId = getTemplate().getLeftHand();
@@ -1183,7 +1180,7 @@ public class L2Npc extends L2Character
 			
 			Lottery.getInstance().increasePrize(price);
 			
-			L2ItemInstance item = new L2ItemInstance(IdFactory.getInstance().getNextId(), 4442);
+			ItemInstance item = new ItemInstance(IdFactory.getInstance().getNextId(), 4442);
 			item.setCount(1);
 			item.setCustomType1(lotonumber);
 			item.setEnchantLevel(enchant);
@@ -1205,7 +1202,7 @@ public class L2Npc extends L2Character
 			
 			int lotonumber = Lottery.getInstance().getId();
 			String message = "";
-			for (L2ItemInstance item : player.getInventory().getItems())
+			for (ItemInstance item : player.getInventory().getItems())
 			{
 				if (item == null)
 					continue;
@@ -1249,7 +1246,7 @@ public class L2Npc extends L2Character
 		else if (val > 24) // >24 - check lottery ticket by item object id
 		{
 			int lotonumber = Lottery.getInstance().getId();
-			L2ItemInstance item = player.getInventory().getItemByObjectId(val);
+			ItemInstance item = player.getInventory().getItemByObjectId(val);
 			if (item == null || item.getItemId() != 4442 || item.getCustomType1() >= lotonumber)
 				return;
 			int[] check = Lottery.checkTicket(item);
@@ -1516,7 +1513,7 @@ public class L2Npc extends L2Character
 		_currentEnchant = getTemplate().getEnchantEffect();
 		_currentCollisionHeight = getTemplate().getCollisionHeight();
 		_currentCollisionRadius = getTemplate().getCollisionRadius();
-		DecayTaskManager.getInstance().addDecayTask(this);
+		DecayTaskManager.getInstance().add(this);
 		return true;
 	}
 	
@@ -1629,7 +1626,7 @@ public class L2Npc extends L2Character
 	{
 		if (!isDecayed())
 		{
-			DecayTaskManager.getInstance().cancelDecayTask(this);
+			DecayTaskManager.getInstance().cancel(this);
 			onDecay();
 		}
 	}

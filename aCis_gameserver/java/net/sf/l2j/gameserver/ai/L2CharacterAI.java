@@ -17,8 +17,6 @@ package net.sf.l2j.gameserver.ai;
 import net.sf.l2j.gameserver.GeoData;
 import net.sf.l2j.gameserver.model.L2CharPosition;
 import net.sf.l2j.gameserver.model.L2Effect;
-import net.sf.l2j.gameserver.model.L2ItemInstance;
-import net.sf.l2j.gameserver.model.L2ItemInstance.ItemLocation;
 import net.sf.l2j.gameserver.model.L2Object;
 import net.sf.l2j.gameserver.model.L2Skill;
 import net.sf.l2j.gameserver.model.actor.L2Attackable;
@@ -28,6 +26,8 @@ import net.sf.l2j.gameserver.model.actor.L2Playable;
 import net.sf.l2j.gameserver.model.actor.L2Summon;
 import net.sf.l2j.gameserver.model.actor.instance.L2DoorInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
+import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
+import net.sf.l2j.gameserver.model.item.instance.ItemInstance.ItemLocation;
 import net.sf.l2j.gameserver.network.serverpackets.AutoAttackStop;
 import net.sf.l2j.gameserver.taskmanager.AttackStanceTaskManager;
 import net.sf.l2j.gameserver.templates.skills.L2SkillType;
@@ -394,7 +394,7 @@ public class L2CharacterAI extends AbstractAI
 		// Stop the actor auto-attack client side by sending Server->Client packet AutoAttackStop (broadcast)
 		clientStopAutoAttack();
 		
-		if (object instanceof L2ItemInstance && ((L2ItemInstance) object).getLocation() != ItemLocation.VOID)
+		if (object instanceof ItemInstance && ((ItemInstance) object).getLocation() != ItemLocation.VOID)
 			return;
 		
 		// Set the Intention of this AbstractAI to PICK_UP
@@ -476,8 +476,8 @@ public class L2CharacterAI extends AbstractAI
 	{
 		// Stop the actor auto-attack client side by sending Server->Client packet AutoAttackStop (broadcast)
 		_actor.broadcastPacket(new AutoAttackStop(_actor.getObjectId()));
-		if (AttackStanceTaskManager.getInstance().getAttackStanceTask(_actor))
-			AttackStanceTaskManager.getInstance().removeAttackStanceTask(_actor);
+		if (AttackStanceTaskManager.getInstance().get(_actor))
+			AttackStanceTaskManager.getInstance().remove(_actor);
 		
 		// Stop Server AutoAttack also
 		setAutoAttacking(false);
@@ -504,8 +504,8 @@ public class L2CharacterAI extends AbstractAI
 	{
 		// Stop the actor auto-attack client side by sending Server->Client packet AutoAttackStop (broadcast)
 		_actor.broadcastPacket(new AutoAttackStop(_actor.getObjectId()));
-		if (AttackStanceTaskManager.getInstance().getAttackStanceTask(_actor))
-			AttackStanceTaskManager.getInstance().removeAttackStanceTask(_actor);
+		if (AttackStanceTaskManager.getInstance().get(_actor))
+			AttackStanceTaskManager.getInstance().remove(_actor);
 		
 		// Stop Server AutoAttack also
 		setAutoAttacking(false);
@@ -531,8 +531,8 @@ public class L2CharacterAI extends AbstractAI
 	{
 		// Stop the actor auto-attack client side by sending Server->Client packet AutoAttackStop (broadcast)
 		_actor.broadcastPacket(new AutoAttackStop(_actor.getObjectId()));
-		if (AttackStanceTaskManager.getInstance().getAttackStanceTask(_actor))
-			AttackStanceTaskManager.getInstance().removeAttackStanceTask(_actor);
+		if (AttackStanceTaskManager.getInstance().get(_actor))
+			AttackStanceTaskManager.getInstance().remove(_actor);
 		
 		// stop Server AutoAttack also
 		setAutoAttacking(false);
@@ -744,7 +744,7 @@ public class L2CharacterAI extends AbstractAI
 		// Stop an AI Follow Task
 		stopFollow();
 		
-		if (!AttackStanceTaskManager.getInstance().getAttackStanceTask(_actor))
+		if (!AttackStanceTaskManager.getInstance().get(_actor))
 			_actor.broadcastPacket(new AutoAttackStop(_actor.getObjectId()));
 		
 		// Launch actions corresponding to the Event Think

@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.l2j.gameserver;
+package net.sf.l2j.gameserver.instancemanager;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -26,11 +26,10 @@ import java.util.logging.Logger;
 
 import net.sf.l2j.Config;
 import net.sf.l2j.L2DatabaseFactory;
+import net.sf.l2j.gameserver.ThreadPoolManager;
 import net.sf.l2j.gameserver.datatables.MapRegionTable;
 import net.sf.l2j.gameserver.datatables.SkillTable;
-import net.sf.l2j.gameserver.instancemanager.CastleManager;
-import net.sf.l2j.gameserver.model.AutoSpawnHandler;
-import net.sf.l2j.gameserver.model.AutoSpawnHandler.AutoSpawnInstance;
+import net.sf.l2j.gameserver.instancemanager.AutoSpawnManager.AutoSpawnInstance;
 import net.sf.l2j.gameserver.model.L2World;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.network.SystemMessageId;
@@ -228,46 +227,46 @@ public class SevenSigns
 	 */
 	public void spawnSevenSignsNPC()
 	{
-		_merchantSpawn = AutoSpawnHandler.getInstance().getAutoSpawnInstance(MAMMON_MERCHANT_ID, false);
-		_blacksmithSpawn = AutoSpawnHandler.getInstance().getAutoSpawnInstance(MAMMON_BLACKSMITH_ID, false);
-		_marketeerSpawns = AutoSpawnHandler.getInstance().getAutoSpawnInstances(MAMMON_MARKETEER_ID);
-		_lilithSpawn = AutoSpawnHandler.getInstance().getAutoSpawnInstance(LILITH_NPC_ID, false);
-		_anakimSpawn = AutoSpawnHandler.getInstance().getAutoSpawnInstance(ANAKIM_NPC_ID, false);
-		_crestofdawnspawns = AutoSpawnHandler.getInstance().getAutoSpawnInstances(CREST_OF_DAWN_ID);
-		_crestofduskspawns = AutoSpawnHandler.getInstance().getAutoSpawnInstances(CREST_OF_DUSK_ID);
-		_oratorSpawns = AutoSpawnHandler.getInstance().getAutoSpawnInstances(ORATOR_NPC_ID);
-		_preacherSpawns = AutoSpawnHandler.getInstance().getAutoSpawnInstances(PREACHER_NPC_ID);
+		_merchantSpawn = AutoSpawnManager.getInstance().getAutoSpawnInstance(MAMMON_MERCHANT_ID, false);
+		_blacksmithSpawn = AutoSpawnManager.getInstance().getAutoSpawnInstance(MAMMON_BLACKSMITH_ID, false);
+		_marketeerSpawns = AutoSpawnManager.getInstance().getAutoSpawnInstances(MAMMON_MARKETEER_ID);
+		_lilithSpawn = AutoSpawnManager.getInstance().getAutoSpawnInstance(LILITH_NPC_ID, false);
+		_anakimSpawn = AutoSpawnManager.getInstance().getAutoSpawnInstance(ANAKIM_NPC_ID, false);
+		_crestofdawnspawns = AutoSpawnManager.getInstance().getAutoSpawnInstances(CREST_OF_DAWN_ID);
+		_crestofduskspawns = AutoSpawnManager.getInstance().getAutoSpawnInstances(CREST_OF_DUSK_ID);
+		_oratorSpawns = AutoSpawnManager.getInstance().getAutoSpawnInstances(ORATOR_NPC_ID);
+		_preacherSpawns = AutoSpawnManager.getInstance().getAutoSpawnInstances(PREACHER_NPC_ID);
 		
 		if (isSealValidationPeriod() || isCompResultsPeriod())
 		{
 			for (AutoSpawnInstance spawnInst : _marketeerSpawns.values())
-				AutoSpawnHandler.getInstance().setSpawnActive(spawnInst, true);
+				AutoSpawnManager.getInstance().setSpawnActive(spawnInst, true);
 			
 			if (getSealOwner(SEAL_GNOSIS) == getCabalHighestScore() && getSealOwner(SEAL_GNOSIS) != CABAL_NULL)
 			{
 				if (!Config.ANNOUNCE_MAMMON_SPAWN)
 					_blacksmithSpawn.setBroadcast(false);
 				
-				if (!AutoSpawnHandler.getInstance().getAutoSpawnInstance(_blacksmithSpawn.getObjectId(), true).isSpawnActive())
-					AutoSpawnHandler.getInstance().setSpawnActive(_blacksmithSpawn, true);
+				if (!AutoSpawnManager.getInstance().getAutoSpawnInstance(_blacksmithSpawn.getObjectId(), true).isSpawnActive())
+					AutoSpawnManager.getInstance().setSpawnActive(_blacksmithSpawn, true);
 				
 				for (AutoSpawnInstance spawnInst : _oratorSpawns.values())
-					if (!AutoSpawnHandler.getInstance().getAutoSpawnInstance(spawnInst.getObjectId(), true).isSpawnActive())
-						AutoSpawnHandler.getInstance().setSpawnActive(spawnInst, true);
+					if (!AutoSpawnManager.getInstance().getAutoSpawnInstance(spawnInst.getObjectId(), true).isSpawnActive())
+						AutoSpawnManager.getInstance().setSpawnActive(spawnInst, true);
 				
 				for (AutoSpawnInstance spawnInst : _preacherSpawns.values())
-					if (!AutoSpawnHandler.getInstance().getAutoSpawnInstance(spawnInst.getObjectId(), true).isSpawnActive())
-						AutoSpawnHandler.getInstance().setSpawnActive(spawnInst, true);
+					if (!AutoSpawnManager.getInstance().getAutoSpawnInstance(spawnInst.getObjectId(), true).isSpawnActive())
+						AutoSpawnManager.getInstance().setSpawnActive(spawnInst, true);
 			}
 			else
 			{
-				AutoSpawnHandler.getInstance().setSpawnActive(_blacksmithSpawn, false);
+				AutoSpawnManager.getInstance().setSpawnActive(_blacksmithSpawn, false);
 				
 				for (AutoSpawnInstance spawnInst : _oratorSpawns.values())
-					AutoSpawnHandler.getInstance().setSpawnActive(spawnInst, false);
+					AutoSpawnManager.getInstance().setSpawnActive(spawnInst, false);
 				
 				for (AutoSpawnInstance spawnInst : _preacherSpawns.values())
-					AutoSpawnHandler.getInstance().setSpawnActive(spawnInst, false);
+					AutoSpawnManager.getInstance().setSpawnActive(spawnInst, false);
 			}
 			
 			if (getSealOwner(SEAL_AVARICE) == getCabalHighestScore() && getSealOwner(SEAL_AVARICE) != CABAL_NULL)
@@ -275,93 +274,93 @@ public class SevenSigns
 				if (!Config.ANNOUNCE_MAMMON_SPAWN)
 					_merchantSpawn.setBroadcast(false);
 				
-				if (!AutoSpawnHandler.getInstance().getAutoSpawnInstance(_merchantSpawn.getObjectId(), true).isSpawnActive())
-					AutoSpawnHandler.getInstance().setSpawnActive(_merchantSpawn, true);
+				if (!AutoSpawnManager.getInstance().getAutoSpawnInstance(_merchantSpawn.getObjectId(), true).isSpawnActive())
+					AutoSpawnManager.getInstance().setSpawnActive(_merchantSpawn, true);
 				
 				switch (getCabalHighestScore())
 				{
 					case CABAL_DAWN:
 						// Spawn Lilith, unspawn Anakim.
-						if (!AutoSpawnHandler.getInstance().getAutoSpawnInstance(_lilithSpawn.getObjectId(), true).isSpawnActive())
-							AutoSpawnHandler.getInstance().setSpawnActive(_lilithSpawn, true);
+						if (!AutoSpawnManager.getInstance().getAutoSpawnInstance(_lilithSpawn.getObjectId(), true).isSpawnActive())
+							AutoSpawnManager.getInstance().setSpawnActive(_lilithSpawn, true);
 						
-						AutoSpawnHandler.getInstance().setSpawnActive(_anakimSpawn, false);
+						AutoSpawnManager.getInstance().setSpawnActive(_anakimSpawn, false);
 						
 						// Spawn Dawn crests.
 						for (AutoSpawnInstance dawnCrest : _crestofdawnspawns.values())
 						{
-							if (!AutoSpawnHandler.getInstance().getAutoSpawnInstance(dawnCrest.getObjectId(), true).isSpawnActive())
-								AutoSpawnHandler.getInstance().setSpawnActive(dawnCrest, true);
+							if (!AutoSpawnManager.getInstance().getAutoSpawnInstance(dawnCrest.getObjectId(), true).isSpawnActive())
+								AutoSpawnManager.getInstance().setSpawnActive(dawnCrest, true);
 						}
 						
 						// Unspawn Dusk crests.
 						for (AutoSpawnInstance duskCrest : _crestofduskspawns.values())
-							AutoSpawnHandler.getInstance().setSpawnActive(duskCrest, false);
+							AutoSpawnManager.getInstance().setSpawnActive(duskCrest, false);
 						break;
 					
 					case CABAL_DUSK:
 						// Spawn Anakim, unspawn Lilith.
-						if (!AutoSpawnHandler.getInstance().getAutoSpawnInstance(_anakimSpawn.getObjectId(), true).isSpawnActive())
-							AutoSpawnHandler.getInstance().setSpawnActive(_anakimSpawn, true);
+						if (!AutoSpawnManager.getInstance().getAutoSpawnInstance(_anakimSpawn.getObjectId(), true).isSpawnActive())
+							AutoSpawnManager.getInstance().setSpawnActive(_anakimSpawn, true);
 						
-						AutoSpawnHandler.getInstance().setSpawnActive(_lilithSpawn, false);
+						AutoSpawnManager.getInstance().setSpawnActive(_lilithSpawn, false);
 						
 						// Spawn Dusk crests.
 						for (AutoSpawnInstance duskCrest : _crestofduskspawns.values())
 						{
-							if (!AutoSpawnHandler.getInstance().getAutoSpawnInstance(duskCrest.getObjectId(), true).isSpawnActive())
-								AutoSpawnHandler.getInstance().setSpawnActive(duskCrest, true);
+							if (!AutoSpawnManager.getInstance().getAutoSpawnInstance(duskCrest.getObjectId(), true).isSpawnActive())
+								AutoSpawnManager.getInstance().setSpawnActive(duskCrest, true);
 						}
 						
 						// Unspawn Dawn crests.
 						for (AutoSpawnInstance dawnCrest : _crestofdawnspawns.values())
-							AutoSpawnHandler.getInstance().setSpawnActive(dawnCrest, false);
+							AutoSpawnManager.getInstance().setSpawnActive(dawnCrest, false);
 						break;
 				}
 			}
 			else
 			{
 				// Unspawn merchant of mammon, Lilith, Anakim.
-				AutoSpawnHandler.getInstance().setSpawnActive(_merchantSpawn, false);
-				AutoSpawnHandler.getInstance().setSpawnActive(_lilithSpawn, false);
-				AutoSpawnHandler.getInstance().setSpawnActive(_anakimSpawn, false);
+				AutoSpawnManager.getInstance().setSpawnActive(_merchantSpawn, false);
+				AutoSpawnManager.getInstance().setSpawnActive(_lilithSpawn, false);
+				AutoSpawnManager.getInstance().setSpawnActive(_anakimSpawn, false);
 				
 				// Unspawn Dawn crests.
 				for (AutoSpawnInstance dawnCrest : _crestofdawnspawns.values())
-					AutoSpawnHandler.getInstance().setSpawnActive(dawnCrest, false);
+					AutoSpawnManager.getInstance().setSpawnActive(dawnCrest, false);
 				
 				// Unspawn Dusk crests.
 				for (AutoSpawnInstance duskCrest : _crestofduskspawns.values())
-					AutoSpawnHandler.getInstance().setSpawnActive(duskCrest, false);
+					AutoSpawnManager.getInstance().setSpawnActive(duskCrest, false);
 			}
 		}
 		else
 		{
 			// Unspawn merchant of mammon, Lilith, Anakim.
-			AutoSpawnHandler.getInstance().setSpawnActive(_merchantSpawn, false);
-			AutoSpawnHandler.getInstance().setSpawnActive(_blacksmithSpawn, false);
-			AutoSpawnHandler.getInstance().setSpawnActive(_lilithSpawn, false);
-			AutoSpawnHandler.getInstance().setSpawnActive(_anakimSpawn, false);
+			AutoSpawnManager.getInstance().setSpawnActive(_merchantSpawn, false);
+			AutoSpawnManager.getInstance().setSpawnActive(_blacksmithSpawn, false);
+			AutoSpawnManager.getInstance().setSpawnActive(_lilithSpawn, false);
+			AutoSpawnManager.getInstance().setSpawnActive(_anakimSpawn, false);
 			
 			// Unspawn Dawn crests.
 			for (AutoSpawnInstance dawnCrest : _crestofdawnspawns.values())
-				AutoSpawnHandler.getInstance().setSpawnActive(dawnCrest, false);
+				AutoSpawnManager.getInstance().setSpawnActive(dawnCrest, false);
 			
 			// Unspawn Dusk crests.
 			for (AutoSpawnInstance duskCrest : _crestofduskspawns.values())
-				AutoSpawnHandler.getInstance().setSpawnActive(duskCrest, false);
+				AutoSpawnManager.getInstance().setSpawnActive(duskCrest, false);
 			
 			// Unspawn Orators.
 			for (AutoSpawnInstance spawnInst : _oratorSpawns.values())
-				AutoSpawnHandler.getInstance().setSpawnActive(spawnInst, false);
+				AutoSpawnManager.getInstance().setSpawnActive(spawnInst, false);
 			
 			// Unspawn Preachers.
 			for (AutoSpawnInstance spawnInst : _preacherSpawns.values())
-				AutoSpawnHandler.getInstance().setSpawnActive(spawnInst, false);
+				AutoSpawnManager.getInstance().setSpawnActive(spawnInst, false);
 			
 			// Unspawn marketeer of mammon.
 			for (AutoSpawnInstance spawnInst : _marketeerSpawns.values())
-				AutoSpawnHandler.getInstance().setSpawnActive(spawnInst, false);
+				AutoSpawnManager.getInstance().setSpawnActive(spawnInst, false);
 		}
 	}
 	

@@ -15,7 +15,7 @@
 package net.sf.l2j.gameserver.model.actor.instance;
 
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.SevenSigns;
+import net.sf.l2j.gameserver.instancemanager.SevenSigns;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.ActionFailed;
 import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;

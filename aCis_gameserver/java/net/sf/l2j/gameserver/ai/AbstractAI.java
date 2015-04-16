@@ -619,7 +619,7 @@ abstract class AbstractAI implements Ctrl
 			_actor.broadcastPacket(new AutoAttackStart(_actor.getObjectId()));
 			setAutoAttacking(true);
 		}
-		AttackStanceTaskManager.getInstance().addAttackStanceTask(_actor);
+		AttackStanceTaskManager.getInstance().add(_actor);
 	}
 	
 	/**
@@ -637,8 +637,8 @@ abstract class AbstractAI implements Ctrl
 		
 		if (_actor instanceof L2PcInstance)
 		{
-			if (!AttackStanceTaskManager.getInstance().getAttackStanceTask(_actor) && isAutoAttacking())
-				AttackStanceTaskManager.getInstance().addAttackStanceTask(_actor);
+			if (!AttackStanceTaskManager.getInstance().get(_actor) && isAutoAttacking())
+				AttackStanceTaskManager.getInstance().add(_actor);
 		}
 		else if (isAutoAttacking())
 		{

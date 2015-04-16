@@ -35,7 +35,6 @@ import net.sf.l2j.gameserver.model.L2CharPosition;
 import net.sf.l2j.gameserver.model.L2CommandChannel;
 import net.sf.l2j.gameserver.model.L2DropCategory;
 import net.sf.l2j.gameserver.model.L2DropData;
-import net.sf.l2j.gameserver.model.L2ItemInstance;
 import net.sf.l2j.gameserver.model.L2Manor;
 import net.sf.l2j.gameserver.model.L2Object;
 import net.sf.l2j.gameserver.model.L2Party;
@@ -45,6 +44,8 @@ import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2SummonInstance;
 import net.sf.l2j.gameserver.model.actor.knownlist.AttackableKnownList;
 import net.sf.l2j.gameserver.model.actor.status.AttackableStatus;
+import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
+import net.sf.l2j.gameserver.model.item.type.EtcItemType;
 import net.sf.l2j.gameserver.model.quest.Quest;
 import net.sf.l2j.gameserver.model.quest.QuestEventType;
 import net.sf.l2j.gameserver.network.SystemMessageId;
@@ -52,7 +53,6 @@ import net.sf.l2j.gameserver.network.clientpackets.Say2;
 import net.sf.l2j.gameserver.network.serverpackets.CreatureSay;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
-import net.sf.l2j.gameserver.templates.item.L2EtcItemType;
 import net.sf.l2j.gameserver.util.Util;
 import net.sf.l2j.util.Rnd;
 
@@ -1276,9 +1276,9 @@ public class L2Attackable extends L2Npc
 	 * <BR>
 	 * <B><U> Actions</U> : </B><BR>
 	 * <BR>
-	 * <li>Get all possible drops of this L2Attackable from L2NpcTemplate and add it Quest drops</li> <li>For each possible drops (base + quests), calculate which one must be dropped (random)</li> <li>Get each Item quantity dropped (random)</li> <li>Create this or these L2ItemInstance corresponding
-	 * to each Item Identifier dropped</li> <li>If the autoLoot mode is actif and if the L2Character that has killed the L2Attackable is a L2PcInstance, give this or these Item(s) to the L2PcInstance that has killed the L2Attackable</li> <li>If the autoLoot mode isn't actif or if the L2Character
-	 * that has killed the L2Attackable is not a L2PcInstance, add this or these Item(s) in the world as a visible object at the position where mob was last</li><BR>
+	 * <li>Get all possible drops of this L2Attackable from L2NpcTemplate and add it Quest drops</li> <li>For each possible drops (base + quests), calculate which one must be dropped (random)</li> <li>Get each Item quantity dropped (random)</li> <li>Create this or these ItemInstance corresponding to
+	 * each Item Identifier dropped</li> <li>If the autoLoot mode is actif and if the L2Character that has killed the L2Attackable is a L2PcInstance, give this or these Item(s) to the L2PcInstance that has killed the L2Attackable</li> <li>If the autoLoot mode isn't actif or if the L2Character that
+	 * has killed the L2Attackable is not a L2PcInstance, add this or these Item(s) in the world as a visible object at the position where mob was last</li><BR>
 	 * <BR>
 	 * @param mainDamageDealer The L2Character that made the most damage.
 	 */
@@ -1421,11 +1421,11 @@ public class L2Attackable extends L2Npc
 	 * @param item The RewardItem.
 	 * @return the dropped item instance.
 	 */
-	public L2ItemInstance dropItem(L2PcInstance mainDamageDealer, RewardItem item)
+	public ItemInstance dropItem(L2PcInstance mainDamageDealer, RewardItem item)
 	{
 		int randDropLim = 70;
 		
-		L2ItemInstance ditem = null;
+		ItemInstance ditem = null;
 		for (int i = 0; i < item.getCount(); i++)
 		{
 			// Randomize drop position
@@ -1435,7 +1435,7 @@ public class L2Attackable extends L2Npc
 			
 			if (ItemTable.getInstance().getTemplate(item.getItemId()) != null)
 			{
-				// Init the dropped L2ItemInstance and add it in the world as a visible object at the position where mob was last
+				// Init the dropped ItemInstance and add it in the world as a visible object at the position where mob was last
 				ditem = ItemTable.getInstance().createItem("Loot", item.getItemId(), item.getCount(), mainDamageDealer, this);
 				ditem.getDropProtection().protect(mainDamageDealer);
 				ditem.dropMe(this, newX, newY, newZ);
@@ -1443,7 +1443,7 @@ public class L2Attackable extends L2Npc
 				// Add drop to auto destroy item task
 				if (!Config.LIST_PROTECTED_ITEMS.contains(item.getItemId()))
 				{
-					if ((Config.AUTODESTROY_ITEM_AFTER > 0 && ditem.getItemType() != L2EtcItemType.HERB) || (Config.HERB_AUTO_DESTROY_TIME > 0 && ditem.getItemType() == L2EtcItemType.HERB))
+					if ((Config.AUTODESTROY_ITEM_AFTER > 0 && ditem.getItemType() != EtcItemType.HERB) || (Config.HERB_AUTO_DESTROY_TIME > 0 && ditem.getItemType() == EtcItemType.HERB))
 						ItemsAutoDestroy.getInstance().addItem(ditem);
 				}
 				ditem.setProtected(false);
@@ -1458,7 +1458,7 @@ public class L2Attackable extends L2Npc
 		return ditem;
 	}
 	
-	public L2ItemInstance dropItem(L2PcInstance lastAttacker, int itemId, int itemCount)
+	public ItemInstance dropItem(L2PcInstance lastAttacker, int itemId, int itemCount)
 	{
 		return dropItem(lastAttacker, new RewardItem(itemId, itemCount));
 	}
@@ -1466,7 +1466,7 @@ public class L2Attackable extends L2Npc
 	/**
 	 * @return the active weapon of this L2Attackable (= null).
 	 */
-	public L2ItemInstance getActiveWeapon()
+	public ItemInstance getActiveWeapon()
 	{
 		return null;
 	}
@@ -1506,7 +1506,7 @@ public class L2Attackable extends L2Npc
 	}
 	
 	/**
-	 * @return array containing all L2ItemInstance that can be spoiled.
+	 * @return array containing all ItemInstance that can be spoiled.
 	 */
 	public synchronized RewardItem[] takeSweep()
 	{
@@ -1516,7 +1516,7 @@ public class L2Attackable extends L2Npc
 	}
 	
 	/**
-	 * @return array containing all L2ItemInstance that can be harvested.
+	 * @return array containing all ItemInstance that can be harvested.
 	 */
 	public synchronized RewardItem[] takeHarvest()
 	{
@@ -1588,9 +1588,9 @@ public class L2Attackable extends L2Npc
 	 * Adds an attacker that successfully absorbed the soul of this L2Attackable into the _absorbersList. Params: attacker - a valid L2PcInstance condition - an integer indicating the event when mob dies. This should be: = 0 - "the crystal scatters"; = 1 -
 	 * "the crystal failed to absorb. nothing happens"; = 2 - "the crystal resonates because you got more than 1 crystal on you"; = 3 - "the crystal cannot absorb the soul because the mob level is too low"; = 4 - "the crystal successfuly absorbed the soul";
 	 * @param user : The L2PcInstance who attacked the monster.
-	 * @param crystal : The L2ItemInstance which was used to register.
+	 * @param crystal : The ItemInstance which was used to register.
 	 */
-	public void addAbsorber(L2PcInstance user, L2ItemInstance crystal)
+	public void addAbsorber(L2PcInstance user, ItemInstance crystal)
 	{
 		// If the L2Character attacker isn't already in the _absorbersList of this L2Attackable, add it
 		AbsorbInfo ai = _absorbersList.get(user.getObjectId());

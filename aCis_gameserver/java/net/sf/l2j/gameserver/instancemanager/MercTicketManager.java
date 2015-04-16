@@ -26,11 +26,11 @@ import java.util.logging.Logger;
 import net.sf.l2j.L2DatabaseFactory;
 import net.sf.l2j.gameserver.datatables.NpcTable;
 import net.sf.l2j.gameserver.idfactory.IdFactory;
-import net.sf.l2j.gameserver.model.L2ItemInstance;
 import net.sf.l2j.gameserver.model.L2World;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2SiegeGuardInstance;
 import net.sf.l2j.gameserver.model.entity.Castle;
+import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
 
 /**
@@ -51,7 +51,7 @@ public class MercTicketManager
 		return SingletonHolder._instance;
 	}
 	
-	private static final List<L2ItemInstance> _droppedTickets = new CopyOnWriteArrayList<>();
+	private static final List<ItemInstance> _droppedTickets = new CopyOnWriteArrayList<>();
 	
 	// max tickets per merc type = 10 + (castleid * 2)?
 	// max tickets per castle = 40 + (castleid * 20)?
@@ -708,8 +708,8 @@ public class MercTicketManager
 						{
 							itemId = ITEM_IDS[i];
 							// create the ticket in the gameworld
-							L2ItemInstance dropticket = new L2ItemInstance(IdFactory.getInstance().getNextId(), itemId);
-							dropticket.setLocation(L2ItemInstance.ItemLocation.INVENTORY);
+							ItemInstance dropticket = new ItemInstance(IdFactory.getInstance().getNextId(), itemId);
+							dropticket.setLocation(ItemInstance.ItemLocation.INVENTORY);
 							dropticket.dropMe(null, x, y, z);
 							dropticket.setDropTime(0); // avoids it from beeing removed by the auto item destroyer
 							L2World.getInstance().storeObject(dropticket);
@@ -747,7 +747,7 @@ public class MercTicketManager
 			return true;
 		
 		int count = 0;
-		for (L2ItemInstance ticket : _droppedTickets)
+		for (ItemInstance ticket : _droppedTickets)
 		{
 			if (ticket != null && ticket.getItemId() == itemId)
 				count++;
@@ -774,7 +774,7 @@ public class MercTicketManager
 			return true;
 		
 		int count = 0;
-		for (L2ItemInstance ticket : _droppedTickets)
+		for (ItemInstance ticket : _droppedTickets)
 		{
 			if ((ticket != null) && (getTicketCastleId(ticket.getItemId()) == castleId))
 				count++;
@@ -793,7 +793,7 @@ public class MercTicketManager
 	
 	public boolean isTooCloseToAnotherTicket(int x, int y, int z)
 	{
-		for (L2ItemInstance item : _droppedTickets)
+		for (ItemInstance item : _droppedTickets)
 		{
 			double dx = x - item.getX();
 			double dy = y - item.getY();
@@ -837,8 +837,8 @@ public class MercTicketManager
 				castle.getSiege().getSiegeGuardManager().hireMerc(x, y, z, heading, NPC_IDS[i]);
 				
 				// create the ticket in the gameworld
-				L2ItemInstance dropticket = new L2ItemInstance(IdFactory.getInstance().getNextId(), itemId);
-				dropticket.setLocation(L2ItemInstance.ItemLocation.INVENTORY);
+				ItemInstance dropticket = new ItemInstance(IdFactory.getInstance().getNextId(), itemId);
+				dropticket.setLocation(ItemInstance.ItemLocation.INVENTORY);
 				dropticket.dropMe(null, x, y, z);
 				dropticket.setDropTime(0); // avoids it from beeing removed by the auto item destroyer
 				L2World.getInstance().storeObject(dropticket); // add to the world
@@ -872,10 +872,10 @@ public class MercTicketManager
 	 */
 	public void deleteTickets(int castleId)
 	{
-		Iterator<L2ItemInstance> it = _droppedTickets.iterator();
+		Iterator<ItemInstance> it = _droppedTickets.iterator();
 		while (it.hasNext())
 		{
-			L2ItemInstance item = it.next();
+			ItemInstance item = it.next();
 			if (item != null && getTicketCastleId(item.getItemId()) == castleId)
 			{
 				item.decayMe();
@@ -889,7 +889,7 @@ public class MercTicketManager
 	 * remove a single ticket and its associated spawn from the world (used when the castle lord picks up a ticket, for example)
 	 * @param item
 	 */
-	public void removeTicket(L2ItemInstance item)
+	public void removeTicket(ItemInstance item)
 	{
 		int itemId = item.getItemId();
 		int npcId = -1;

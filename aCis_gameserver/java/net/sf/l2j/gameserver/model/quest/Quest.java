@@ -34,7 +34,6 @@ import net.sf.l2j.gameserver.datatables.NpcTable;
 import net.sf.l2j.gameserver.instancemanager.QuestManager;
 import net.sf.l2j.gameserver.instancemanager.ZoneManager;
 import net.sf.l2j.gameserver.model.L2Clan;
-import net.sf.l2j.gameserver.model.L2ItemInstance;
 import net.sf.l2j.gameserver.model.L2Object;
 import net.sf.l2j.gameserver.model.L2Skill;
 import net.sf.l2j.gameserver.model.L2Spawn;
@@ -42,13 +41,14 @@ import net.sf.l2j.gameserver.model.Location;
 import net.sf.l2j.gameserver.model.actor.L2Character;
 import net.sf.l2j.gameserver.model.actor.L2Npc;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
+import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
+import net.sf.l2j.gameserver.model.item.kind.Item;
 import net.sf.l2j.gameserver.model.zone.L2ZoneType;
 import net.sf.l2j.gameserver.network.serverpackets.ActionFailed;
 import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
 import net.sf.l2j.gameserver.scripting.ManagedScript;
 import net.sf.l2j.gameserver.scripting.ScriptManager;
 import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
-import net.sf.l2j.gameserver.templates.item.L2Item;
 import net.sf.l2j.util.Rnd;
 
 /**
@@ -1235,13 +1235,13 @@ public class Quest extends ManagedScript
 	{
 		for (int itemId : itemIds)
 		{
-			L2Item t = ItemTable.getInstance().getTemplate(itemId);
+			Item t = ItemTable.getInstance().getTemplate(itemId);
 			if (t != null)
 				t.addQuestEvent(this);
 		}
 	}
 	
-	public final boolean notifyItemUse(L2ItemInstance item, L2PcInstance player, L2Object target)
+	public final boolean notifyItemUse(ItemInstance item, L2PcInstance player, L2Object target)
 	{
 		String res = null;
 		try
@@ -1255,7 +1255,7 @@ public class Quest extends ManagedScript
 		return showResult(null, player, res);
 	}
 	
-	public String onItemUse(L2ItemInstance item, L2PcInstance player, L2Object target)
+	public String onItemUse(ItemInstance item, L2PcInstance player, L2Object target)
 	{
 		return null;
 	}

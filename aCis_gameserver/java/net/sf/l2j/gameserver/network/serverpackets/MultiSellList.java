@@ -18,7 +18,7 @@ import net.sf.l2j.gameserver.datatables.ItemTable;
 import net.sf.l2j.gameserver.model.L2Multisell.MultiSellEntry;
 import net.sf.l2j.gameserver.model.L2Multisell.MultiSellIngredient;
 import net.sf.l2j.gameserver.model.L2Multisell.MultiSellListContainer;
-import net.sf.l2j.gameserver.templates.item.L2Item;
+import net.sf.l2j.gameserver.model.item.kind.Item;
 
 public class MultiSellList extends L2GameServerPacket
 {
@@ -56,7 +56,7 @@ public class MultiSellList extends L2GameServerPacket
 				
 				for (MultiSellIngredient i : ent.getProducts())
 				{
-					L2Item item = ItemTable.getInstance().getTemplate(i.getItemId());
+					Item item = ItemTable.getInstance().getTemplate(i.getItemId());
 					
 					writeH(i.getItemId());
 					writeD(item.getBodyPart());
@@ -70,7 +70,7 @@ public class MultiSellList extends L2GameServerPacket
 				for (MultiSellIngredient i : ent.getIngredients())
 				{
 					int itemId = i.getItemId();
-					L2Item item = ItemTable.getInstance().getTemplate(itemId);
+					Item item = ItemTable.getInstance().getTemplate(itemId);
 					
 					writeH(itemId);
 					writeH((itemId != 65336) ? item.getType2() : 65535);

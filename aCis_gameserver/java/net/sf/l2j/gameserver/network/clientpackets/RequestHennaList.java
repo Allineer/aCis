@@ -16,8 +16,8 @@ package net.sf.l2j.gameserver.network.clientpackets;
 
 import net.sf.l2j.gameserver.datatables.HennaTable;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
+import net.sf.l2j.gameserver.model.item.Henna;
 import net.sf.l2j.gameserver.network.serverpackets.HennaEquipList;
-import net.sf.l2j.gameserver.templates.item.L2Henna;
 
 /**
  * RequestHennaList
@@ -41,7 +41,7 @@ public final class RequestHennaList extends L2GameClientPacket
 		if (activeChar == null)
 			return;
 		
-		final L2Henna[] henna = HennaTable.getInstance().getAvailableHenna(activeChar.getClassId().getId());
+		final Henna[] henna = HennaTable.getInstance().getAvailableHenna(activeChar.getClassId().getId());
 		if (henna == null)
 			return;
 		

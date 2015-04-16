@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.l2j.gameserver.templates.item;
+package net.sf.l2j.gameserver.model.item.kind;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,12 +22,19 @@ import java.util.logging.Logger;
 import net.sf.l2j.Config;
 import net.sf.l2j.gameserver.datatables.ItemTable;
 import net.sf.l2j.gameserver.model.L2Effect;
-import net.sf.l2j.gameserver.model.L2ItemInstance;
 import net.sf.l2j.gameserver.model.L2Object;
 import net.sf.l2j.gameserver.model.actor.L2Character;
 import net.sf.l2j.gameserver.model.actor.L2Summon;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.holder.SkillHolder;
+import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
+import net.sf.l2j.gameserver.model.item.type.ActionType;
+import net.sf.l2j.gameserver.model.item.type.ArmorType;
+import net.sf.l2j.gameserver.model.item.type.CrystalType;
+import net.sf.l2j.gameserver.model.item.type.EtcItemType;
+import net.sf.l2j.gameserver.model.item.type.ItemType;
+import net.sf.l2j.gameserver.model.item.type.MaterialType;
+import net.sf.l2j.gameserver.model.item.type.WeaponType;
 import net.sf.l2j.gameserver.model.quest.Quest;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
@@ -39,10 +46,14 @@ import net.sf.l2j.gameserver.skills.effects.EffectTemplate;
 import net.sf.l2j.gameserver.templates.StatsSet;
 
 /**
- * This class contains all informations concerning the item (weapon, armor, etc).<BR>
- * Mother class of : <LI>L2Armor</LI> <LI>L2EtcItem</LI> <LI>L2Weapon</LI>
+ * This class contains all informations concerning the item (weapon, armor, etc). Mother class of :
+ * <ul>
+ * <li>L2Armor</li>
+ * <li>L2EtcItem</li>
+ * <li>Weapon</li>
+ * </ul>
  */
-public abstract class L2Item
+public abstract class Item
 {
 	public static final int TYPE1_WEAPON_RING_EARRING_NECKLACE = 0;
 	public static final int TYPE1_SHIELD_ARMOR = 1;
@@ -86,73 +97,14 @@ public abstract class L2Item
 	
 	public static final int SLOT_ALLWEAPON = SLOT_LR_HAND | SLOT_R_HAND;
 	
-	public static final int MATERIAL_STEEL = 0x00;
-	public static final int MATERIAL_FINE_STEEL = 0x01;
-	public static final int MATERIAL_BLOOD_STEEL = 0x02;
-	public static final int MATERIAL_BRONZE = 0x03;
-	public static final int MATERIAL_SILVER = 0x04;
-	public static final int MATERIAL_GOLD = 0x05;
-	public static final int MATERIAL_MITHRIL = 0x06;
-	public static final int MATERIAL_ORIHARUKON = 0x07;
-	public static final int MATERIAL_PAPER = 0x08;
-	public static final int MATERIAL_WOOD = 0x09;
-	public static final int MATERIAL_CLOTH = 0x0a;
-	public static final int MATERIAL_LEATHER = 0x0b;
-	public static final int MATERIAL_BONE = 0x0c;
-	public static final int MATERIAL_HORN = 0x0d;
-	public static final int MATERIAL_DAMASCUS = 0x0e;
-	public static final int MATERIAL_ADAMANTAITE = 0x0f;
-	public static final int MATERIAL_CHRYSOLITE = 0x10;
-	public static final int MATERIAL_CRYSTAL = 0x11;
-	public static final int MATERIAL_LIQUID = 0x12;
-	public static final int MATERIAL_SCALE_OF_DRAGON = 0x13;
-	public static final int MATERIAL_DYESTUFF = 0x14;
-	public static final int MATERIAL_COBWEB = 0x15;
-	public static final int MATERIAL_SEED = 0x16;
-	
-	public static final int CRYSTAL_NONE = 0x00;
-	public static final int CRYSTAL_D = 0x01;
-	public static final int CRYSTAL_C = 0x02;
-	public static final int CRYSTAL_B = 0x03;
-	public static final int CRYSTAL_A = 0x04;
-	public static final int CRYSTAL_S = 0x05;
-	
-	private static final int[] crystalItemId =
-	{
-		0,
-		1458,
-		1459,
-		1460,
-		1461,
-		1462
-	};
-	private static final int[] crystalEnchantBonusArmor =
-	{
-		0,
-		11,
-		6,
-		11,
-		19,
-		25
-	};
-	private static final int[] crystalEnchantBonusWeapon =
-	{
-		0,
-		90,
-		45,
-		67,
-		144,
-		250
-	};
-	
 	private final int _itemId;
 	private final String _name;
 	protected int _type1; // needed for item list (inventory)
 	protected int _type2; // different lists for armor, weapon, etc
 	private final int _weight;
 	private final boolean _stackable;
-	private final int _materialType;
-	private final int _crystalType; // default to none-grade
+	private final MaterialType _materialType;
+	private final CrystalType _crystalType;
 	private final int _duration;
 	private final int _bodyPart;
 	private final int _referencePrice;
@@ -167,7 +119,7 @@ public abstract class L2Item
 	private final boolean _heroItem;
 	private final boolean _isOlyRestricted;
 	
-	private final L2ActionType _defaultAction;
+	private final ActionType _defaultAction;
 	
 	protected List<FuncTemplate> _funcTemplates;
 	protected List<EffectTemplate> _effectTemplates;
@@ -177,23 +129,22 @@ public abstract class L2Item
 	
 	private final List<Quest> _questEvents = new ArrayList<>();
 	
-	protected static final Logger _log = Logger.getLogger(L2Item.class.getName());
+	protected static final Logger _log = Logger.getLogger(Item.class.getName());
 	
 	/**
-	 * Constructor of the L2Item that fill class variables.<BR>
-	 * <BR>
+	 * Constructor of the L2Item that fill class variables.
 	 * @param set : StatsSet corresponding to a set of couples (key,value) for description of the item
 	 */
-	protected L2Item(StatsSet set)
+	protected Item(StatsSet set)
 	{
 		_itemId = set.getInteger("item_id");
 		_name = set.getString("name");
 		_weight = set.getInteger("weight", 0);
-		_materialType = ItemTable._materials.get(set.getString("material", "steel")); // default is steel, yeah and what?
+		_materialType = set.getEnum("material", MaterialType.class, MaterialType.STEEL);
 		_duration = set.getInteger("duration", -1);
 		_bodyPart = ItemTable._slots.get(set.getString("bodypart", "none"));
 		_referencePrice = set.getInteger("price", 0);
-		_crystalType = ItemTable._crystalTypes.get(set.getString("crystal_type", "none")); // default to none-grade
+		_crystalType = set.getEnum("crystal_type", CrystalType.class, CrystalType.NONE);
 		_crystalCount = set.getInteger("crystal_count", 0);
 		
 		_stackable = set.getBool("is_stackable", false);
@@ -206,7 +157,7 @@ public abstract class L2Item
 		_heroItem = (_itemId >= 6611 && _itemId <= 6621) || _itemId == 6842;
 		_isOlyRestricted = set.getBool("is_oly_restricted", false);
 		
-		_defaultAction = set.getEnum("default_action", L2ActionType.class, L2ActionType.none);
+		_defaultAction = set.getEnum("default_action", ActionType.class, ActionType.none);
 		
 		String skills = set.getString("item_skill", null);
 		if (skills != null)
@@ -257,7 +208,7 @@ public abstract class L2Item
 	/**
 	 * @return Enum the itemType.
 	 */
-	public abstract L2ItemType getItemType();
+	public abstract ItemType getItemType();
 	
 	/**
 	 * @return int the duration of the item
@@ -280,7 +231,7 @@ public abstract class L2Item
 	/**
 	 * @return int the type of material of the item
 	 */
-	public final int getMaterialType()
+	public final MaterialType getMaterialType()
 	{
 		return _materialType;
 	}
@@ -306,13 +257,13 @@ public abstract class L2Item
 	 */
 	public final boolean isCrystallizable()
 	{
-		return _crystalType != L2Item.CRYSTAL_NONE && _crystalCount > 0;
+		return _crystalType != CrystalType.NONE && _crystalCount > 0;
 	}
 	
 	/**
-	 * @return int the type of crystal if item is crystallizable
+	 * @return CrystalType the type of crystal if item is crystallizable
 	 */
-	public final int getCrystalType()
+	public final CrystalType getCrystalType()
 	{
 		return _crystalType;
 	}
@@ -322,7 +273,7 @@ public abstract class L2Item
 	 */
 	public final int getCrystalItemId()
 	{
-		return crystalItemId[_crystalType];
+		return _crystalType.getCrystalId();
 	}
 	
 	/**
@@ -345,9 +296,11 @@ public abstract class L2Item
 			{
 				case TYPE2_SHIELD_ARMOR:
 				case TYPE2_ACCESSORY:
-					return _crystalCount + crystalEnchantBonusArmor[getCrystalType()] * (3 * enchantLevel - 6);
+					return _crystalCount + getCrystalType().getCrystalEnchantBonusArmor() * (3 * enchantLevel - 6);
+					
 				case TYPE2_WEAPON:
-					return _crystalCount + crystalEnchantBonusWeapon[getCrystalType()] * (2 * enchantLevel - 3);
+					return _crystalCount + getCrystalType().getCrystalEnchantBonusWeapon() * (2 * enchantLevel - 3);
+					
 				default:
 					return _crystalCount;
 			}
@@ -358,9 +311,9 @@ public abstract class L2Item
 			{
 				case TYPE2_SHIELD_ARMOR:
 				case TYPE2_ACCESSORY:
-					return _crystalCount + crystalEnchantBonusArmor[getCrystalType()] * enchantLevel;
+					return _crystalCount + getCrystalType().getCrystalEnchantBonusArmor() * enchantLevel;
 				case TYPE2_WEAPON:
-					return _crystalCount + crystalEnchantBonusWeapon[getCrystalType()] * enchantLevel;
+					return _crystalCount + getCrystalType().getCrystalEnchantBonusWeapon() * enchantLevel;
 				default:
 					return _crystalCount;
 			}
@@ -411,7 +364,7 @@ public abstract class L2Item
 	
 	public boolean isEquipable()
 	{
-		return getBodyPart() != 0 && !(getItemType() instanceof L2EtcItemType);
+		return getBodyPart() != 0 && !(getItemType() instanceof EtcItemType);
 	}
 	
 	/**
@@ -469,11 +422,11 @@ public abstract class L2Item
 	
 	/**
 	 * Get the functions used by this item.
-	 * @param item : L2ItemInstance pointing out the item
+	 * @param item : ItemInstance pointing out the item
 	 * @param player : L2Character pointing out the player
 	 * @return the list of functions
 	 */
-	public final List<Func> getStatFuncs(L2ItemInstance item, L2Character player)
+	public final List<Func> getStatFuncs(ItemInstance item, L2Character player)
 	{
 		if (_funcTemplates == null || _funcTemplates.isEmpty())
 			return Collections.emptyList();
@@ -496,11 +449,11 @@ public abstract class L2Item
 	
 	/**
 	 * Returns the effects associated with the item.
-	 * @param instance : L2ItemInstance pointing out the item
+	 * @param instance : ItemInstance pointing out the item
 	 * @param player : L2Character pointing out the player
 	 * @return L2Effect[] : array of effects generated by the item
 	 */
-	public final List<L2Effect> getEffects(L2ItemInstance instance, L2Character player)
+	public final List<L2Effect> getEffects(ItemInstance instance, L2Character player)
 	{
 		if (_effectTemplates == null || _effectTemplates.isEmpty())
 			return Collections.emptyList();
@@ -629,7 +582,7 @@ public abstract class L2Item
 	
 	public boolean isQuestItem()
 	{
-		return (getItemType() == L2EtcItemType.QUEST);
+		return (getItemType() == EtcItemType.QUEST);
 	}
 	
 	public final boolean isHeroItem()
@@ -644,20 +597,20 @@ public abstract class L2Item
 	
 	public boolean isPetItem()
 	{
-		return (getItemType() == L2ArmorType.PET || getItemType() == L2WeaponType.PET);
+		return (getItemType() == ArmorType.PET || getItemType() == WeaponType.PET);
 	}
 	
 	public boolean isPotion()
 	{
-		return (getItemType() == L2EtcItemType.POTION);
+		return (getItemType() == EtcItemType.POTION);
 	}
 	
 	public boolean isElixir()
 	{
-		return (getItemType() == L2EtcItemType.ELIXIR);
+		return (getItemType() == EtcItemType.ELIXIR);
 	}
 	
-	public L2ActionType getDefaultAction()
+	public ActionType getDefaultAction()
 	{
 		return _defaultAction;
 	}

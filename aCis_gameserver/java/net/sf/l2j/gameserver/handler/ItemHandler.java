@@ -43,7 +43,7 @@ import net.sf.l2j.gameserver.handler.itemhandlers.SoulShots;
 import net.sf.l2j.gameserver.handler.itemhandlers.SpecialXMas;
 import net.sf.l2j.gameserver.handler.itemhandlers.SpiritShot;
 import net.sf.l2j.gameserver.handler.itemhandlers.SummonItems;
-import net.sf.l2j.gameserver.templates.item.L2EtcItem;
+import net.sf.l2j.gameserver.model.item.kind.EtcItem;
 
 public class ItemHandler
 {
@@ -89,7 +89,7 @@ public class ItemHandler
 		_datatable.put(handler.getClass().getSimpleName().intern().hashCode(), handler);
 	}
 	
-	public IItemHandler getItemHandler(L2EtcItem item)
+	public IItemHandler getItemHandler(EtcItem item)
 	{
 		if (item == null || item.getHandlerName() == null)
 			return null;

@@ -33,13 +33,13 @@ import net.sf.l2j.gameserver.ThreadPoolManager;
 import net.sf.l2j.gameserver.datatables.DoorTable;
 import net.sf.l2j.gameserver.datatables.NpcTable;
 import net.sf.l2j.gameserver.datatables.SpawnTable;
-import net.sf.l2j.gameserver.model.L2ItemInstance;
 import net.sf.l2j.gameserver.model.L2Spawn;
 import net.sf.l2j.gameserver.model.actor.L2Npc;
 import net.sf.l2j.gameserver.model.actor.instance.L2DoorInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2SepulcherMonsterInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2SepulcherNpcInstance;
+import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.model.quest.QuestState;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
@@ -1105,7 +1105,7 @@ public class FourSepulchersManager
 				if (mem.getInventory().getItemByItemId(ANTIQUE_BROOCH) == null)
 					mem.addItem("Quest", USED_PASS, 1, mem, true);
 				
-				L2ItemInstance hallsKey = mem.getInventory().getItemByItemId(CHAPEL_KEY);
+				ItemInstance hallsKey = mem.getInventory().getItemByItemId(CHAPEL_KEY);
 				if (hallsKey != null)
 					mem.destroyItemByItemId("Quest", CHAPEL_KEY, hallsKey.getCount(), mem, true);
 			}
@@ -1136,7 +1136,7 @@ public class FourSepulchersManager
 				if (mem.getInventory().getItemByItemId(ANTIQUE_BROOCH) == null)
 					mem.addItem("Quest", USED_PASS, 1, mem, true);
 				
-				L2ItemInstance hallsKey = mem.getInventory().getItemByItemId(CHAPEL_KEY);
+				ItemInstance hallsKey = mem.getInventory().getItemByItemId(CHAPEL_KEY);
 				if (hallsKey != null)
 					mem.destroyItemByItemId("Quest", CHAPEL_KEY, hallsKey.getCount(), mem, true);
 			}
@@ -1157,7 +1157,7 @@ public class FourSepulchersManager
 			if (player.getInventory().getItemByItemId(ANTIQUE_BROOCH) == null)
 				player.addItem("Quest", USED_PASS, 1, player, true);
 			
-			L2ItemInstance hallsKey = player.getInventory().getItemByItemId(CHAPEL_KEY);
+			ItemInstance hallsKey = player.getInventory().getItemByItemId(CHAPEL_KEY);
 			if (hallsKey != null)
 				player.destroyItemByItemId("Quest", CHAPEL_KEY, hallsKey.getCount(), player, true);
 			

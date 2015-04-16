@@ -20,21 +20,21 @@ import java.util.List;
 import net.sf.l2j.Config;
 import net.sf.l2j.gameserver.datatables.ItemTable;
 import net.sf.l2j.gameserver.model.L2Augmentation;
-import net.sf.l2j.gameserver.model.L2ItemInstance;
 import net.sf.l2j.gameserver.model.L2Multisell;
 import net.sf.l2j.gameserver.model.L2Multisell.MultiSellEntry;
 import net.sf.l2j.gameserver.model.L2Multisell.MultiSellIngredient;
 import net.sf.l2j.gameserver.model.L2Multisell.MultiSellListContainer;
 import net.sf.l2j.gameserver.model.actor.L2Npc;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
+import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
+import net.sf.l2j.gameserver.model.item.kind.Armor;
+import net.sf.l2j.gameserver.model.item.kind.Item;
+import net.sf.l2j.gameserver.model.item.kind.Weapon;
 import net.sf.l2j.gameserver.model.itemcontainer.PcInventory;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.ItemList;
 import net.sf.l2j.gameserver.network.serverpackets.StatusUpdate;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
-import net.sf.l2j.gameserver.templates.item.L2Armor;
-import net.sf.l2j.gameserver.templates.item.L2Item;
-import net.sf.l2j.gameserver.templates.item.L2Weapon;
 
 public class MultiSellChoose extends L2GameClientPacket
 {
@@ -104,7 +104,7 @@ public class MultiSellChoose extends L2GameClientPacket
 			if (id < 0)
 				continue;
 			
-			L2Item template = ItemTable.getInstance().getTemplate(id);
+			Item template = ItemTable.getInstance().getTemplate(id);
 			if (template == null)
 				continue;
 			
@@ -218,7 +218,7 @@ public class MultiSellChoose extends L2GameClientPacket
 		{
 			if (e.getItemId() != 65336)
 			{
-				L2ItemInstance itemToTake = inv.getItemByItemId(e.getItemId());
+				ItemInstance itemToTake = inv.getItemByItemId(e.getItemId());
 				
 				if (itemToTake == null)
 				{
@@ -245,7 +245,7 @@ public class MultiSellChoose extends L2GameClientPacket
 						if (maintainEnchantment)
 						{
 							// loop through this list and remove (one by one) each item until the required amount is taken.
-							L2ItemInstance[] inventoryContents = inv.getAllItemsByItemId(e.getItemId(), e.getEnchantmentLevel());
+							ItemInstance[] inventoryContents = inv.getAllItemsByItemId(e.getItemId(), e.getEnchantmentLevel());
 							for (int i = 0; i < (e.getItemCount() * _amount); i++)
 							{
 								if (inventoryContents[i].isAugmented())
@@ -259,13 +259,13 @@ public class MultiSellChoose extends L2GameClientPacket
 						{
 							for (int i = 1; i <= (e.getItemCount() * _amount); i++)
 							{
-								L2ItemInstance[] inventoryContents = inv.getAllItemsByItemId(e.getItemId());
+								ItemInstance[] inventoryContents = inv.getAllItemsByItemId(e.getItemId());
 								
 								itemToTake = inventoryContents[0];
 								// get item with the LOWEST enchantment level from the inventory (0 is the lowest)
 								if (itemToTake.getEnchantLevel() > 0)
 								{
-									for (L2ItemInstance item : inventoryContents)
+									for (ItemInstance item : inventoryContents)
 									{
 										if (item.getEnchantLevel() < itemToTake.getEnchantLevel())
 										{
@@ -301,7 +301,7 @@ public class MultiSellChoose extends L2GameClientPacket
 			{
 				for (int i = 0; i < (e.getItemCount() * _amount); i++)
 				{
-					L2ItemInstance product = inv.addItem("Multisell", e.getItemId(), 1, player, player.getTarget());
+					ItemInstance product = inv.addItem("Multisell", e.getItemId(), 1, player, player.getTarget());
 					if (product == null)
 						continue;
 					
@@ -393,8 +393,8 @@ public class MultiSellChoose extends L2GameClientPacket
 			// if it is an armor/weapon, modify the enchantment level appropriately, if necessary
 			else if (maintainEnchantment && newIngredient.getItemId() > 0)
 			{
-				L2Item tempItem = ItemTable.getInstance().createDummyItem(newIngredient.getItemId()).getItem();
-				if ((tempItem instanceof L2Armor) || (tempItem instanceof L2Weapon))
+				Item tempItem = ItemTable.getInstance().createDummyItem(newIngredient.getItemId()).getItem();
+				if ((tempItem instanceof Armor) || (tempItem instanceof Weapon))
 				{
 					newIngredient.setEnchantmentLevel(enchantLevel);
 					hasIngredient = true;
@@ -418,8 +418,8 @@ public class MultiSellChoose extends L2GameClientPacket
 			{
 				// if it is an armor/weapon, modify the enchantment level appropriately
 				// (note, if maintain enchantment is "false" this modification will result to a +0)
-				L2Item tempItem = ItemTable.getInstance().createDummyItem(newIngredient.getItemId()).getItem();
-				if ((tempItem instanceof L2Armor) || (tempItem instanceof L2Weapon))
+				Item tempItem = ItemTable.getInstance().createDummyItem(newIngredient.getItemId()).getItem();
+				if ((tempItem instanceof Armor) || (tempItem instanceof Weapon))
 					newIngredient.setEnchantmentLevel(enchantLevel);
 			}
 			newEntry.addProduct(newIngredient);

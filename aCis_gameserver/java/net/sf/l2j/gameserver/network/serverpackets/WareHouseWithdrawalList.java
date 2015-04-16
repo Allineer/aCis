@@ -15,9 +15,9 @@
 package net.sf.l2j.gameserver.network.serverpackets;
 
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.model.L2ItemInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
-import net.sf.l2j.gameserver.templates.item.L2Item;
+import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
+import net.sf.l2j.gameserver.model.item.kind.Item;
 
 /**
  * 0x42 WarehouseWithdrawalList dh (h dddhh dhhh d)
@@ -31,7 +31,7 @@ public class WareHouseWithdrawalList extends L2GameServerPacket
 	
 	private L2PcInstance _activeChar;
 	private int _playerAdena;
-	private L2ItemInstance[] _items;
+	private ItemInstance[] _items;
 	private int _whType;
 	
 	public WareHouseWithdrawalList(L2PcInstance player, int type)
@@ -49,7 +49,7 @@ public class WareHouseWithdrawalList extends L2GameServerPacket
 		_items = _activeChar.getActiveWarehouse().getItems();
 		
 		if (Config.DEBUG)
-			for (L2ItemInstance item : _items)
+			for (ItemInstance item : _items)
 				_log.fine("item:" + item.getItem().getName() + " type1:" + item.getItem().getType1() + " type2:" + item.getItem().getType2());
 	}
 	
@@ -61,12 +61,12 @@ public class WareHouseWithdrawalList extends L2GameServerPacket
 		writeD(_playerAdena);
 		writeH(_items.length);
 		
-		for (L2ItemInstance temp : _items)
+		for (ItemInstance temp : _items)
 		{
 			if (temp == null || temp.getItem() == null)
 				continue;
 			
-			L2Item item = temp.getItem();
+			Item item = temp.getItem();
 			
 			writeH(item.getType1());
 			writeD(temp.getObjectId());

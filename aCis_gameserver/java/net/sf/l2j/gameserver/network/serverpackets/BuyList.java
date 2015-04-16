@@ -51,10 +51,10 @@ public final class BuyList extends L2GameServerPacket
 				writeD(item.getItemId());
 				writeD(item.getCurrentCount() < 0 ? 0 : item.getCurrentCount());
 				writeH(item.getTemplate().getType2());
-				writeH(0x00); // TODO: L2ItemInstance getCustomType1()
+				writeH(0x00); // TODO: ItemInstance getCustomType1()
 				writeD(item.getTemplate().getBodyPart());
-				writeH(0x00); // TODO: L2ItemInstance getEnchantLevel()
-				writeH(0x00); // TODO: L2ItemInstance getCustomType2()
+				writeH(0x00); // TODO: ItemInstance getEnchantLevel()
+				writeH(0x00); // TODO: ItemInstance getCustomType2()
 				writeH(0x00);
 				
 				if (item.getItemId() >= 3960 && item.getItemId() <= 4026)

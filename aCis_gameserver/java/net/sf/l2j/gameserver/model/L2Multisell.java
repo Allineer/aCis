@@ -24,10 +24,11 @@ import java.util.logging.Logger;
 
 import net.sf.l2j.gameserver.datatables.ItemTable;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
+import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
+import net.sf.l2j.gameserver.model.item.kind.Armor;
+import net.sf.l2j.gameserver.model.item.kind.Item;
+import net.sf.l2j.gameserver.model.item.kind.Weapon;
 import net.sf.l2j.gameserver.network.serverpackets.MultiSellList;
-import net.sf.l2j.gameserver.templates.item.L2Armor;
-import net.sf.l2j.gameserver.templates.item.L2Item;
-import net.sf.l2j.gameserver.templates.item.L2Weapon;
 import net.sf.l2j.gameserver.xmlfactory.XMLDocumentFactory;
 
 import org.w3c.dom.Document;
@@ -102,18 +103,18 @@ public class L2Multisell
 			if (player == null)
 				return list;
 			
-			L2ItemInstance[] items;
+			ItemInstance[] items;
 			if (listTemplate.getMaintainEnchantment())
 				items = player.getInventory().getUniqueItemsByEnchantLevel(false, false, false);
 			else
 				items = player.getInventory().getUniqueItems(false, false, false);
 			
 			int enchantLevel;
-			for (L2ItemInstance item : items)
+			for (ItemInstance item : items)
 			{
 				// only do the matchup on equipable items that are not currently equipped
 				// so for each appropriate item, produce a set of entries for the multisell list.
-				if ((item.getItem() instanceof L2Armor) || (item.getItem() instanceof L2Weapon))
+				if ((item.getItem() instanceof Armor) || (item.getItem() instanceof Weapon))
 				{
 					enchantLevel = (listTemplate.getMaintainEnchantment() ? item.getEnchantLevel() : 0);
 					
@@ -182,8 +183,8 @@ public class L2Multisell
 			// if it is an armor/weapon, modify the enchantment level appropriately, if necessary
 			else if (maintainEnchantment && newIngredient.getItemId() > 0)
 			{
-				L2Item tempItem = ItemTable.getInstance().createDummyItem(ing.getItemId()).getItem();
-				if ((tempItem instanceof L2Armor) || (tempItem instanceof L2Weapon))
+				Item tempItem = ItemTable.getInstance().createDummyItem(ing.getItemId()).getItem();
+				if ((tempItem instanceof Armor) || (tempItem instanceof Weapon))
 					newIngredient.setEnchantmentLevel(enchantLevel);
 			}
 			
@@ -205,8 +206,8 @@ public class L2Multisell
 			{
 				// if it is an armor/weapon, modify the enchantment level appropriately
 				// (note, if maintain enchantment is "false" this modification will result to a +0)
-				L2Item tempItem = ItemTable.getInstance().createDummyItem(ing.getItemId()).getItem();
-				if ((tempItem instanceof L2Armor) || (tempItem instanceof L2Weapon))
+				Item tempItem = ItemTable.getInstance().createDummyItem(ing.getItemId()).getItem();
+				if ((tempItem instanceof Armor) || (tempItem instanceof Weapon))
 					newIngredient.setEnchantmentLevel(enchantLevel);
 			}
 			newEntry.addProduct(newIngredient);

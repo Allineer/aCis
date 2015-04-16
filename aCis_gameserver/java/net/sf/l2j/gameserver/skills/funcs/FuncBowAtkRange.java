@@ -14,11 +14,11 @@
  */
 package net.sf.l2j.gameserver.skills.funcs;
 
+import net.sf.l2j.gameserver.model.item.type.WeaponType;
 import net.sf.l2j.gameserver.skills.Env;
 import net.sf.l2j.gameserver.skills.Stats;
 import net.sf.l2j.gameserver.skills.basefuncs.Func;
 import net.sf.l2j.gameserver.skills.conditions.ConditionUsingItemType;
-import net.sf.l2j.gameserver.templates.item.L2WeaponType;
 
 public class FuncBowAtkRange extends Func
 {
@@ -32,7 +32,7 @@ public class FuncBowAtkRange extends Func
 	private FuncBowAtkRange()
 	{
 		super(Stats.POWER_ATTACK_RANGE, 0x10, null, null);
-		setCondition(new ConditionUsingItemType(L2WeaponType.BOW.mask()));
+		setCondition(new ConditionUsingItemType(WeaponType.BOW.mask()));
 	}
 	
 	@Override

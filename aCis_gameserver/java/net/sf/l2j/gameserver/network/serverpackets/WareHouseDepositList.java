@@ -17,9 +17,9 @@ package net.sf.l2j.gameserver.network.serverpackets;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.l2j.gameserver.model.L2ItemInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
-import net.sf.l2j.gameserver.templates.item.L2Item;
+import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
+import net.sf.l2j.gameserver.model.item.kind.Item;
 
 /**
  * dh (h dddhh dhhh d)
@@ -32,7 +32,7 @@ public final class WareHouseDepositList extends L2GameServerPacket
 	public static final int FREIGHT = 4; // not sure
 	
 	private final int _playerAdena;
-	private final List<L2ItemInstance> _items;
+	private final List<ItemInstance> _items;
 	private final int _whType;
 	
 	public WareHouseDepositList(L2PcInstance player, int type)
@@ -42,7 +42,7 @@ public final class WareHouseDepositList extends L2GameServerPacket
 		_items = new ArrayList<>();
 		
 		final boolean isPrivate = _whType == PRIVATE;
-		for (L2ItemInstance temp : player.getInventory().getAvailableItems(true, isPrivate))
+		for (ItemInstance temp : player.getInventory().getAvailableItems(true, isPrivate))
 		{
 			if (temp != null && temp.isDepositable(isPrivate))
 				_items.add(temp);
@@ -57,12 +57,12 @@ public final class WareHouseDepositList extends L2GameServerPacket
 		writeD(_playerAdena);
 		writeH(_items.size());
 		
-		for (L2ItemInstance temp : _items)
+		for (ItemInstance temp : _items)
 		{
 			if (temp == null || temp.getItem() == null)
 				continue;
 			
-			L2Item item = temp.getItem();
+			Item item = temp.getItem();
 			
 			writeH(item.getType1());
 			writeD(temp.getObjectId());

@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.l2j.gameserver.model;
+package net.sf.l2j.gameserver.model.item.instance;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -33,8 +33,21 @@ import net.sf.l2j.gameserver.ai.CtrlIntention;
 import net.sf.l2j.gameserver.datatables.ItemTable;
 import net.sf.l2j.gameserver.instancemanager.ItemsOnGroundManager;
 import net.sf.l2j.gameserver.instancemanager.MercTicketManager;
+import net.sf.l2j.gameserver.model.DropProtection;
+import net.sf.l2j.gameserver.model.L2Augmentation;
+import net.sf.l2j.gameserver.model.L2Object;
+import net.sf.l2j.gameserver.model.L2World;
+import net.sf.l2j.gameserver.model.L2WorldRegion;
+import net.sf.l2j.gameserver.model.Location;
+import net.sf.l2j.gameserver.model.ShotType;
 import net.sf.l2j.gameserver.model.actor.L2Character;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
+import net.sf.l2j.gameserver.model.item.kind.Armor;
+import net.sf.l2j.gameserver.model.item.kind.EtcItem;
+import net.sf.l2j.gameserver.model.item.kind.Item;
+import net.sf.l2j.gameserver.model.item.kind.Weapon;
+import net.sf.l2j.gameserver.model.item.type.EtcItemType;
+import net.sf.l2j.gameserver.model.item.type.ItemType;
 import net.sf.l2j.gameserver.model.quest.Quest;
 import net.sf.l2j.gameserver.model.quest.QuestState;
 import net.sf.l2j.gameserver.network.SystemMessageId;
@@ -44,19 +57,13 @@ import net.sf.l2j.gameserver.network.serverpackets.GetItem;
 import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
 import net.sf.l2j.gameserver.network.serverpackets.SpawnItem;
 import net.sf.l2j.gameserver.skills.basefuncs.Func;
-import net.sf.l2j.gameserver.templates.item.L2Armor;
-import net.sf.l2j.gameserver.templates.item.L2EtcItem;
-import net.sf.l2j.gameserver.templates.item.L2EtcItemType;
-import net.sf.l2j.gameserver.templates.item.L2Item;
-import net.sf.l2j.gameserver.templates.item.L2ItemType;
-import net.sf.l2j.gameserver.templates.item.L2Weapon;
 
 /**
  * This class manages items.
  */
-public final class L2ItemInstance extends L2Object
+public final class ItemInstance extends L2Object
 {
-	protected static final Logger _log = Logger.getLogger(L2ItemInstance.class.getName());
+	protected static final Logger _log = Logger.getLogger(ItemInstance.class.getName());
 	private static final Logger _logItems = Logger.getLogger("item");
 	
 	/** Enumeration of locations for item */
@@ -83,7 +90,7 @@ public final class L2ItemInstance extends L2Object
 	private boolean _decrease = false;
 	
 	private final int _itemId;
-	private final L2Item _item;
+	private final Item _item;
 	
 	/** Location of the item : Inventory, PaperDoll, WareHouse */
 	private ItemLocation _loc;
@@ -125,11 +132,11 @@ public final class L2ItemInstance extends L2Object
 	private ScheduledFuture<?> _timerTask; // Used for shadow weapons.
 	
 	/**
-	 * Constructor of the L2ItemInstance from the objectId and the itemId.
+	 * Constructor of the ItemInstance from the objectId and the itemId.
 	 * @param objectId : int designating the ID of the object in the world
 	 * @param itemId : int designating the ID of the item
 	 */
-	public L2ItemInstance(int objectId, int itemId)
+	public ItemInstance(int objectId, int itemId)
 	{
 		super(objectId);
 		_itemId = itemId;
@@ -148,11 +155,11 @@ public final class L2ItemInstance extends L2Object
 	}
 	
 	/**
-	 * Constructor of the L2ItemInstance from the objetId and the description of the item given by the L2Item.
+	 * Constructor of the ItemInstance from the objetId and the description of the item given by the L2Item.
 	 * @param objectId : int designating the ID of the object in the world
 	 * @param item : L2Item containing informations of the item
 	 */
-	public L2ItemInstance(int objectId, L2Item item)
+	public ItemInstance(int objectId, Item item)
 	{
 		super(objectId);
 		_itemId = item.getItemId();
@@ -318,7 +325,7 @@ public final class L2ItemInstance extends L2Object
 	 */
 	public boolean isEquipable()
 	{
-		return !(_item.getBodyPart() == 0 || _item.getItemType() == L2EtcItemType.ARROW || _item.getItemType() == L2EtcItemType.LURE);
+		return !(_item.getBodyPart() == 0 || _item.getItemType() == EtcItemType.ARROW || _item.getItemType() == EtcItemType.LURE);
 	}
 	
 	/**
@@ -344,7 +351,7 @@ public final class L2ItemInstance extends L2Object
 	 * Returns the characteristics of the item
 	 * @return L2Item
 	 */
-	public L2Item getItem()
+	public Item getItem()
 	{
 		return _item;
 	}
@@ -388,7 +395,7 @@ public final class L2ItemInstance extends L2Object
 	 * Returns the type of item
 	 * @return Enum
 	 */
-	public L2ItemType getItemType()
+	public ItemType getItemType()
 	{
 		return _item.getItemType();
 	}
@@ -408,7 +415,7 @@ public final class L2ItemInstance extends L2Object
 	 */
 	public boolean isEtcItem()
 	{
-		return (_item instanceof L2EtcItem);
+		return (_item instanceof EtcItem);
 	}
 	
 	/**
@@ -417,7 +424,7 @@ public final class L2ItemInstance extends L2Object
 	 */
 	public boolean isWeapon()
 	{
-		return (_item instanceof L2Weapon);
+		return (_item instanceof Weapon);
 	}
 	
 	/**
@@ -426,41 +433,41 @@ public final class L2ItemInstance extends L2Object
 	 */
 	public boolean isArmor()
 	{
-		return (_item instanceof L2Armor);
+		return (_item instanceof Armor);
 	}
 	
 	/**
 	 * Returns the characteristics of the L2EtcItem
-	 * @return L2EtcItem
+	 * @return EtcItem
 	 */
-	public L2EtcItem getEtcItem()
+	public EtcItem getEtcItem()
 	{
-		if (_item instanceof L2EtcItem)
-			return (L2EtcItem) _item;
+		if (_item instanceof EtcItem)
+			return (EtcItem) _item;
 		
 		return null;
 	}
 	
 	/**
-	 * Returns the characteristics of the L2Weapon
-	 * @return L2Weapon
+	 * Returns the characteristics of the Weapon
+	 * @return Weapon
 	 */
-	public L2Weapon getWeaponItem()
+	public Weapon getWeaponItem()
 	{
-		if (_item instanceof L2Weapon)
-			return (L2Weapon) _item;
+		if (_item instanceof Weapon)
+			return (Weapon) _item;
 		
 		return null;
 	}
 	
 	/**
 	 * Returns the characteristics of the L2Armor
-	 * @return L2Armor
+	 * @return Armor
 	 */
-	public L2Armor getArmorItem()
+	public Armor getArmorItem()
 	{
-		if (_item instanceof L2Armor)
-			return (L2Armor) _item;
+		if (_item instanceof Armor)
+			return (Armor) _item;
 		
 		return null;
 	}
@@ -583,19 +590,19 @@ public final class L2ItemInstance extends L2Object
 	public boolean isAvailable(L2PcInstance player, boolean allowAdena, boolean allowNonTradable)
 	{
 		return ((!isEquipped()) // Not equipped
-			&& (getItem().getType2() != L2Item.TYPE2_QUEST) // Not Quest Item
-			&& (getItem().getType2() != L2Item.TYPE2_MONEY || getItem().getType1() != L2Item.TYPE1_SHIELD_ARMOR) // not money, not shield
+			&& (getItem().getType2() != Item.TYPE2_QUEST) // Not Quest Item
+			&& (getItem().getType2() != Item.TYPE2_MONEY || getItem().getType1() != Item.TYPE1_SHIELD_ARMOR) // not money, not shield
 			&& (player.getPet() == null || getObjectId() != player.getPet().getControlItemId()) // Not Control item of currently summoned pet
 			&& (player.getActiveEnchantItem() != this) // Not momentarily used enchant scroll
 			&& (allowAdena || getItemId() != 57) // Not adena
-			&& (player.getCurrentSkill() == null || player.getCurrentSkill().getSkill().getItemConsumeId() != getItemId()) && (!player.isCastingSimultaneouslyNow() || player.getLastSimultaneousSkillCast() == null || player.getLastSimultaneousSkillCast().getItemConsumeId() != getItemId()) && (allowNonTradable || isTradable()));
+			&& (player.getCurrentSkill().getSkill() == null || player.getCurrentSkill().getSkill().getItemConsumeId() != getItemId()) && (!player.isCastingSimultaneouslyNow() || player.getLastSimultaneousSkillCast() == null || player.getLastSimultaneousSkillCast().getItemConsumeId() != getItemId()) && (allowNonTradable || isTradable()));
 	}
 	
 	@Override
 	public void onAction(L2PcInstance player)
 	{
 		// Mercenaries tickets case.
-		if (_item.getItemType() == L2EtcItemType.CASTLE_GUARD)
+		if (_item.getItemType() == EtcItemType.CASTLE_GUARD)
 		{
 			if (player.isInParty())
 			{
@@ -811,7 +818,7 @@ public final class L2ItemInstance extends L2Object
 	}
 	
 	/**
-	 * This function basically returns a set of functions from L2Item/L2Armor/L2Weapon, but may add additional functions, if this particular item instance is enhanched for a particular player.
+	 * This function basically returns a set of functions from L2Item/L2Armor/Weapon, but may add additional functions, if this particular item instance is enhanched for a particular player.
 	 * @param player : L2Character designating the player
 	 * @return Func[]
 	 */
@@ -864,11 +871,11 @@ public final class L2ItemInstance extends L2Object
 	/**
 	 * @param ownerId : objectID of the owner.
 	 * @param rs : the ResultSet of the item.
-	 * @return a L2ItemInstance stored in database from its objectID
+	 * @return a ItemInstance stored in database from its objectID
 	 */
-	public static L2ItemInstance restoreFromDb(int ownerId, ResultSet rs)
+	public static ItemInstance restoreFromDb(int ownerId, ResultSet rs)
 	{
-		L2ItemInstance inst = null;
+		ItemInstance inst = null;
 		int objectId, item_id, loc_data, enchant_level, custom_type1, custom_type2, manaLeft, count;
 		long time;
 		ItemLocation loc;
@@ -891,14 +898,14 @@ public final class L2ItemInstance extends L2Object
 			return null;
 		}
 		
-		L2Item item = ItemTable.getInstance().getTemplate(item_id);
+		Item item = ItemTable.getInstance().getTemplate(item_id);
 		if (item == null)
 		{
 			_log.severe("Item item_id=" + item_id + " not known, object_id=" + objectId);
 			return null;
 		}
 		
-		inst = new L2ItemInstance(objectId, item);
+		inst = new ItemInstance(objectId, item);
 		inst._ownerId = ownerId;
 		inst.setCount(count);
 		inst._enchantLevel = enchant_level;
@@ -921,7 +928,7 @@ public final class L2ItemInstance extends L2Object
 	}
 	
 	/**
-	 * Init a dropped L2ItemInstance and add it in the world as a visible object.<BR>
+	 * Init a dropped ItemInstance and add it in the world as a visible object.<BR>
 	 * <BR>
 	 * <FONT COLOR=#FF0000><B> <U>Caution</U> : This method DOESN'T ADD the object to _allObjects of L2World </B></FONT><BR>
 	 * <BR>
@@ -939,9 +946,9 @@ public final class L2ItemInstance extends L2Object
 	{
 		private int _x, _y, _z;
 		private final L2Character _dropper;
-		private final L2ItemInstance _itm;
+		private final ItemInstance _itm;
 		
-		public ItemDropTask(L2ItemInstance item, L2Character dropper, int x, int y, int z)
+		public ItemDropTask(ItemInstance item, L2Character dropper, int x, int y, int z)
 		{
 			_x = x;
 			_y = y;
@@ -965,7 +972,7 @@ public final class L2ItemInstance extends L2Object
 			
 			synchronized (_itm)
 			{
-				// Set the x,y,z position of the L2ItemInstance dropped and update its _worldregion
+				// Set the x,y,z position of the ItemInstance dropped and update its _worldregion
 				_itm.setIsVisible(true);
 				_itm.getPosition().setWorldPosition(_x, _y, _z);
 				_itm.getPosition().setWorldRegion(L2World.getInstance().getRegion(getPosition().getWorldPosition()));
@@ -975,7 +982,7 @@ public final class L2ItemInstance extends L2Object
 			_itm.setDropTime(System.currentTimeMillis());
 			_itm.setDropperObjectId(_dropper != null ? _dropper.getObjectId() : 0); // Set the dropper Id for the knownlist packets in sendInfo
 			
-			// Add the L2ItemInstance dropped in the world as a visible object
+			// Add the ItemInstance dropped in the world as a visible object
 			L2World.getInstance().addVisibleObject(_itm, _itm.getPosition().getWorldRegion());
 			
 			if (Config.SAVE_DROPPED_ITEM)
@@ -986,7 +993,7 @@ public final class L2ItemInstance extends L2Object
 	}
 	
 	/**
-	 * Remove a L2ItemInstance from the world and send server->client GetItem packets.<BR>
+	 * Remove a ItemInstance from the world and send server->client GetItem packets.<BR>
 	 * <BR>
 	 * <FONT COLOR=#FF0000><B> <U>Caution</U> : This method DOESN'T REMOVE the object from _allObjects of L2World </B></FONT><BR>
 	 * <BR>
@@ -998,7 +1005,7 @@ public final class L2ItemInstance extends L2Object
 		
 		L2WorldRegion oldregion = getPosition().getWorldRegion();
 		
-		// Create a server->client GetItem packet to pick up the L2ItemInstance
+		// Create a server->client GetItem packet to pick up the ItemInstance
 		GetItem gi = new GetItem(this, player.getObjectId());
 		player.broadcastPacket(gi);
 		
@@ -1028,7 +1035,7 @@ public final class L2ItemInstance extends L2Object
 			}
 		}
 		
-		// Remove the L2ItemInstance from the world (out of synchro, to avoid deadlocks)
+		// Remove the ItemInstance from the world (out of synchro, to avoid deadlocks)
 		L2World.getInstance().removeVisibleObject(this, oldregion);
 	}
 	
@@ -1232,7 +1239,7 @@ public final class L2ItemInstance extends L2Object
 	
 	public boolean isHerb()
 	{
-		return getItem().getItemType() == L2EtcItemType.HERB;
+		return getItem().getItemType() == EtcItemType.HERB;
 	}
 	
 	public boolean isHeroItem()

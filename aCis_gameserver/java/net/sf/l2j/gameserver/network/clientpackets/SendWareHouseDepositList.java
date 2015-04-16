@@ -17,9 +17,9 @@ package net.sf.l2j.gameserver.network.clientpackets;
 import static net.sf.l2j.gameserver.model.itemcontainer.PcInventory.ADENA_ID;
 
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.model.L2ItemInstance;
 import net.sf.l2j.gameserver.model.actor.L2Npc;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
+import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.model.itemcontainer.ItemContainer;
 import net.sf.l2j.gameserver.model.itemcontainer.PcWarehouse;
 import net.sf.l2j.gameserver.network.SystemMessageId;
@@ -107,7 +107,7 @@ public final class SendWareHouseDepositList extends L2GameClientPacket
 		
 		for (WarehouseItem i : _items)
 		{
-			L2ItemInstance item = player.checkItemManipulation(i.getObjectId(), i.getCount());
+			ItemInstance item = player.checkItemManipulation(i.getObjectId(), i.getCount());
 			if (item == null)
 			{
 				_log.warning("Error depositing a warehouse object for char " + player.getName() + " (validity check)");
@@ -146,7 +146,7 @@ public final class SendWareHouseDepositList extends L2GameClientPacket
 		for (WarehouseItem i : _items)
 		{
 			// Check validity of requested item
-			L2ItemInstance oldItem = player.checkItemManipulation(i.getObjectId(), i.getCount());
+			ItemInstance oldItem = player.checkItemManipulation(i.getObjectId(), i.getCount());
 			if (oldItem == null)
 			{
 				_log.warning("Error depositing a warehouse object for char " + player.getName() + " (olditem == null)");
@@ -156,7 +156,7 @@ public final class SendWareHouseDepositList extends L2GameClientPacket
 			if (!oldItem.isDepositable(isPrivate) || !oldItem.isAvailable(player, true, isPrivate))
 				continue;
 			
-			final L2ItemInstance newItem = player.getInventory().transferItem(warehouse.getName(), i.getObjectId(), i.getCount(), warehouse, player, manager);
+			final ItemInstance newItem = player.getInventory().transferItem(warehouse.getName(), i.getObjectId(), i.getCount(), warehouse, player, manager);
 			if (newItem == null)
 			{
 				_log.warning("Error depositing a warehouse object for char " + player.getName() + " (newitem == null)");

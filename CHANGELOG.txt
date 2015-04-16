@@ -1,4 +1,27 @@
 ====================================================================================================
+Changeset 323 @ 2014.03.31
+
+Misc
+    - Numerous cleanups (Javadocs, formatting, methods renaming, organizing classes, etcs).
+        - AutoSpawnHandler > AutoSpawnManager (moved to instancemanager)
+        - RecipeController > RecipeTable (moved to datatables)
+        - SevenSigns / SevenSignsFestival (moved to instancemanager)
+        - CursedWeapon (moved to model.entity)
+        - model/partymatching folder creation (moved 3 classes inside)
+        - Numerous "L2" drops on names (L2Item, L2Weapon, L2Armor, etc). More to come.
+        - Item renamed NewItem (because of L2Item renamed Item), and internal Item (another one) class dropped for ItemHolder use.
+    - Rework checkPvpSkill method. Ty Kingzor for the buff/heal fix.
+    - Recipes lists are on Collection from now (avoids operations from/to arrays).
+    - Drop _charId, getter/setter. Use of getObjectId() on the few uses.
+    - Rework SkillDat (renamed for SkillUseHolder), avoiding to create a massive amount of objects (3 final objects per players refreshed on demand, instead of 1 created per casted/queued skill).
+    - _currentPetSkill getSkill() is correctly setted to null after a pet skill cast.
+    - [L2J 6477] fix a double login issue.
+    - [L2J 6488] [L2J 6490] implements MaterialType, CrystalType enums. Cleanup ItemTable. Move and rename classes.
+    - Addition of missing sounds for boats, ty Root.
+
+PS: you have to replace all items/skills XMLs, and few quests/scripts aswell.
+
+====================================================================================================
 Changeset 322 @ 2014.03.28
 
 Trove drop, Misc

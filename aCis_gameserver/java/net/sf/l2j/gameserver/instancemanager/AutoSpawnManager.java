@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.l2j.gameserver.model;
+package net.sf.l2j.gameserver.instancemanager;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -35,6 +35,8 @@ import net.sf.l2j.gameserver.datatables.MapRegionTable;
 import net.sf.l2j.gameserver.datatables.NpcTable;
 import net.sf.l2j.gameserver.datatables.SpawnTable;
 import net.sf.l2j.gameserver.idfactory.IdFactory;
+import net.sf.l2j.gameserver.model.L2Spawn;
+import net.sf.l2j.gameserver.model.Location;
 import net.sf.l2j.gameserver.model.actor.L2Npc;
 import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
 import net.sf.l2j.util.Rnd;
@@ -55,9 +57,9 @@ import net.sf.l2j.util.Rnd;
  * can be used to specify the number of NPC instances to spawn using setSpawnCount(), and broadcast a message to all users using setBroadcast(). Random Spawning = OFF by default Broadcasting = OFF by default
  * @author Tempy
  */
-public class AutoSpawnHandler
+public class AutoSpawnManager
 {
-	protected static final Logger _log = Logger.getLogger(AutoSpawnHandler.class.getName());
+	protected static final Logger _log = Logger.getLogger(AutoSpawnManager.class.getName());
 	
 	private static final int DEFAULT_INITIAL_SPAWN = 30000; // 30 seconds after registration
 	private static final int DEFAULT_RESPAWN = 3600000; // 1 hour in millisecs
@@ -68,7 +70,7 @@ public class AutoSpawnHandler
 	
 	protected boolean _activeState = true;
 	
-	protected AutoSpawnHandler()
+	protected AutoSpawnManager()
 	{
 		_registeredSpawns = new ConcurrentHashMap<>();
 		_runningSpawns = new ConcurrentHashMap<>();
@@ -76,7 +78,7 @@ public class AutoSpawnHandler
 		restoreSpawnData();
 	}
 	
-	public static AutoSpawnHandler getInstance()
+	public static AutoSpawnManager getInstance()
 	{
 		return SingletonHolder._instance;
 	}
@@ -126,11 +128,11 @@ public class AutoSpawnHandler
 			statement.close();
 			
 			if (Config.DEBUG)
-				_log.config("AutoSpawnHandler: Loaded " + numLoaded + " spawn group(s) from the database.");
+				_log.config("AutoSpawnManager: Loaded " + numLoaded + " spawn group(s) from the database.");
 		}
 		catch (Exception e)
 		{
-			_log.warning("AutoSpawnHandler: Could not restore spawn data: " + e);
+			_log.warning("AutoSpawnManager: Could not restore spawn data: " + e);
 		}
 	}
 	
@@ -168,7 +170,7 @@ public class AutoSpawnHandler
 		setSpawnActive(newSpawn, true);
 		
 		if (Config.DEBUG)
-			_log.config("AutoSpawnHandler: Registered auto spawn for NPC ID " + npcId + " (Object ID = " + newId + ").");
+			_log.config("AutoSpawnManager: Registered auto spawn for NPC ID " + npcId + " (Object ID = " + newId + ").");
 		
 		return newSpawn;
 	}
@@ -209,11 +211,11 @@ public class AutoSpawnHandler
 			respawnTask.cancel(false);
 			
 			if (Config.DEBUG)
-				_log.config("AutoSpawnHandler: Removed auto spawn for NPC ID " + spawnInst._npcId + " (Object ID = " + spawnInst._objectId + ").");
+				_log.config("AutoSpawnManager: Removed auto spawn for NPC ID " + spawnInst._npcId + " (Object ID = " + spawnInst._objectId + ").");
 		}
 		catch (Exception e)
 		{
-			_log.warning("AutoSpawnHandler: Could not auto spawn for NPC ID " + spawnInst._npcId + " (Object ID = " + spawnInst._objectId + "): " + e);
+			_log.warning("AutoSpawnManager: Could not auto spawn for NPC ID " + spawnInst._npcId + " (Object ID = " + spawnInst._objectId + "): " + e);
 			return false;
 		}
 		
@@ -385,7 +387,7 @@ public class AutoSpawnHandler
 				// If there are no set co-ordinates, cancel the spawn task.
 				if (locationList.length == 0)
 				{
-					_log.info("AutoSpawnHandler: No location co-ords specified for spawn instance (Object ID = " + _objectId + ").");
+					_log.info("AutoSpawnManager: No location co-ords specified for spawn instance (Object ID = " + _objectId + ").");
 					return;
 				}
 				
@@ -464,7 +466,7 @@ public class AutoSpawnHandler
 			}
 			catch (Exception e)
 			{
-				_log.log(Level.WARNING, "AutoSpawnHandler: An error occurred while initializing spawn instance (Object ID = " + _objectId + "): " + e.getMessage(), e);
+				_log.log(Level.WARNING, "AutoSpawnManager: An error occurred while initializing spawn instance (Object ID = " + _objectId + "): " + e.getMessage(), e);
 			}
 		}
 	}
@@ -493,7 +495,7 @@ public class AutoSpawnHandler
 				
 				if (spawnInst == null)
 				{
-					_log.info("AutoSpawnHandler: No spawn registered for object ID = " + _objectId + ".");
+					_log.info("AutoSpawnManager: No spawn registered for object ID = " + _objectId + ".");
 					return;
 				}
 				
@@ -506,12 +508,12 @@ public class AutoSpawnHandler
 					spawnInst.removeNpcInstance(npcInst);
 					
 					if (Config.DEBUG)
-						_log.info("AutoSpawnHandler: Spawns removed for spawn instance (Object ID = " + _objectId + ").");
+						_log.info("AutoSpawnManager: Spawns removed for spawn instance (Object ID = " + _objectId + ").");
 				}
 			}
 			catch (Exception e)
 			{
-				_log.warning("AutoSpawnHandler: An error occurred while despawning spawn (Object ID = " + _objectId + "): " + e);
+				_log.warning("AutoSpawnManager: An error occurred while despawning spawn (Object ID = " + _objectId + "): " + e);
 			}
 		}
 	}
@@ -688,6 +690,6 @@ public class AutoSpawnHandler
 	
 	private static class SingletonHolder
 	{
-		protected static final AutoSpawnHandler _instance = new AutoSpawnHandler();
+		protected static final AutoSpawnManager _instance = new AutoSpawnManager();
 	}
 }

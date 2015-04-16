@@ -18,10 +18,10 @@ import java.util.Calendar;
 import java.util.List;
 
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.SevenSigns;
-import net.sf.l2j.gameserver.SevenSignsFestival;
-import net.sf.l2j.gameserver.model.L2ItemInstance;
+import net.sf.l2j.gameserver.instancemanager.SevenSigns;
+import net.sf.l2j.gameserver.instancemanager.SevenSignsFestival;
 import net.sf.l2j.gameserver.model.L2Party;
+import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.ActionFailed;
 import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
@@ -263,7 +263,7 @@ public final class L2FestivalGuideInstance extends L2NpcInstance
 						return;
 					}
 					
-					final L2ItemInstance bloodOfferings = player.getInventory().getItemByItemId(SevenSignsFestival.FESTIVAL_OFFERING_ID);
+					final ItemInstance bloodOfferings = player.getInventory().getItemByItemId(SevenSignsFestival.FESTIVAL_OFFERING_ID);
 					
 					// Check if the player collected any blood offerings during the festival.
 					if (bloodOfferings == null)

@@ -29,12 +29,12 @@ import net.sf.l2j.gameserver.model.actor.L2Npc;
 import net.sf.l2j.gameserver.model.actor.instance.L2MercManagerInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2MerchantInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
+import net.sf.l2j.gameserver.model.item.kind.Item;
 import net.sf.l2j.gameserver.model.itemcontainer.Inventory;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.ActionFailed;
 import net.sf.l2j.gameserver.network.serverpackets.ShopPreviewInfo;
 import net.sf.l2j.gameserver.network.serverpackets.UserInfo;
-import net.sf.l2j.gameserver.templates.item.L2Item;
 import net.sf.l2j.gameserver.util.Util;
 
 /**
@@ -162,7 +162,7 @@ public final class RequestPreviewItem extends L2GameClientPacket
 				return;
 			}
 			
-			final L2Item template = ItemTable.getInstance().getTemplate(itemId);
+			final Item template = ItemTable.getInstance().getTemplate(itemId);
 			if (template == null)
 				continue;
 			

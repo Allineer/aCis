@@ -20,8 +20,8 @@ import java.util.List;
 import net.sf.l2j.gameserver.datatables.ItemTable;
 import net.sf.l2j.gameserver.model.base.ClassId;
 import net.sf.l2j.gameserver.model.base.Race;
+import net.sf.l2j.gameserver.model.item.kind.Item;
 import net.sf.l2j.gameserver.templates.StatsSet;
-import net.sf.l2j.gameserver.templates.item.L2Item;
 
 /**
  * @author mkizub
@@ -47,7 +47,7 @@ public class L2PcTemplate extends L2CharTemplate
 	public final float lvlMpAdd;
 	public final float lvlMpMod;
 	
-	private final List<L2Item> _items = new ArrayList<>();
+	private final List<Item> _items = new ArrayList<>();
 	
 	public L2PcTemplate(StatsSet set)
 	{
@@ -77,7 +77,7 @@ public class L2PcTemplate extends L2CharTemplate
 	 */
 	public void addItem(int itemId)
 	{
-		L2Item item = ItemTable.getInstance().getTemplate(itemId);
+		Item item = ItemTable.getInstance().getTemplate(itemId);
 		if (item != null)
 			_items.add(item);
 	}
@@ -85,9 +85,9 @@ public class L2PcTemplate extends L2CharTemplate
 	/**
 	 * @return itemIds of all the starter equipment
 	 */
-	public L2Item[] getItems()
+	public Item[] getItems()
 	{
-		return _items.toArray(new L2Item[_items.size()]);
+		return _items.toArray(new Item[_items.size()]);
 	}
 	
 	public final int getFallHeight()

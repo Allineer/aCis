@@ -18,15 +18,15 @@ import java.util.Arrays;
 import java.util.logging.Level;
 
 import net.sf.l2j.gameserver.model.L2Effect;
-import net.sf.l2j.gameserver.model.L2ItemInstance;
 import net.sf.l2j.gameserver.model.L2Skill;
 import net.sf.l2j.gameserver.model.actor.L2Character;
 import net.sf.l2j.gameserver.model.actor.L2Npc;
 import net.sf.l2j.gameserver.model.actor.L2Summon;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
+import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
+import net.sf.l2j.gameserver.model.item.kind.Item;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
-import net.sf.l2j.gameserver.templates.item.L2Item;
 
 public final class SystemMessage extends L2GameServerPacket
 {
@@ -212,12 +212,12 @@ public final class SystemMessage extends L2GameServerPacket
 		return this;
 	}
 	
-	public final SystemMessage addItemName(final L2ItemInstance item)
+	public final SystemMessage addItemName(final ItemInstance item)
 	{
 		return addItemName(item.getItem().getItemId());
 	}
 	
-	public final SystemMessage addItemName(final L2Item item)
+	public final SystemMessage addItemName(final Item item)
 	{
 		return addItemName(item.getItemId());
 	}

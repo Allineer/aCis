@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.sf.l2j.gameserver.model.L2ArmorSet;
+import net.sf.l2j.gameserver.model.item.ArmorSet;
 import net.sf.l2j.gameserver.templates.StatsSet;
 import net.sf.l2j.gameserver.xmlfactory.XMLParser;
 
@@ -32,7 +32,7 @@ public class ArmorSetsTable
 {
 	private static Logger _log = Logger.getLogger(ArmorSetsTable.class.getName());
 	
-	private final Map<Integer, L2ArmorSet> _armorSets = new HashMap<>();
+	private final Map<Integer, ArmorSet> _armorSets = new HashMap<>();
 	
 	public static ArmorSetsTable getInstance()
 	{
@@ -66,7 +66,7 @@ public class ArmorSetsTable
 					int shield = set.getInteger("shield", 0);
 					int shield_skill_id = set.getInteger("shield_skill_id", 0);
 					int enchant6skill = set.getInteger("enchant6skill", 0);
-					_armorSets.put(chest, new L2ArmorSet(chest, legs, head, gloves, feet, skill_id, shield, shield_skill_id, enchant6skill));
+					_armorSets.put(chest, new ArmorSet(chest, legs, head, gloves, feet, skill_id, shield, shield_skill_id, enchant6skill));
 				}
 			}
 		}
@@ -82,7 +82,7 @@ public class ArmorSetsTable
 		return _armorSets.containsKey(chestId);
 	}
 	
-	public L2ArmorSet getSet(int chestId)
+	public ArmorSet getSet(int chestId)
 	{
 		return _armorSets.get(chestId);
 	}

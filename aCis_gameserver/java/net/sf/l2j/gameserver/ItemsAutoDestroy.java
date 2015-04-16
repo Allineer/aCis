@@ -20,14 +20,14 @@ import java.util.logging.Logger;
 
 import net.sf.l2j.Config;
 import net.sf.l2j.gameserver.instancemanager.ItemsOnGroundManager;
-import net.sf.l2j.gameserver.model.L2ItemInstance;
 import net.sf.l2j.gameserver.model.L2World;
-import net.sf.l2j.gameserver.templates.item.L2EtcItemType;
+import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
+import net.sf.l2j.gameserver.model.item.type.EtcItemType;
 
 public class ItemsAutoDestroy
 {
 	protected static final Logger _log = Logger.getLogger(ItemsAutoDestroy.class.getName());
-	protected List<L2ItemInstance> _items;
+	protected List<ItemInstance> _items;
 	protected static long _sleep;
 	
 	protected ItemsAutoDestroy()
@@ -47,7 +47,7 @@ public class ItemsAutoDestroy
 		return SingletonHolder._instance;
 	}
 	
-	public void addItem(L2ItemInstance item)
+	public void addItem(ItemInstance item)
 	{
 		item.setDropTime(System.currentTimeMillis());
 		_items.add(item);
@@ -62,13 +62,13 @@ public class ItemsAutoDestroy
 				return;
 			
 			long curtime = System.currentTimeMillis();
-			for (L2ItemInstance item : _items)
+			for (ItemInstance item : _items)
 			{
-				if (item == null || item.getDropTime() == 0 || item.getLocation() != L2ItemInstance.ItemLocation.VOID)
+				if (item == null || item.getDropTime() == 0 || item.getLocation() != ItemInstance.ItemLocation.VOID)
 					_items.remove(item);
 				else
 				{
-					if ((item.getItemType() == L2EtcItemType.HERB && (curtime - item.getDropTime()) > Config.HERB_AUTO_DESTROY_TIME) || ((curtime - item.getDropTime()) > _sleep))
+					if ((item.getItemType() == EtcItemType.HERB && (curtime - item.getDropTime()) > Config.HERB_AUTO_DESTROY_TIME) || ((curtime - item.getDropTime()) > _sleep))
 					{
 						L2World.getInstance().removeVisibleObject(item, item.getWorldRegion());
 						L2World.getInstance().removeObject(item);

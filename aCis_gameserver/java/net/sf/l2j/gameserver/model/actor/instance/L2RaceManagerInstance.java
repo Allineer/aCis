@@ -21,8 +21,8 @@ import net.sf.l2j.gameserver.idfactory.IdFactory;
 import net.sf.l2j.gameserver.instancemanager.games.MonsterRace;
 import net.sf.l2j.gameserver.instancemanager.games.MonsterRace.HistoryInfo;
 import net.sf.l2j.gameserver.instancemanager.games.MonsterRace.RaceState;
-import net.sf.l2j.gameserver.model.L2ItemInstance;
 import net.sf.l2j.gameserver.model.actor.knownlist.RaceManagerKnownList;
+import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.ActionFailed;
 import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
@@ -160,7 +160,7 @@ public class L2RaceManagerInstance extends L2NpcInstance
 				player.setRace(0, 0);
 				player.setRace(1, 0);
 				
-				L2ItemInstance item = new L2ItemInstance(IdFactory.getInstance().getNextId(), 4443);
+				ItemInstance item = new ItemInstance(IdFactory.getInstance().getNextId(), 4443);
 				item.setCount(1);
 				item.setEnchantLevel(MonsterRace.getInstance().getRaceNumber());
 				item.setCustomType1(ticket);
@@ -229,7 +229,7 @@ public class L2RaceManagerInstance extends L2NpcInstance
 			final StringBuilder replyMSG = new StringBuilder();
 			
 			// Retrieve player's tickets.
-			for (L2ItemInstance ticket : player.getInventory().getAllItemsByItemId(4443))
+			for (ItemInstance ticket : player.getInventory().getAllItemsByItemId(4443))
 			{
 				// Don't list current race tickets.
 				if (ticket.getEnchantLevel() == MonsterRace.getInstance().getRaceNumber())
@@ -254,7 +254,7 @@ public class L2RaceManagerInstance extends L2NpcInstance
 			}
 			
 			// Retrieve ticket on player's inventory.
-			final L2ItemInstance ticket = player.getInventory().getItemByObjectId(val);
+			final ItemInstance ticket = player.getInventory().getItemByObjectId(val);
 			if (ticket == null)
 			{
 				super.onBypassFeedback(player, "Chat 0");
@@ -296,7 +296,7 @@ public class L2RaceManagerInstance extends L2NpcInstance
 			}
 			
 			// Delete ticket on player's inventory.
-			final L2ItemInstance ticket = player.getInventory().getItemByObjectId(val);
+			final ItemInstance ticket = player.getInventory().getItemByObjectId(val);
 			if (ticket == null)
 			{
 				super.onBypassFeedback(player, "Chat 0");

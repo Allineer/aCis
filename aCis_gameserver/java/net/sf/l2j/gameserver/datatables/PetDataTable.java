@@ -27,8 +27,8 @@ import net.sf.l2j.L2DatabaseFactory;
 import net.sf.l2j.gameserver.model.L2PetData;
 import net.sf.l2j.gameserver.model.L2PetData.L2PetLevelData;
 import net.sf.l2j.gameserver.model.actor.instance.L2PetInstance;
-import net.sf.l2j.gameserver.templates.item.L2EtcItemType;
-import net.sf.l2j.gameserver.templates.item.L2Item;
+import net.sf.l2j.gameserver.model.item.kind.Item;
+import net.sf.l2j.gameserver.model.item.type.EtcItemType;
 import net.sf.l2j.gameserver.xmlfactory.XMLDocumentFactory;
 
 import org.w3c.dom.Document;
@@ -177,8 +177,8 @@ public class PetDataTable
 	
 	public static boolean isPetCollar(int itemId)
 	{
-		L2Item item = ItemTable.getInstance().getTemplate(itemId);
-		if (item != null && item.getItemType() == L2EtcItemType.PET_COLLAR)
+		Item item = ItemTable.getInstance().getTemplate(itemId);
+		if (item != null && item.getItemType() == EtcItemType.PET_COLLAR)
 			return true;
 		
 		return false;

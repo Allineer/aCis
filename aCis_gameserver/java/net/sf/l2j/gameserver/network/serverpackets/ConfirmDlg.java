@@ -18,15 +18,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.l2j.gameserver.model.L2Effect;
-import net.sf.l2j.gameserver.model.L2ItemInstance;
 import net.sf.l2j.gameserver.model.L2Skill;
 import net.sf.l2j.gameserver.model.actor.L2Character;
 import net.sf.l2j.gameserver.model.actor.L2Npc;
 import net.sf.l2j.gameserver.model.actor.L2Summon;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
+import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
+import net.sf.l2j.gameserver.model.item.kind.Item;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
-import net.sf.l2j.gameserver.templates.item.L2Item;
 
 /**
  * @author kombat Format: cd d[d s/d/dd/ddd]
@@ -120,12 +120,12 @@ public class ConfirmDlg extends L2GameServerPacket
 		return this;
 	}
 	
-	public ConfirmDlg addItemName(L2ItemInstance item)
+	public ConfirmDlg addItemName(ItemInstance item)
 	{
 		return addItemName(item.getItem().getItemId());
 	}
 	
-	public ConfirmDlg addItemName(L2Item item)
+	public ConfirmDlg addItemName(Item item)
 	{
 		return addItemName(item.getItemId());
 	}

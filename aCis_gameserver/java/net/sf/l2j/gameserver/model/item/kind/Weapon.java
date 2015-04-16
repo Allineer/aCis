@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sf.l2j.gameserver.templates.item;
+package net.sf.l2j.gameserver.model.item.kind;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,6 +26,7 @@ import net.sf.l2j.gameserver.model.actor.L2Character;
 import net.sf.l2j.gameserver.model.actor.L2Npc;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.model.holder.SkillHolder;
+import net.sf.l2j.gameserver.model.item.type.WeaponType;
 import net.sf.l2j.gameserver.model.quest.Quest;
 import net.sf.l2j.gameserver.model.quest.QuestEventType;
 import net.sf.l2j.gameserver.skills.Env;
@@ -39,9 +40,9 @@ import net.sf.l2j.util.StringUtil;
 /**
  * This class is dedicated to the management of weapons.
  */
-public final class L2Weapon extends L2Item
+public final class Weapon extends Item
 {
-	private final L2WeaponType _type;
+	private final WeaponType _type;
 	private final int _rndDam;
 	private final int _soulShotCount;
 	private final int _spiritShotCount;
@@ -77,14 +78,14 @@ public final class L2Weapon extends L2Item
 	 * <LI>_isMagical</LI>
 	 * </UL>
 	 * @param set : StatsSet designating the set of couples (key,value) caracterizing the armor
-	 * @see L2Item constructor
+	 * @see Item constructor
 	 */
-	public L2Weapon(StatsSet set)
+	public Weapon(StatsSet set)
 	{
 		super(set);
-		_type = L2WeaponType.valueOf(set.getString("weapon_type", "none").toUpperCase());
-		_type1 = L2Item.TYPE1_WEAPON_RING_EARRING_NECKLACE;
-		_type2 = L2Item.TYPE2_WEAPON;
+		_type = WeaponType.valueOf(set.getString("weapon_type", "none").toUpperCase());
+		_type1 = Item.TYPE1_WEAPON_RING_EARRING_NECKLACE;
+		_type2 = Item.TYPE2_WEAPON;
 		_soulShotCount = set.getInteger("soulshots", 0);
 		_spiritShotCount = set.getInteger("spiritshots", 0);
 		_rndDam = set.getInteger("random_damage", 0);
@@ -187,7 +188,7 @@ public final class L2Weapon extends L2Item
 	 * @return the type of weapon.
 	 */
 	@Override
-	public L2WeaponType getItemType()
+	public WeaponType getItemType()
 	{
 		return _type;
 	}
@@ -242,7 +243,7 @@ public final class L2Weapon extends L2Item
 	}
 	
 	/**
-	 * @return the Reuse Delay of the L2Weapon.
+	 * @return the Reuse Delay of the Weapon.
 	 */
 	public int getReuseDelay()
 	{

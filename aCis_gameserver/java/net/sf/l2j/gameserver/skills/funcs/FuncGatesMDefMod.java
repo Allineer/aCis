@@ -14,7 +14,7 @@
  */
 package net.sf.l2j.gameserver.skills.funcs;
 
-import net.sf.l2j.gameserver.SevenSigns;
+import net.sf.l2j.gameserver.instancemanager.SevenSigns;
 import net.sf.l2j.gameserver.skills.Env;
 import net.sf.l2j.gameserver.skills.Stats;
 import net.sf.l2j.gameserver.skills.basefuncs.Func;

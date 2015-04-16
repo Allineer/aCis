@@ -19,7 +19,7 @@ import java.util.Collection;
 import net.sf.l2j.Config;
 import net.sf.l2j.gameserver.model.L2TradeList;
 import net.sf.l2j.gameserver.model.L2TradeList.L2TradeItem;
-import net.sf.l2j.gameserver.templates.item.L2Item;
+import net.sf.l2j.gameserver.model.item.kind.Item;
 
 public class ShopPreviewList extends L2GameServerPacket
 {
@@ -56,19 +56,19 @@ public class ShopPreviewList extends L2GameServerPacket
 		int newlength = 0;
 		for (L2TradeItem item : _list)
 		{
-			if (item.getTemplate().getCrystalType() <= _expertise && item.getTemplate().isEquipable())
+			if (item.getTemplate().getCrystalType().getId() <= _expertise && item.getTemplate().isEquipable())
 				newlength++;
 		}
 		writeH(newlength);
 		
 		for (L2TradeItem item : _list)
 		{
-			if (item.getTemplate().getCrystalType() <= _expertise && item.getTemplate().isEquipable())
+			if (item.getTemplate().getCrystalType().getId() <= _expertise && item.getTemplate().isEquipable())
 			{
 				writeD(item.getItemId());
 				writeH(item.getTemplate().getType2()); // item type2
 				
-				if (item.getTemplate().getType1() != L2Item.TYPE1_ITEM_QUESTITEM_ADENA)
+				if (item.getTemplate().getType1() != Item.TYPE1_ITEM_QUESTITEM_ADENA)
 					writeH(item.getTemplate().getBodyPart()); // slot
 				else
 					writeH(0x00); // slot

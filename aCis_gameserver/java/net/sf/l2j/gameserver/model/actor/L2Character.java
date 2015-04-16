@@ -46,7 +46,6 @@ import net.sf.l2j.gameserver.model.FusionSkill;
 import net.sf.l2j.gameserver.model.IChanceSkillTrigger;
 import net.sf.l2j.gameserver.model.L2CharPosition;
 import net.sf.l2j.gameserver.model.L2Effect;
-import net.sf.l2j.gameserver.model.L2ItemInstance;
 import net.sf.l2j.gameserver.model.L2Object;
 import net.sf.l2j.gameserver.model.L2Party;
 import net.sf.l2j.gameserver.model.L2Skill;
@@ -58,13 +57,18 @@ import net.sf.l2j.gameserver.model.ShotType;
 import net.sf.l2j.gameserver.model.actor.instance.L2DoorInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2NpcWalkerInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
-import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance.SkillDat;
 import net.sf.l2j.gameserver.model.actor.instance.L2PetInstance;
 import net.sf.l2j.gameserver.model.actor.instance.L2RiftInvaderInstance;
 import net.sf.l2j.gameserver.model.actor.knownlist.CharKnownList;
 import net.sf.l2j.gameserver.model.actor.position.CharPosition;
 import net.sf.l2j.gameserver.model.actor.stat.CharStat;
 import net.sf.l2j.gameserver.model.actor.status.CharStatus;
+import net.sf.l2j.gameserver.model.holder.SkillUseHolder;
+import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
+import net.sf.l2j.gameserver.model.item.kind.Armor;
+import net.sf.l2j.gameserver.model.item.kind.Item;
+import net.sf.l2j.gameserver.model.item.kind.Weapon;
+import net.sf.l2j.gameserver.model.item.type.WeaponType;
 import net.sf.l2j.gameserver.model.itemcontainer.Inventory;
 import net.sf.l2j.gameserver.model.quest.Quest;
 import net.sf.l2j.gameserver.model.quest.QuestEventType;
@@ -113,10 +117,6 @@ import net.sf.l2j.gameserver.skills.funcs.FuncPDefMod;
 import net.sf.l2j.gameserver.taskmanager.AttackStanceTaskManager;
 import net.sf.l2j.gameserver.templates.chars.L2CharTemplate;
 import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
-import net.sf.l2j.gameserver.templates.item.L2Armor;
-import net.sf.l2j.gameserver.templates.item.L2Item;
-import net.sf.l2j.gameserver.templates.item.L2Weapon;
-import net.sf.l2j.gameserver.templates.item.L2WeaponType;
 import net.sf.l2j.gameserver.templates.skills.L2EffectFlag;
 import net.sf.l2j.gameserver.templates.skills.L2EffectType;
 import net.sf.l2j.gameserver.templates.skills.L2SkillType;
@@ -606,10 +606,10 @@ public abstract class L2Character extends L2Object
 		stopEffectsOnAction();
 		
 		// Get the active weapon item corresponding to the active weapon instance (always equipped in the right hand)
-		final L2Weapon weaponItem = getActiveWeaponItem();
-		final L2WeaponType weaponItemType = getAttackType();
+		final Weapon weaponItem = getActiveWeaponItem();
+		final WeaponType weaponItemType = getAttackType();
 		
-		if (weaponItemType == L2WeaponType.FISHINGROD)
+		if (weaponItemType == WeaponType.FISHINGROD)
 		{
 			// You can't make an attack with a fishing pole.
 			sendPacket(SystemMessage.getSystemMessage(SystemMessageId.CANNOT_ATTACK_WITH_FISHING_POLE));
@@ -629,7 +629,7 @@ public abstract class L2Character extends L2Object
 		}
 		
 		// Check for a bow
-		if (weaponItemType == L2WeaponType.BOW)
+		if (weaponItemType == WeaponType.BOW)
 		{
 			// Check for arrows and MP
 			if (this instanceof L2PcInstance)
@@ -703,12 +703,12 @@ public abstract class L2Character extends L2Object
 		_attackEndTime -= 1;
 		
 		// Create Attack
-		Attack attack = new Attack(this, wasSSCharged, (weaponItem != null) ? weaponItem.getCrystalType() : 0);
+		Attack attack = new Attack(this, wasSSCharged, (weaponItem != null) ? weaponItem.getCrystalType().getId() : 0);
 		
 		// Make sure that char is facing selected target
 		setHeading(Util.calculateHeadingFrom(this, target));
 		
-		// Get the Attack Reuse Delay of the L2Weapon
+		// Get the Attack Reuse Delay of the Weapon
 		final int reuse = calculateReuseTime(target, weaponItem);
 		
 		boolean hitted;
@@ -730,7 +730,7 @@ public abstract class L2Character extends L2Object
 				break;
 			
 			case FIST:
-				if (getSecondaryWeaponItem() != null && getSecondaryWeaponItem() instanceof L2Armor)
+				if (getSecondaryWeaponItem() != null && getSecondaryWeaponItem() instanceof Armor)
 					hitted = doAttackHitSimple(attack, target, timeToHit);
 				else
 					hitted = doAttackHitByDual(attack, target, timeToHit);
@@ -744,7 +744,7 @@ public abstract class L2Character extends L2Object
 		// Flag the attacker if it's a L2PcInstance outside a PvP area
 		if (player != null)
 		{
-			AttackStanceTaskManager.getInstance().addAttackStanceTask(player);
+			AttackStanceTaskManager.getInstance().add(player);
 			
 			if (player.getPet() != target)
 				player.updatePvPStatus(target);
@@ -804,7 +804,7 @@ public abstract class L2Character extends L2Object
 			broadcastPacket(attack);
 		
 		// Notify AI with EVT_READY_TO_ACT
-		ThreadPoolManager.getInstance().scheduleAi(new NotifyAITask(CtrlEvent.EVT_READY_TO_ACT), (weaponItemType == L2WeaponType.BOW) ? timeAtk : timeAtk + reuse);
+		ThreadPoolManager.getInstance().scheduleAi(new NotifyAITask(CtrlEvent.EVT_READY_TO_ACT), (weaponItemType == WeaponType.BOW) ? timeAtk : timeAtk + reuse);
 	}
 	
 	/**
@@ -1499,8 +1499,8 @@ public abstract class L2Character extends L2Object
 		// Check if the spell consumes an Item
 		if (skill.getItemConsumeId() > 0 && getInventory() != null)
 		{
-			// Get the L2ItemInstance consumed by the spell
-			L2ItemInstance requiredItems = getInventory().getItemByItemId(skill.getItemConsumeId());
+			// Get the ItemInstance consumed by the spell
+			ItemInstance requiredItems = getInventory().getItemByItemId(skill.getItemConsumeId());
 			
 			// Check if the caster owns enough consumed Item to cast
 			if (requiredItems == null || requiredItems.getCount() < skill.getItemConsume())
@@ -4019,22 +4019,22 @@ public abstract class L2Character extends L2Object
 	/**
 	 * @return the active weapon instance (always equipped in the right hand).
 	 */
-	public abstract L2ItemInstance getActiveWeaponInstance();
+	public abstract ItemInstance getActiveWeaponInstance();
 	
 	/**
 	 * @return the active weapon item (always equipped in the right hand).
 	 */
-	public abstract L2Weapon getActiveWeaponItem();
+	public abstract Weapon getActiveWeaponItem();
 	
 	/**
 	 * @return the secondary weapon instance (always equipped in the left hand).
 	 */
-	public abstract L2ItemInstance getSecondaryWeaponInstance();
+	public abstract ItemInstance getSecondaryWeaponInstance();
 	
 	/**
-	 * @return the secondary {@link L2Item} item (always equiped in the left hand).
+	 * @return the secondary {@link Item} item (always equiped in the left hand).
 	 */
-	public abstract L2Item getSecondaryWeaponItem();
+	public abstract Item getSecondaryWeaponItem();
 	
 	/**
 	 * Manage hit process (called by Hit Task).<BR>
@@ -4110,7 +4110,7 @@ public abstract class L2Character extends L2Object
 		
 		if (!miss && damage > 0)
 		{
-			boolean isBow = (getAttackType() == L2WeaponType.BOW);
+			boolean isBow = (getAttackType() == WeaponType.BOW);
 			int reflectedDamage = 0;
 			
 			// Reflect damage system - do not reflect if weapon is a bow or target is invulnerable
@@ -4183,7 +4183,7 @@ public abstract class L2Character extends L2Object
 		}
 		
 		// Launch weapon Special ability effect if available
-		final L2Weapon activeWeapon = getActiveWeaponItem();
+		final Weapon activeWeapon = getActiveWeaponItem();
 		if (activeWeapon != null)
 			activeWeapon.getSkillEffects(this, target, crit);
 	}
@@ -4391,7 +4391,7 @@ public abstract class L2Character extends L2Object
 	 * @param weapon The wepaon to test.
 	 * @return The Attack Speed of the L2Character (delay (in milliseconds) before next attack).
 	 */
-	public int calculateTimeBetweenAttacks(L2Character target, L2Weapon weapon)
+	public int calculateTimeBetweenAttacks(L2Character target, Weapon weapon)
 	{
 		double atkSpd = 0;
 		if (weapon != null)
@@ -4401,10 +4401,11 @@ public abstract class L2Character extends L2Object
 				case BOW:
 					atkSpd = getStat().getPAtkSpd();
 					return (int) (1500 * 345 / atkSpd);
+					
 				case DAGGER:
 					atkSpd = getStat().getPAtkSpd();
-					// atkSpd /= 1.15;
 					break;
+				
 				default:
 					atkSpd = getStat().getPAtkSpd();
 			}
@@ -4415,7 +4416,7 @@ public abstract class L2Character extends L2Object
 		return Formulas.calcPAtkSpd(this, target, atkSpd);
 	}
 	
-	public int calculateReuseTime(L2Character target, L2Weapon weapon)
+	public int calculateReuseTime(L2Character target, Weapon weapon)
 	{
 		if (weapon == null)
 			return 0;
@@ -4431,6 +4432,7 @@ public abstract class L2Character extends L2Object
 		{
 			case BOW:
 				return (int) (reuse * 345 / atkSpd);
+				
 			default:
 				return (int) (reuse * 312 / atkSpd);
 		}
@@ -4439,13 +4441,13 @@ public abstract class L2Character extends L2Object
 	/**
 	 * @return the type of attack, depending of the worn weapon.
 	 */
-	public L2WeaponType getAttackType()
+	public WeaponType getAttackType()
 	{
-		final L2Weapon weapon = getActiveWeaponItem();
+		final Weapon weapon = getActiveWeaponItem();
 		if (weapon != null)
 			return weapon.getItemType();
 		
-		return L2WeaponType.NONE;
+		return WeaponType.NONE;
 	}
 	
 	/**
@@ -4967,21 +4969,27 @@ public abstract class L2Character extends L2Object
 		
 		notifyQuestEventSkillFinished(skill, target);
 		
-		/*
-		 * If character is a player, then wipe their current cast state and check if a skill is queued. If there is a queued skill, launch it and wipe the queue.
-		 */
-		if (this instanceof L2PcInstance)
+		// If the current character is a summon, refresh _currentPetSkill, otherwise if it's a player, refresh _currentSkill and _queuedSkill.
+		if (this instanceof L2Playable)
 		{
-			L2PcInstance currPlayer = (L2PcInstance) this;
-			SkillDat queuedSkill = currPlayer.getQueuedSkill();
+			boolean isPlayer = this instanceof L2PcInstance;
+			final L2PcInstance player = getActingPlayer();
 			
-			currPlayer.setCurrentSkill(null, false, false);
-			
-			if (queuedSkill != null)
+			if (isPlayer)
 			{
-				currPlayer.setQueuedSkill(null, false, false);
-				ThreadPoolManager.getInstance().executeTask(new QueuedMagicUseTask(currPlayer, queuedSkill.getSkill(), queuedSkill.isCtrlPressed(), queuedSkill.isShiftPressed()));
+				// Wipe current cast state.
+				player.setCurrentSkill(null, false, false);
+				
+				// Check if a skill is queued.
+				final SkillUseHolder queuedSkill = player.getQueuedSkill();
+				if (queuedSkill.getSkill() != null)
+				{
+					ThreadPoolManager.getInstance().executeTask(new QueuedMagicUseTask(player, queuedSkill.getSkill(), queuedSkill.isCtrlPressed(), queuedSkill.isShiftPressed()));
+					player.setQueuedSkill(null, false, false);
+				}
 			}
+			else
+				player.setCurrentPetSkill(null, false, false);
 		}
 	}
 	
@@ -5105,7 +5113,7 @@ public abstract class L2Character extends L2Object
 		{
 			// Get the skill handler corresponding to the skill type (PDAM, MDAM, SWEEP...) started in gameserver
 			ISkillHandler handler = SkillHandler.getInstance().getSkillHandler(skill.getSkillType());
-			L2Weapon activeWeapon = getActiveWeaponItem();
+			Weapon activeWeapon = getActiveWeaponItem();
 			
 			// Check if the toggle skill effects are already in progress on the L2Character
 			if (skill.isToggle() && getFirstEffect(skill.getId()) != null)
@@ -5416,8 +5424,7 @@ public abstract class L2Character extends L2Object
 	 */
 	public final int getRandomDamage(L2Character target)
 	{
-		L2Weapon weaponItem = getActiveWeaponItem();
-		
+		Weapon weaponItem = getActiveWeaponItem();
 		if (weaponItem == null)
 			return 5 + (int) Math.sqrt(getLevel());
 		
@@ -5797,7 +5804,7 @@ public abstract class L2Character extends L2Object
 	 */
 	public final double getRandomDamageMultiplier()
 	{
-		L2Weapon activeWeapon = getActiveWeaponItem();
+		Weapon activeWeapon = getActiveWeaponItem();
 		int random;
 		
 		if (activeWeapon != null)

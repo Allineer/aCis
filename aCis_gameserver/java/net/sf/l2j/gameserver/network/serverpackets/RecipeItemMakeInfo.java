@@ -14,8 +14,7 @@
  */
 package net.sf.l2j.gameserver.network.serverpackets;
 
-import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.RecipeController;
+import net.sf.l2j.gameserver.datatables.RecipeTable;
 import net.sf.l2j.gameserver.model.L2RecipeList;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 
@@ -45,7 +44,7 @@ public class RecipeItemMakeInfo extends L2GameServerPacket
 	@Override
 	protected final void writeImpl()
 	{
-		L2RecipeList recipe = RecipeController.getInstance().getRecipeList(_id);
+		L2RecipeList recipe = RecipeTable.getInstance().getRecipeList(_id);
 		if (recipe != null)
 		{
 			writeC(0xD7);
@@ -56,7 +55,5 @@ public class RecipeItemMakeInfo extends L2GameServerPacket
 			writeD(_activeChar.getMaxMp());
 			writeD(_success ? 1 : 0); // item creation success/failed
 		}
-		else if (Config.DEBUG)
-			_log.info("No recipe found with ID = " + _id);
 	}
 }

@@ -14,7 +14,7 @@
  */
 package net.sf.l2j.gameserver.model.actor.instance;
 
-import net.sf.l2j.gameserver.SevenSigns;
+import net.sf.l2j.gameserver.instancemanager.SevenSigns;
 import net.sf.l2j.gameserver.network.serverpackets.ActionFailed;
 import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
 import net.sf.l2j.gameserver.templates.chars.L2NpcTemplate;
@@ -104,7 +104,7 @@ public class L2DuskPriestInstance extends L2SignsPriestInstance
 		
 		NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
 		html.setFile(filename);
-		html.replace("%objectId%",getObjectId());
+		html.replace("%objectId%", getObjectId());
 		player.sendPacket(html);
 	}
 }

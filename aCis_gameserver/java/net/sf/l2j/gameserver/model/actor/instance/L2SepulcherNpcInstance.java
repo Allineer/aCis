@@ -22,9 +22,9 @@ import net.sf.l2j.gameserver.ThreadPoolManager;
 import net.sf.l2j.gameserver.ai.CtrlIntention;
 import net.sf.l2j.gameserver.datatables.DoorTable;
 import net.sf.l2j.gameserver.instancemanager.FourSepulchersManager;
-import net.sf.l2j.gameserver.model.L2ItemInstance;
 import net.sf.l2j.gameserver.model.L2World;
 import net.sf.l2j.gameserver.model.actor.L2Npc;
+import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.model.quest.Quest;
 import net.sf.l2j.gameserver.model.quest.QuestEventType;
 import net.sf.l2j.gameserver.network.clientpackets.Say2;
@@ -261,7 +261,7 @@ public class L2SepulcherNpcInstance extends L2NpcInstance
 		}
 		else if (command.startsWith("open_gate"))
 		{
-			L2ItemInstance hallsKey = player.getInventory().getItemByItemId(HALLS_KEY);
+			ItemInstance hallsKey = player.getInventory().getItemByItemId(HALLS_KEY);
 			if (hallsKey == null)
 				showHtmlFile(player, "Gatekeeper-no.htm");
 			else if (FourSepulchersManager.getInstance().isAttackTime())

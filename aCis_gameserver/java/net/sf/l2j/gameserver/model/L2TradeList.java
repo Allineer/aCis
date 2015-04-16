@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 import net.sf.l2j.L2DatabaseFactory;
 import net.sf.l2j.gameserver.ThreadPoolManager;
 import net.sf.l2j.gameserver.datatables.ItemTable;
-import net.sf.l2j.gameserver.templates.item.L2Item;
+import net.sf.l2j.gameserver.model.item.kind.Item;
 
 public class L2TradeList
 {
@@ -162,7 +162,7 @@ public class L2TradeList
 		private static final Logger _log = Logger.getLogger(L2TradeItem.class.getName());
 		
 		private final int _listId, _itemId;
-		private final L2Item _template;
+		private final Item _template;
 		private int _price;
 		
 		// count related
@@ -201,7 +201,7 @@ public class L2TradeList
 			return _price;
 		}
 		
-		public L2Item getTemplate()
+		public Item getTemplate()
 		{
 			return _template;
 		}
