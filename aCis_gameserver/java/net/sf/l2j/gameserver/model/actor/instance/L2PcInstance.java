@@ -37,7 +37,6 @@ import java.util.logging.Level;
 
 import net.sf.l2j.Config;
 import net.sf.l2j.L2DatabaseFactory;
-import net.sf.l2j.gameserver.GameTimeController;
 import net.sf.l2j.gameserver.LoginServerThread;
 import net.sf.l2j.gameserver.ThreadPoolManager;
 import net.sf.l2j.gameserver.ai.CtrlEvent;
@@ -71,7 +70,6 @@ import net.sf.l2j.gameserver.instancemanager.CursedWeaponsManager;
 import net.sf.l2j.gameserver.instancemanager.DimensionalRiftManager;
 import net.sf.l2j.gameserver.instancemanager.DuelManager;
 import net.sf.l2j.gameserver.instancemanager.GrandBossManager;
-import net.sf.l2j.gameserver.instancemanager.ItemsOnGroundManager;
 import net.sf.l2j.gameserver.instancemanager.QuestManager;
 import net.sf.l2j.gameserver.instancemanager.SevenSigns;
 import net.sf.l2j.gameserver.instancemanager.SevenSignsFestival;
@@ -234,9 +232,10 @@ import net.sf.l2j.gameserver.skills.funcs.FuncMaxCpMul;
 import net.sf.l2j.gameserver.skills.l2skills.L2SkillSiegeFlag;
 import net.sf.l2j.gameserver.skills.l2skills.L2SkillSummon;
 import net.sf.l2j.gameserver.taskmanager.AttackStanceTaskManager;
-import net.sf.l2j.gameserver.taskmanager.ItemsAutoDestroyTaskManager;
+import net.sf.l2j.gameserver.taskmanager.GameTimeTaskManager;
+import net.sf.l2j.gameserver.taskmanager.ItemsOnGroundTaskManager;
 import net.sf.l2j.gameserver.taskmanager.PvpFlagTaskManager;
-import net.sf.l2j.gameserver.taskmanager.TakeBreakTaskManager;
+import net.sf.l2j.gameserver.taskmanager.ShadowItemTaskManager;
 import net.sf.l2j.gameserver.taskmanager.WaterTaskManager;
 import net.sf.l2j.gameserver.templates.skills.L2EffectFlag;
 import net.sf.l2j.gameserver.templates.skills.L2EffectType;
@@ -352,7 +351,7 @@ public final class L2PcInstance extends L2Playable
 		{
 			super.doAttack(target);
 			
-			getPlayer().setRecentFakeDeath(false);
+			getPlayer().clearRecentFakeDeath();
 		}
 		
 		@Override
@@ -360,7 +359,7 @@ public final class L2PcInstance extends L2Playable
 		{
 			super.doCast(skill);
 			
-			getPlayer().setRecentFakeDeath(false);
+			getPlayer().clearRecentFakeDeath();
 		}
 	}
 	
@@ -2920,22 +2919,6 @@ public final class L2PcInstance extends L2Playable
 		
 		item.dropMe(this, getX() + Rnd.get(50) - 25, getY() + Rnd.get(50) - 25, getZ() + 20);
 		
-		if (Config.ITEM_AUTO_DESTROY_TIME > 0 && Config.DESTROY_DROPPED_PLAYER_ITEM && !Config.LIST_PROTECTED_ITEMS.contains(item.getItemId()))
-		{
-			if ((item.isEquipable() && Config.DESTROY_EQUIPABLE_PLAYER_ITEM) || !item.isEquipable())
-				ItemsAutoDestroyTaskManager.getInstance().addItem(item);
-		}
-		
-		if (Config.DESTROY_DROPPED_PLAYER_ITEM)
-		{
-			if (!item.isEquipable() || (item.isEquipable() && Config.DESTROY_EQUIPABLE_PLAYER_ITEM))
-				item.setProtected(false);
-			else
-				item.setProtected(true);
-		}
-		else
-			item.setProtected(true);
-		
 		// retail drop protection
 		if (protectItem)
 			item.getDropProtection().protect(this);
@@ -2989,22 +2972,6 @@ public final class L2PcInstance extends L2Playable
 		}
 		
 		item.dropMe(this, x, y, z);
-		
-		if (Config.ITEM_AUTO_DESTROY_TIME > 0 && Config.DESTROY_DROPPED_PLAYER_ITEM && !Config.LIST_PROTECTED_ITEMS.contains(item.getItemId()))
-		{
-			if ((item.isEquipable() && Config.DESTROY_EQUIPABLE_PLAYER_ITEM) || !item.isEquipable())
-				ItemsAutoDestroyTaskManager.getInstance().addItem(item);
-		}
-		
-		if (Config.DESTROY_DROPPED_PLAYER_ITEM)
-		{
-			if (!item.isEquipable() || (item.isEquipable() && Config.DESTROY_EQUIPABLE_PLAYER_ITEM))
-				item.setProtected(false);
-			else
-				item.setProtected(true);
-		}
-		else
-			item.setProtected(true);
 		
 		// retail drop protection
 		if (protectItem)
@@ -3093,16 +3060,20 @@ public final class L2PcInstance extends L2Playable
 	
 	/**
 	 * Set protection from agro mobs when getting up from fake death, according settings.
-	 * @param protect boolean Drop timer or activate it.
 	 */
-	public void setRecentFakeDeath(boolean protect)
+	public void setRecentFakeDeath()
 	{
-		_recentFakeDeathEndTime = protect ? GameTimeController.getInstance().getGameTicks() + Config.PLAYER_FAKEDEATH_UP_PROTECTION * GameTimeController.TICKS_PER_SECOND : 0;
+		_recentFakeDeathEndTime = System.currentTimeMillis() + Config.PLAYER_FAKEDEATH_UP_PROTECTION * 1000;
+	}
+	
+	public void clearRecentFakeDeath()
+	{
+		_recentFakeDeathEndTime = 0;
 	}
 	
 	public boolean isRecentFakeDeath()
 	{
-		return _recentFakeDeathEndTime > GameTimeController.getInstance().getGameTicks();
+		return _recentFakeDeathEndTime > System.currentTimeMillis();
 	}
 	
 	public final boolean isFakeDeath()
@@ -3604,8 +3575,8 @@ public final class L2PcInstance extends L2Playable
 			// Remove the ItemInstance from the world and send GetItem packets
 			target.pickupMe(this);
 			
-			if (Config.SAVE_DROPPED_ITEM) // item must be removed from ItemsOnGroundManager if is active
-				ItemsOnGroundManager.getInstance().removeObject(target);
+			// item must be removed from ItemsOnGroundManager if is active
+			ItemsOnGroundTaskManager.getInstance().remove(target);
 		}
 		
 		// Auto use herbs - pick up
@@ -4246,7 +4217,7 @@ public final class L2PcInstance extends L2Playable
 		if (isInsideZone(ZoneId.PVP))
 			return;
 		
-		PvpFlagTaskManager.getInstance().add(this, System.currentTimeMillis() + Config.PVP_NORMAL_TIME);
+		PvpFlagTaskManager.getInstance().add(this, Config.PVP_NORMAL_TIME);
 		
 		if (getPvpFlag() == 0)
 			updatePvPFlag(1);
@@ -4263,7 +4234,7 @@ public final class L2PcInstance extends L2Playable
 		
 		if ((!isInsideZone(ZoneId.PVP) || !target.isInsideZone(ZoneId.PVP)) && player.getKarma() == 0)
 		{
-			PvpFlagTaskManager.getInstance().add(this, System.currentTimeMillis() + ((checkIfPvP(player)) ? Config.PVP_PVP_TIME : Config.PVP_NORMAL_TIME));
+			PvpFlagTaskManager.getInstance().add(this, checkIfPvP(player) ? Config.PVP_PVP_TIME : Config.PVP_NORMAL_TIME);
 			
 			if (getPvpFlag() == 0)
 				updatePvPFlag(1);
@@ -4379,11 +4350,11 @@ public final class L2PcInstance extends L2Playable
 		storePetFood(_mountNpcId);
 		stopPunishTask(true);
 		stopChargeTask();
-		getInventory().stopShadowTimers();
 		
 		AttackStanceTaskManager.getInstance().remove(this);
 		PvpFlagTaskManager.getInstance().remove(this);
-		TakeBreakTaskManager.getInstance().remove(this);
+		GameTimeTaskManager.getInstance().remove(this);
+		ShadowItemTaskManager.getInstance().remove(this);
 	}
 	
 	/**
@@ -4470,7 +4441,7 @@ public final class L2PcInstance extends L2Playable
 	 */
 	public boolean isProcessingRequest()
 	{
-		return getActiveRequester() != null || _requestExpireTime > GameTimeController.getInstance().getGameTicks();
+		return getActiveRequester() != null || _requestExpireTime > System.currentTimeMillis();
 	}
 	
 	/**
@@ -4478,7 +4449,7 @@ public final class L2PcInstance extends L2Playable
 	 */
 	public boolean isProcessingTransaction()
 	{
-		return getActiveRequester() != null || _activeTradeList != null || _requestExpireTime > GameTimeController.getInstance().getGameTicks();
+		return getActiveRequester() != null || _activeTradeList != null || _requestExpireTime > System.currentTimeMillis();
 	}
 	
 	/**
@@ -4487,7 +4458,7 @@ public final class L2PcInstance extends L2Playable
 	 */
 	public void onTransactionRequest(L2PcInstance partner)
 	{
-		_requestExpireTime = GameTimeController.getInstance().getGameTicks() + REQUEST_TIMEOUT * GameTimeController.TICKS_PER_SECOND;
+		_requestExpireTime = System.currentTimeMillis() + REQUEST_TIMEOUT * 1000;
 		partner.setActiveRequester(this);
 	}
 	
@@ -4496,7 +4467,7 @@ public final class L2PcInstance extends L2Playable
 	 */
 	public boolean isRequestExpired()
 	{
-		return !(_requestExpireTime > GameTimeController.getInstance().getGameTicks());
+		return _requestExpireTime <= System.currentTimeMillis();
 	}
 	
 	/**
@@ -4744,7 +4715,7 @@ public final class L2PcInstance extends L2Playable
 				arrows.setLastChange(ItemInstance.MODIFIED);
 				
 				// could do also without saving, but let's save approx 1 of 10
-				if (GameTimeController.getInstance().getGameTicks() % 10 == 0)
+				if (Rnd.get(10) < 1)
 					arrows.updateDatabase();
 				_inventory.refreshWeight();
 			}
@@ -8575,7 +8546,7 @@ public final class L2PcInstance extends L2Playable
 			final int time = (int) calcStat(Stats.BREATH, 60000 * getRace().getBreathMultiplier(), this, null);
 			
 			sendPacket(new SetupGauge(2, time));
-			WaterTaskManager.getInstance().add(this, System.currentTimeMillis() + time);
+			WaterTaskManager.getInstance().add(this, time);
 		}
 	}
 	
@@ -8592,8 +8563,8 @@ public final class L2PcInstance extends L2Playable
 		if (isCursedWeaponEquipped())
 			CursedWeaponsManager.getInstance().getCursedWeapon(getCursedWeaponEquippedId()).cursedOnLogin();
 		
-		// Add a task for the "Take Break" message.
-		TakeBreakTaskManager.getInstance().add(this);
+		// Add to the GameTimeTask to keep inform about activity time.
+		GameTimeTaskManager.getInstance().add(this);
 		
 		// Teleport player if the Seven Signs period isn't the good one, or if the player isn't in a cabal.
 		if (isIn7sDungeon() && !isGM())
@@ -10489,7 +10460,7 @@ public final class L2PcInstance extends L2Playable
 		if (isLocked())
 			return false;
 		
-		if (AttackStanceTaskManager.getInstance().get(this))
+		if (AttackStanceTaskManager.getInstance().isInAttackStance(this))
 			return false;
 		
 		if (isCastingNow() || isCastingSimultaneouslyNow())

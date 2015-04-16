@@ -46,14 +46,12 @@ import net.sf.l2j.gameserver.model.holder.ItemHolder;
 import net.sf.l2j.gameserver.model.item.DropCategory;
 import net.sf.l2j.gameserver.model.item.DropData;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
-import net.sf.l2j.gameserver.model.item.type.EtcItemType;
 import net.sf.l2j.gameserver.model.quest.Quest;
 import net.sf.l2j.gameserver.model.quest.QuestEventType;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.clientpackets.Say2;
 import net.sf.l2j.gameserver.network.serverpackets.CreatureSay;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
-import net.sf.l2j.gameserver.taskmanager.ItemsAutoDestroyTaskManager;
 import net.sf.l2j.gameserver.util.Util;
 import net.sf.l2j.util.Rnd;
 
@@ -1388,14 +1386,6 @@ public class L2Attackable extends L2Npc
 				ditem = ItemTable.getInstance().createItem("Loot", item.getId(), item.getCount(), mainDamageDealer, this);
 				ditem.getDropProtection().protect(mainDamageDealer);
 				ditem.dropMe(this, newX, newY, newZ);
-				
-				// Add drop to auto destroy item task
-				if (!Config.LIST_PROTECTED_ITEMS.contains(item.getId()))
-				{
-					if ((Config.ITEM_AUTO_DESTROY_TIME > 0 && ditem.getItemType() != EtcItemType.HERB) || (Config.HERB_AUTO_DESTROY_TIME > 0 && ditem.getItemType() == EtcItemType.HERB))
-						ItemsAutoDestroyTaskManager.getInstance().addItem(ditem);
-				}
-				ditem.setProtected(false);
 				
 				// If stackable, end loop as entire count is included in 1 instance of item
 				if (ditem.isStackable() || !Config.MULTIPLE_ITEM_DROP)

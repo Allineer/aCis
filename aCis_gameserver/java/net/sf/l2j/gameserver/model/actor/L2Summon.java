@@ -56,7 +56,6 @@ import net.sf.l2j.gameserver.network.serverpackets.PetStatusUpdate;
 import net.sf.l2j.gameserver.network.serverpackets.RelationChanged;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 import net.sf.l2j.gameserver.network.serverpackets.TeleportToLocation;
-import net.sf.l2j.gameserver.taskmanager.DecayTaskManager;
 
 public abstract class L2Summon extends L2Playable
 {
@@ -345,11 +344,6 @@ public abstract class L2Summon extends L2Playable
 			}
 		}
 		return true;
-	}
-	
-	public void stopDecay()
-	{
-		DecayTaskManager.getInstance().cancel(this);
 	}
 	
 	@Override

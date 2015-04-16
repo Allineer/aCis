@@ -1880,7 +1880,7 @@ public abstract class L2Skill implements IChanceSkillTrigger
 				}
 				
 				// Corpse mob only available for half time
-				if (_skillType == L2SkillType.DRAIN && DecayTaskManager.getInstance().getTasks().containsKey(target) && (System.currentTimeMillis() - DecayTaskManager.getInstance().getTasks().get(target)) > DecayTaskManager.DEFAULT_DECAY_TIME / 2)
+				if (_skillType == L2SkillType.DRAIN && !DecayTaskManager.getInstance().isCorpseActionAllowed((L2Attackable) target))
 				{
 					activeChar.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.CORPSE_TOO_OLD_SKILL_NOT_USED));
 					return _emptyTargetList;

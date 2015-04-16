@@ -83,7 +83,6 @@ import net.sf.l2j.gameserver.instancemanager.DimensionalRiftManager;
 import net.sf.l2j.gameserver.instancemanager.FishingChampionshipManager;
 import net.sf.l2j.gameserver.instancemanager.FourSepulchersManager;
 import net.sf.l2j.gameserver.instancemanager.GrandBossManager;
-import net.sf.l2j.gameserver.instancemanager.ItemsOnGroundManager;
 import net.sf.l2j.gameserver.instancemanager.MercTicketManager;
 import net.sf.l2j.gameserver.instancemanager.MovieMakerManager;
 import net.sf.l2j.gameserver.instancemanager.PetitionManager;
@@ -105,9 +104,16 @@ import net.sf.l2j.gameserver.model.partymatching.PartyMatchWaitingList;
 import net.sf.l2j.gameserver.network.L2GameClient;
 import net.sf.l2j.gameserver.network.L2GamePacketHandler;
 import net.sf.l2j.gameserver.scripting.L2ScriptEngineManager;
-import net.sf.l2j.gameserver.taskmanager.ItemsAutoDestroyTaskManager;
+import net.sf.l2j.gameserver.taskmanager.AttackStanceTaskManager;
+import net.sf.l2j.gameserver.taskmanager.DecayTaskManager;
+import net.sf.l2j.gameserver.taskmanager.GameTimeTaskManager;
+import net.sf.l2j.gameserver.taskmanager.ItemsOnGroundTaskManager;
 import net.sf.l2j.gameserver.taskmanager.KnownListUpdateTaskManager;
+import net.sf.l2j.gameserver.taskmanager.MovementTaskManager;
+import net.sf.l2j.gameserver.taskmanager.PvpFlagTaskManager;
+import net.sf.l2j.gameserver.taskmanager.ShadowItemTaskManager;
 import net.sf.l2j.gameserver.taskmanager.TaskManager;
+import net.sf.l2j.gameserver.taskmanager.WaterTaskManager;
 import net.sf.l2j.gameserver.xmlfactory.XMLDocumentFactory;
 import net.sf.l2j.util.DeadLockDetector;
 import net.sf.l2j.util.IPv4Filter;
@@ -147,7 +153,6 @@ public class GameServer
 		new File("./data/crests").mkdirs();
 		
 		Util.printSection("World");
-		GameTimeController.getInstance();
 		L2World.getInstance();
 		MapRegionTable.getInstance();
 		Announcements.getInstance();
@@ -212,6 +217,17 @@ public class GameServer
 		ZoneManager.getInstance();
 		GrandBossManager.getInstance().initZones();
 		
+		Util.printSection("Task Managers");
+		AttackStanceTaskManager.getInstance();
+		DecayTaskManager.getInstance();
+		GameTimeTaskManager.getInstance();
+		ItemsOnGroundTaskManager.getInstance();
+		KnownListUpdateTaskManager.getInstance();
+		MovementTaskManager.getInstance();
+		PvpFlagTaskManager.getInstance();
+		ShadowItemTaskManager.getInstance();
+		WaterTaskManager.getInstance();
+		
 		Util.printSection("Castles");
 		CastleManager.getInstance().load();
 		
@@ -238,7 +254,7 @@ public class GameServer
 		StaticObjects.load();
 		SpawnTable.getInstance();
 		RaidBossSpawnManager.getInstance();
-		DayNightSpawnManager.getInstance().trim().notifyChangeMode();
+		DayNightSpawnManager.getInstance();
 		DimensionalRiftManager.getInstance();
 		
 		Util.printSection("Olympiads & Heroes");
@@ -269,12 +285,6 @@ public class GameServer
 		else
 			_log.config("QuestManager: Skipping scripts.");
 		
-		if (Config.SAVE_DROPPED_ITEM)
-			ItemsOnGroundManager.getInstance();
-		
-		if (Config.ITEM_AUTO_DESTROY_TIME > 0 || Config.HERB_AUTO_DESTROY_TIME > 0)
-			ItemsAutoDestroyTaskManager.getInstance();
-		
 		Util.printSection("Monster Derby Track");
 		MonsterRace.getInstance();
 		
@@ -294,12 +304,10 @@ public class GameServer
 		
 		Util.printSection("System");
 		TaskManager.getInstance();
-		
 		Runtime.getRuntime().addShutdownHook(Shutdown.getInstance());
 		ForumsBBSManager.getInstance();
 		_log.config("IdFactory: Free ObjectIDs remaining: " + IdFactory.getInstance().size());
 		
-		KnownListUpdateTaskManager.getInstance();
 		MovieMakerManager.getInstance();
 		
 		if (Config.DEADLOCK_DETECTOR)

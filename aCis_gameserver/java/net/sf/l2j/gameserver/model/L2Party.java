@@ -21,7 +21,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
 
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.GameTimeController;
 import net.sf.l2j.gameserver.ThreadPoolManager;
 import net.sf.l2j.gameserver.datatables.ItemTable;
 import net.sf.l2j.gameserver.instancemanager.DuelManager;
@@ -139,7 +138,7 @@ public class L2Party
 	public void setPendingInvitation(boolean val)
 	{
 		_pendingInvitation = val;
-		_pendingInviteTimeout = GameTimeController.getInstance().getGameTicks() + L2PcInstance.REQUEST_TIMEOUT * GameTimeController.TICKS_PER_SECOND;
+		_pendingInviteTimeout = System.currentTimeMillis() + L2PcInstance.REQUEST_TIMEOUT * 1000;
 	}
 	
 	/**
@@ -149,7 +148,7 @@ public class L2Party
 	 */
 	public boolean isInvitationRequestExpired()
 	{
-		return !(_pendingInviteTimeout > GameTimeController.getInstance().getGameTicks());
+		return _pendingInviteTimeout <= System.currentTimeMillis();
 	}
 	
 	/**

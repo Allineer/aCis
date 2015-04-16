@@ -555,18 +555,12 @@ public final class Config
 	/** Items Management */
 	public static boolean ALLOW_DISCARDITEM;
 	public static boolean MULTIPLE_ITEM_DROP;
-	public static int ITEM_AUTO_DESTROY_TIME;
 	public static int HERB_AUTO_DESTROY_TIME;
-	public static String PROTECTED_ITEMS;
-	
-	public static List<Integer> LIST_PROTECTED_ITEMS;
-	
-	public static boolean DESTROY_DROPPED_PLAYER_ITEM;
-	public static boolean DESTROY_EQUIPABLE_PLAYER_ITEM;
+	public static int ITEM_AUTO_DESTROY_TIME;
+	public static int EQUIPABLE_ITEM_AUTO_DESTROY_TIME;
+	public static Map<Integer, Integer> SPECIAL_ITEM_DESTROY_TIME;
+	public static int PLAYER_DROPPED_ITEM_MULTIPLIER;
 	public static boolean SAVE_DROPPED_ITEM;
-	public static boolean EMPTY_DROPPED_ITEM_TABLE_AFTER_LOAD;
-	public static int SAVE_DROPPED_ITEM_INTERVAL;
-	public static boolean CLEAR_DROPPED_ITEM_TABLE;
 	
 	/** Rate control */
 	public static double RATE_XP;
@@ -1158,20 +1152,21 @@ public final class Config
 			
 			ALLOW_DISCARDITEM = server.getProperty("AllowDiscardItem", true);
 			MULTIPLE_ITEM_DROP = server.getProperty("MultipleItemDrop", true);
-			ITEM_AUTO_DESTROY_TIME = server.getProperty("AutoDestroyItemTime", 0) * 1000;
 			HERB_AUTO_DESTROY_TIME = server.getProperty("AutoDestroyHerbTime", 15) * 1000;
-			PROTECTED_ITEMS = server.getProperty("ListOfProtectedItems");
-			
-			LIST_PROTECTED_ITEMS = new ArrayList<>();
-			for (String id : PROTECTED_ITEMS.split(","))
-				LIST_PROTECTED_ITEMS.add(Integer.parseInt(id));
-			
-			DESTROY_DROPPED_PLAYER_ITEM = server.getProperty("DestroyPlayerDroppedItem", false);
-			DESTROY_EQUIPABLE_PLAYER_ITEM = server.getProperty("DestroyEquipableItem", false);
+			ITEM_AUTO_DESTROY_TIME = server.getProperty("AutoDestroyItemTime", 600) * 1000;
+			EQUIPABLE_ITEM_AUTO_DESTROY_TIME = server.getProperty("AutoDestroyEquipableItemTime", 0) * 1000;
+			SPECIAL_ITEM_DESTROY_TIME = new HashMap<>();
+			String[] data = server.getProperty("AutoDestroySpecialItemTime", (String[]) null, ",");
+			if (data != null)
+			{
+				for (String itemData : data)
+				{
+					String[] item = itemData.split("-");
+					SPECIAL_ITEM_DESTROY_TIME.put(Integer.parseInt(item[0]), Integer.parseInt(item[1]) * 1000);
+				}
+			}
+			PLAYER_DROPPED_ITEM_MULTIPLIER = server.getProperty("PlayerDroppedItemMultiplier", 1);
 			SAVE_DROPPED_ITEM = server.getProperty("SaveDroppedItem", false);
-			EMPTY_DROPPED_ITEM_TABLE_AFTER_LOAD = server.getProperty("EmptyDroppedItemTableAfterLoad", false);
-			SAVE_DROPPED_ITEM_INTERVAL = server.getProperty("SaveDroppedItemInterval", 0) * 60000;
-			CLEAR_DROPPED_ITEM_TABLE = server.getProperty("ClearDroppedItemTable", false);
 			
 			RATE_XP = server.getProperty("RateXp", 1.);
 			RATE_SP = server.getProperty("RateSp", 1.);

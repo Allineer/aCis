@@ -14,26 +14,36 @@
  */
 package net.sf.l2j.gameserver.taskmanager.tasks;
 
-import net.sf.l2j.gameserver.Shutdown;
+import java.util.concurrent.ScheduledFuture;
+
 import net.sf.l2j.gameserver.taskmanager.TaskManager.ExecutedTask;
 
 /**
  * @author Layane
  */
-public final class TaskRestart extends ATask
+public abstract class ATask
 {
-	public static final String NAME = "restart";
-	
-	@Override
-	public String getName()
+	public enum TaskType
 	{
-		return NAME;
+		TYPE_NONE,
+		TYPE_TIME,
+		TYPE_SHEDULED,
+		TYPE_FIXED_SHEDULED,
+		TYPE_GLOBAL_TASK,
+		TYPE_STARTUP,
+		TYPE_SPECIAL
 	}
 	
-	@Override
-	public void onTimeElapsed(ExecutedTask task)
+	public ScheduledFuture<?> launchSpecial(ExecutedTask instance)
 	{
-		Shutdown handler = new Shutdown(Integer.valueOf(task.getParams()[2]), true);
-		handler.start();
+		return null;
 	}
+	
+	public abstract String getName();
+	
+	public void initializate()
+	{	
+	}
+	
+	public abstract void onTimeElapsed(ExecutedTask task);
 }

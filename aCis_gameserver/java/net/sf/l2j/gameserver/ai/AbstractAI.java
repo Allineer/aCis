@@ -17,7 +17,6 @@ package net.sf.l2j.gameserver.ai;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
-import net.sf.l2j.gameserver.GameTimeController;
 import net.sf.l2j.gameserver.ThreadPoolManager;
 import net.sf.l2j.gameserver.model.L2CharPosition;
 import net.sf.l2j.gameserver.model.L2Object;
@@ -116,7 +115,7 @@ abstract class AbstractAI implements Ctrl
 	protected L2Skill _skill;
 	
 	/** Different internal state flags */
-	private int _moveToPawnTimeout;
+	private long _moveToPawnTimeout;
 	
 	protected Future<?> _followTask = null;
 	private static final int FOLLOW_INTERVAL = 1000;
@@ -455,14 +454,14 @@ abstract class AbstractAI implements Ctrl
 	 */
 	protected void moveToPawn(L2Object pawn, int offset)
 	{
-		if (_clientMoving && _target == pawn && _actor.isOnGeodataPath() && GameTimeController.getInstance().getGameTicks() < _moveToPawnTimeout)
+		if (_clientMoving && _target == pawn && _actor.isOnGeodataPath() && System.currentTimeMillis() < _moveToPawnTimeout)
 			return;
 		
 		_target = pawn;
 		if (_target == null)
 			return;
 		
-		_moveToPawnTimeout = GameTimeController.getInstance().getGameTicks() + 20;
+		_moveToPawnTimeout = System.currentTimeMillis() + 2000;
 		
 		moveTo(_target.getX(), _target.getY(), _target.getZ(), (offset < 10) ? 10 : offset);
 	}
@@ -609,7 +608,7 @@ abstract class AbstractAI implements Ctrl
 		
 		if (_actor instanceof L2PcInstance)
 		{
-			if (!AttackStanceTaskManager.getInstance().get(_actor) && isAutoAttacking())
+			if (!AttackStanceTaskManager.getInstance().isInAttackStance(_actor) && isAutoAttacking())
 				AttackStanceTaskManager.getInstance().add(_actor);
 		}
 		else if (isAutoAttacking())

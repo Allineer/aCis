@@ -15,13 +15,13 @@
 package net.sf.l2j.gameserver.handler.admincommandhandlers;
 
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.GameTimeController;
 import net.sf.l2j.gameserver.LoginServerThread;
 import net.sf.l2j.gameserver.Shutdown;
 import net.sf.l2j.gameserver.handler.IAdminCommandHandler;
 import net.sf.l2j.gameserver.model.L2World;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
 import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
+import net.sf.l2j.gameserver.taskmanager.GameTimeTaskManager;
 import net.sf.l2j.loginserver.network.gameserverpackets.ServerStatus;
 
 public class AdminMaintenance implements IAdminCommandHandler
@@ -113,7 +113,7 @@ public class AdminMaintenance implements IAdminCommandHandler
 		adminReply.replace("%server_name%", LoginServerThread.getInstance().getServerName());
 		adminReply.replace("%status%", LoginServerThread.getInstance().getStatusString());
 		adminReply.replace("%max_players%", LoginServerThread.getInstance().getMaxPlayer());
-		adminReply.replace("%time%", GameTimeController.getInstance().getStringHour());
+		adminReply.replace("%time%", GameTimeTaskManager.getInstance().getGameTimeFormated());
 		activeChar.sendPacket(adminReply);
 	}
 	

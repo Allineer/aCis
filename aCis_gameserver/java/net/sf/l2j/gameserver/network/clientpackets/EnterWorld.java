@@ -16,7 +16,6 @@ package net.sf.l2j.gameserver.network.clientpackets;
 
 import net.sf.l2j.Config;
 import net.sf.l2j.gameserver.Announcements;
-import net.sf.l2j.gameserver.GameTimeController;
 import net.sf.l2j.gameserver.communitybbs.Manager.MailBBSManager;
 import net.sf.l2j.gameserver.datatables.AdminCommandAccessRights;
 import net.sf.l2j.gameserver.datatables.GmListTable;
@@ -60,6 +59,7 @@ import net.sf.l2j.gameserver.network.serverpackets.ShortCutInit;
 import net.sf.l2j.gameserver.network.serverpackets.SkillCoolTime;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 import net.sf.l2j.gameserver.network.serverpackets.UserInfo;
+import net.sf.l2j.gameserver.taskmanager.GameTimeTaskManager;
 
 public class EnterWorld extends L2GameClientPacket
 {
@@ -176,7 +176,7 @@ public class EnterWorld extends L2GameClientPacket
 		
 		// if player is DE, check for shadow sense skill at night
 		if (activeChar.getRace() == Race.DarkElf && activeChar.getSkillLevel(294) == 1)
-			activeChar.sendPacket(SystemMessage.getSystemMessage((GameTimeController.getInstance().isNight()) ? SystemMessageId.NIGHT_S1_EFFECT_APPLIES : SystemMessageId.DAY_S1_EFFECT_DISAPPEARS).addSkillName(294));
+			activeChar.sendPacket(SystemMessage.getSystemMessage((GameTimeTaskManager.getInstance().isNight()) ? SystemMessageId.NIGHT_S1_EFFECT_APPLIES : SystemMessageId.DAY_S1_EFFECT_DISAPPEARS).addSkillName(294));
 		
 		activeChar.getMacroses().sendUpdate();
 		activeChar.sendPacket(new UserInfo(activeChar));

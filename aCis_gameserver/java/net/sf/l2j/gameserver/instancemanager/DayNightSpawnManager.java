@@ -21,10 +21,10 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.sf.l2j.gameserver.GameTimeController;
 import net.sf.l2j.gameserver.model.L2Spawn;
 import net.sf.l2j.gameserver.model.actor.L2Npc;
 import net.sf.l2j.gameserver.model.actor.instance.L2RaidBossInstance;
+import net.sf.l2j.gameserver.taskmanager.GameTimeTaskManager;
 
 /**
  * @author godson
@@ -48,7 +48,7 @@ public class DayNightSpawnManager
 		_nightCreatures = new ArrayList<>();
 		_bosses = new HashMap<>();
 		
-		_log.info("DayNightSpawnManager: Day/Night handler initialized.");
+		notifyChangeMode();
 	}
 	
 	public void addDayCreature(L2Spawn spawnDat)
@@ -146,18 +146,11 @@ public class DayNightSpawnManager
 		}
 	}
 	
-	public DayNightSpawnManager trim()
-	{
-		((ArrayList<?>) _nightCreatures).trimToSize();
-		((ArrayList<?>) _dayCreatures).trimToSize();
-		return this;
-	}
-	
 	public void notifyChangeMode()
 	{
 		try
 		{
-			if (GameTimeController.getInstance().isNight())
+			if (GameTimeTaskManager.getInstance().isNight())
 				changeMode(1);
 			else
 				changeMode(0);
@@ -226,7 +219,7 @@ public class DayNightSpawnManager
 		if (_bosses.containsKey(spawnDat))
 			return _bosses.get(spawnDat);
 		
-		if (GameTimeController.getInstance().isNight())
+		if (GameTimeTaskManager.getInstance().isNight())
 		{
 			L2RaidBossInstance raidboss = (L2RaidBossInstance) spawnDat.doSpawn();
 			_bosses.put(spawnDat, raidboss);

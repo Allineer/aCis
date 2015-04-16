@@ -24,14 +24,15 @@ import java.util.logging.Logger;
 
 import net.sf.l2j.L2DatabaseFactory;
 import net.sf.l2j.gameserver.ThreadPoolManager;
+import net.sf.l2j.gameserver.datatables.ItemTable;
 import net.sf.l2j.gameserver.datatables.SkillTable;
+import net.sf.l2j.gameserver.geoengine.GeoData;
 import net.sf.l2j.gameserver.model.L2Effect;
 import net.sf.l2j.gameserver.model.L2Party.MessageType;
 import net.sf.l2j.gameserver.model.Location;
 import net.sf.l2j.gameserver.model.actor.L2Attackable;
 import net.sf.l2j.gameserver.model.actor.L2Character;
 import net.sf.l2j.gameserver.model.actor.instance.L2PcInstance;
-import net.sf.l2j.gameserver.model.holder.ItemHolder;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.Earthquake;
@@ -313,8 +314,9 @@ public class CursedWeapon
 	{
 		_player.abortAttack();
 		
+		 // Prevent item from being removed by ItemsAutoDestroy
+		_item.setDestroyProtected(true);
 		_player.dropItem("DieDrop", _item, killer, true);
-		_item.setDropTime(0); // Prevent item from being removed by ItemsAutoDestroy
 		
 		_isActivated = false;
 		_isDropped = true;
@@ -353,12 +355,19 @@ public class CursedWeapon
 	{
 		_isActivated = false;
 		
-		_item = attackable.dropItem(player, new ItemHolder(_itemId, 1));
-		_item.setDropTime(0); // Prevent item from being removed by ItemsAutoDestroy
+		// get position
+		int x = attackable.getX() + Rnd.get(-70, 70);
+		int y = attackable.getY() + Rnd.get(-70, 70);
+		int z = GeoData.getInstance().getHeight(x, y, attackable.getZ());
+		
+		// create item and drop it
+		_item = ItemTable.getInstance().createItem("CursedWeapon", _itemId, 1, player, attackable);
+		_item.setDestroyProtected(true);
+		_item.dropMe(attackable, x, y, z);
 		
 		// RedSky and Earthquake
 		Broadcast.toAllOnlinePlayers(new ExRedSky(10));
-		Broadcast.toAllOnlinePlayers(new Earthquake(player.getX(), player.getY(), player.getZ(), 14, 3));
+		Broadcast.toAllOnlinePlayers(new Earthquake(x, y, z, 14, 3));
 		
 		_isDropped = true;
 		
@@ -463,6 +472,7 @@ public class CursedWeapon
 		if (player.isMounted() && !player.dismount())
 		{
 			player.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.FAILED_TO_PICKUP_S1).addItemName(item.getItemId()));
+			item.setDestroyProtected(true);
 			player.dropItem("InvDrop", item, null, true);
 			return;
 		}

@@ -1506,7 +1506,7 @@ public class L2Npc extends L2Character
 		_currentEnchant = getTemplate().getEnchantEffect();
 		_currentCollisionHeight = getTemplate().getCollisionHeight();
 		_currentCollisionRadius = getTemplate().getCollisionRadius();
-		DecayTaskManager.getInstance().add(this);
+		DecayTaskManager.getInstance().add(this, getTemplate().getCorpseTime());
 		return true;
 	}
 	
@@ -1666,11 +1666,6 @@ public class L2Npc extends L2Character
 	public int getCollisionRadius()
 	{
 		return _currentCollisionRadius;
-	}
-	
-	public int getCorpseDecayTime()
-	{
-		return getTemplate().getCorpseTime() * 1000;
 	}
 	
 	public int getScriptValue()

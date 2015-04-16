@@ -16,7 +16,6 @@ package net.sf.l2j.gameserver.ai;
 
 import java.util.List;
 
-import net.sf.l2j.gameserver.GameTimeController;
 import net.sf.l2j.gameserver.ThreadPoolManager;
 import net.sf.l2j.gameserver.geoengine.PathFinding;
 import net.sf.l2j.gameserver.model.L2CharPosition;
@@ -201,7 +200,7 @@ public class L2SiegeGuardAI extends L2AttackableAI
 		L2Character attackTarget = (L2Character) getTarget();
 		
 		// If target doesn't exist, is dead or if timeout is expired
-		if (attackTarget == null || attackTarget.isAlikeDead() || _attackTimeout < GameTimeController.getInstance().getGameTicks())
+		if (attackTarget == null || attackTarget.isAlikeDead() || _attackTimeout < System.currentTimeMillis())
 		{
 			// Stop hating this target after the attack timeout or if target is dead
 			if (attackTarget != null)

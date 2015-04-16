@@ -17,7 +17,6 @@ package net.sf.l2j.gameserver.skills;
 import java.util.logging.Logger;
 
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.GameTimeController;
 import net.sf.l2j.gameserver.instancemanager.ClanHallManager;
 import net.sf.l2j.gameserver.instancemanager.SevenSigns;
 import net.sf.l2j.gameserver.instancemanager.SevenSignsFestival;
@@ -42,6 +41,7 @@ import net.sf.l2j.gameserver.model.zone.type.L2MotherTreeZone;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 import net.sf.l2j.gameserver.skills.effects.EffectTemplate;
+import net.sf.l2j.gameserver.taskmanager.GameTimeTaskManager;
 import net.sf.l2j.gameserver.templates.skills.L2SkillType;
 import net.sf.l2j.gameserver.util.Util;
 import net.sf.l2j.util.Rnd;
@@ -994,7 +994,7 @@ public final class Formulas
 			modifier -= 3;
 		
 		// Get weather bonus. TODO: rain support (-3%).
-		if (GameTimeController.getInstance().isNight())
+		if (GameTimeTaskManager.getInstance().isNight())
 			modifier -= 10;
 		
 		// Get position bonus.

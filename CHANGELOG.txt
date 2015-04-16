@@ -1,4 +1,59 @@
 ================================================================================
+Changeset 338 @ 2015.01.09
+
+Tasks Managers - by Hasha
+
+General
+    - Task managers are using directly Runnable interface, not nested class anymore.
+    - Iteration methods are changed from for-each to iterator -> support element removal during iteration.
+
+AttackStanceTaskManager
+PvpFlagTaskManager
+WaterTaskManager
+    - Use of Map.Entry instead of keySet() / get(), leading to an performance boost on all existing tasks.
+
+DecayTaskManager
+    - Moved checks for decay delay to "add" method; iteration compares and doesn't calculate.
+    - Added new method for corpse action (Corpse Drain Life, Harvest, Sweep).
+
+GameTimeTaskManager
+    - New manager created from 2 sources.
+    - Implements old TakeBreakTaskManager, to notify long activity for players.
+    - Implements ingame time system from old GameTimeController, to handle day/night cycle && spawns, plus Shadow Sense skill.
+
+ItemsOnGroundTaskManager
+    - New manager created from 2 sources.
+    - Implements old ItemsAutoDestroyTaskManager to destroy items on ground.
+    - Implements old ItemsOnGroundManager, to save dropped items on ground.
+    - New configs, which are more logical and have better usage.
+    - Reworked drop methods to support new interface of the manager.
+    - The processes of save/load items to/from database are simplified.
+    - Cursed weapons can be now picked by anyone, no longer drop-protected to killer/killer party.
+
+KnownListUpdateTaskManager
+    - Fix a bug which was forcing all regions to update knownlist, when at least 1 player was detected in a region.
+    - Full update for NPCs is performed much more often now, since there are NPCs, which need it (e.g. Cabale buffers).
+    - Cleanup/sort all knownlist classes.
+
+MovementTaskManager
+    - Created from old GameTimeController.
+    - Handles only characters movement (keep max priority thread design).
+    - Remove game time ticks system, everything is calculated using real time (attack, bow attack, cast break, movement, etc) -> leading to:
+        - Improved accuracy of movement, thought there is still issue with it (requires next rework).
+        - Fixed bow attack delay with high attack speed.
+        - Fixed bow attack & skill cast/movement, skill is now casted/movement is performed after bow attack is completed.
+
+ShadowItemTaskManager
+    - New manager.
+    - No longer 1 created task per equipped shadow item, shadow items are now handled by a single task.
+    - Mana ticking is now handled with higher precision (each second instead of each minute).
+    - Thanks to previous, equip/unequip/equip a shadow item no longer decrease timer by 1 minute per equip.
+    - Fixed an inventory bug when equipped shadow item disappears.
+
+TaskManager
+    - Redesigned abstract Task class.
+
+================================================================================
 Changeset 337 @ 2014.12.31
 
 Knownlists, Cursed Weapons, NextAction, Misc

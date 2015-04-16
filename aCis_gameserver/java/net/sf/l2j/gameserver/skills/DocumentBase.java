@@ -39,7 +39,6 @@ import net.sf.l2j.gameserver.skills.conditions.Condition;
 import net.sf.l2j.gameserver.skills.conditions.ConditionElementSeed;
 import net.sf.l2j.gameserver.skills.conditions.ConditionForceBuff;
 import net.sf.l2j.gameserver.skills.conditions.ConditionGameTime;
-import net.sf.l2j.gameserver.skills.conditions.ConditionGameTime.CheckGameTime;
 import net.sf.l2j.gameserver.skills.conditions.ConditionLogicAnd;
 import net.sf.l2j.gameserver.skills.conditions.ConditionLogicNot;
 import net.sf.l2j.gameserver.skills.conditions.ConditionLogicOr;
@@ -704,7 +703,7 @@ abstract class DocumentBase
 			if ("night".equalsIgnoreCase(a.getNodeName()))
 			{
 				boolean val = Boolean.valueOf(a.getNodeValue());
-				cond = joinAnd(cond, new ConditionGameTime(CheckGameTime.NIGHT, val));
+				cond = joinAnd(cond, new ConditionGameTime(val));
 			}
 		}
 		
