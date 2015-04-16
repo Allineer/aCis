@@ -32,7 +32,7 @@ public final class FloodProtectorAction
 	private final L2GameClient _client;
 	private final FloodProtectorConfig _config;
 	
-	private volatile int _nextGameTick = GameTimeController.getGameTicks();
+	private volatile int _nextGameTick = GameTimeController.getInstance().getGameTicks();
 	private final AtomicInteger _count = new AtomicInteger(0);
 	
 	private boolean _logged;
@@ -58,7 +58,7 @@ public final class FloodProtectorAction
 	 */
 	public boolean tryPerformAction(final String command)
 	{
-		final int curTick = GameTimeController.getGameTicks();
+		final int curTick = GameTimeController.getInstance().getGameTicks();
 		
 		if (curTick < _nextGameTick || _punishmentInProgress)
 		{

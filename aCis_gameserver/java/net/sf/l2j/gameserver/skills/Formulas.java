@@ -1001,7 +1001,7 @@ public final class Formulas
 			modifier -= 3;
 		
 		// Get weather bonus. TODO: rain support (-3%).
-		if (GameTimeController.getInstance().isNowNight())
+		if (GameTimeController.getInstance().isNight())
 			modifier -= 10;
 		
 		// Get position bonus.

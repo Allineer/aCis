@@ -86,7 +86,7 @@ public class FishData
 	
 	public int getType(boolean isLureNight)
 	{
-		if (!GameTimeController.getInstance().isNowNight() && isLureNight)
+		if (!GameTimeController.getInstance().isNight() && isLureNight)
 			return -1;
 		
 		return _type;

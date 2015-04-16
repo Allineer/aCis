@@ -88,7 +88,7 @@ public abstract class L2Effect
 			try
 			{
 				_periodFirstTime = 0;
-				_periodStartTicks = GameTimeController.getGameTicks();
+				_periodStartTicks = GameTimeController.getInstance().getGameTicks();
 				scheduleEffect();
 			}
 			catch (Exception e)
@@ -145,7 +145,7 @@ public abstract class L2Effect
 		_abnormalEffect = template.abnormalEffect;
 		_stackType = template.stackType;
 		_stackOrder = template.stackOrder;
-		_periodStartTicks = GameTimeController.getGameTicks();
+		_periodStartTicks = GameTimeController.getInstance().getGameTicks();
 		_periodFirstTime = 0;
 		_icon = template.icon;
 		_effectPower = template.effectPower;
@@ -187,7 +187,7 @@ public abstract class L2Effect
 	
 	public int getTime()
 	{
-		return (GameTimeController.getGameTicks() - _periodStartTicks) / GameTimeController.TICKS_PER_SECOND;
+		return (GameTimeController.getInstance().getGameTicks() - _periodStartTicks) / GameTimeController.TICKS_PER_SECOND;
 	}
 	
 	/**

@@ -476,14 +476,14 @@ abstract class AbstractAI implements Ctrl
 	 */
 	protected void moveToPawn(L2Object pawn, int offset)
 	{
-		if (_clientMoving && _target == pawn && _actor.isOnGeodataPath() && GameTimeController.getGameTicks() < _moveToPawnTimeout)
+		if (_clientMoving && _target == pawn && _actor.isOnGeodataPath() && GameTimeController.getInstance().getGameTicks() < _moveToPawnTimeout)
 			return;
 		
 		_target = pawn;
 		if (_target == null)
 			return;
 		
-		_moveToPawnTimeout = GameTimeController.getGameTicks() + 20;
+		_moveToPawnTimeout = GameTimeController.getInstance().getGameTicks() + 20;
 		
 		moveTo(_target.getX(), _target.getY(), _target.getZ(), offset = offset < 10 ? 10 : offset);
 		

@@ -285,7 +285,8 @@ public class L2Clan
 		}
 		newLeader.broadcastUserInfo();
 		
-		broadcastToOnlineMembers(new PledgeShowMemberListAll(this, 0), SystemMessage.getSystemMessage(SystemMessageId.CLAN_LEADER_PRIVILEGES_HAVE_BEEN_TRANSFERRED_TO_S1).addPcName(newLeader));
+		broadcastClanStatus();
+		broadcastToOnlineMembers(SystemMessage.getSystemMessage(SystemMessageId.CLAN_LEADER_PRIVILEGES_HAVE_BEEN_TRANSFERRED_TO_S1).addPcName(newLeader));
 	}
 	
 	/**

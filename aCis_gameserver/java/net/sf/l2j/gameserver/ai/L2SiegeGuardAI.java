@@ -202,7 +202,7 @@ public class L2SiegeGuardAI extends L2AttackableAI
 		L2Character attackTarget = (L2Character) getTarget();
 		
 		// If target doesn't exist, is dead or if timeout is expired
-		if (attackTarget == null || attackTarget.isAlikeDead() || _attackTimeout < GameTimeController.getGameTicks())
+		if (attackTarget == null || attackTarget.isAlikeDead() || _attackTimeout < GameTimeController.getInstance().getGameTicks())
 		{
 			// Stop hating this target after the attack timeout or if target is dead
 			if (attackTarget != null)

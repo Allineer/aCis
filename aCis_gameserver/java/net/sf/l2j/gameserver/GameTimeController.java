@@ -14,12 +14,14 @@
  */
 package net.sf.l2j.gameserver;
 
-import java.util.Iterator;
+import java.util.Calendar;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.sf.l2j.gameserver.ai.CtrlEvent;
+import net.sf.l2j.gameserver.ai.L2CharacterAI;
 import net.sf.l2j.gameserver.datatables.SkillTable;
 import net.sf.l2j.gameserver.instancemanager.DayNightSpawnManager;
 import net.sf.l2j.gameserver.model.L2Skill;
@@ -31,220 +33,199 @@ import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 
 /**
- * This class handles :
- * <ul>
- * <li>ingame time (10 real seconds equal 1 ingame minute) ;</li>
- * <li>character movement ;</li>
- * <li>ShadowSense messages.</li>
- * </ul>
+ * Game Time controller class.
+ * @author Forsaiken
  */
-public class GameTimeController
+public final class GameTimeController extends Thread
 {
 	protected static final Logger _log = Logger.getLogger(GameTimeController.class.getName());
 	
-	public static final int TICKS_PER_SECOND = 10;
-	public static final int MILLIS_IN_TICK = 100;
+	public static final int TICKS_PER_SECOND = 10; // not able to change this without checking through code
+	public static final int MILLIS_IN_TICK = 1000 / TICKS_PER_SECOND;
+	public static final int IG_DAYS_PER_DAY = 6;
+	public static final int MILLIS_PER_IG_DAY = (3600000 * 24) / IG_DAYS_PER_DAY;
+	public static final int SECONDS_PER_IG_DAY = MILLIS_PER_IG_DAY / 1000;
+	public static final int MINUTES_PER_IG_DAY = SECONDS_PER_IG_DAY / 60;
+	public static final int TICKS_PER_IG_DAY = SECONDS_PER_IG_DAY * TICKS_PER_SECOND;
+	public static final int TICKS_SUN_STATE_CHANGE = TICKS_PER_IG_DAY / 4;
 	
-	protected static int _gameTicks;
-	protected static long _gameStartTime;
-	protected static boolean _isNight = false;
-	protected static boolean _interruptRequest = false;
+	private final Map<Integer, L2Character> _movingObjects = new ConcurrentHashMap<>();
+	private final long _referenceTime;
 	
-	private static final Map<Integer, L2Character> _movingObjects = new ConcurrentHashMap<>();
-	protected static TimerThread _timer;
-	
-	public static GameTimeController getInstance()
+	public static final GameTimeController getInstance()
 	{
 		return SingletonHolder._instance;
 	}
 	
 	protected GameTimeController()
 	{
-		_gameStartTime = System.currentTimeMillis() - 3600000;
-		_gameTicks = 36000;
+		super("GameTimeController");
+		super.setDaemon(true);
+		super.setPriority(MAX_PRIORITY);
 		
-		_timer = new TimerThread();
-		_timer.start();
+		final Calendar c = Calendar.getInstance();
+		c.set(Calendar.HOUR_OF_DAY, 0);
+		c.set(Calendar.MINUTE, 0);
+		c.set(Calendar.SECOND, 0);
+		c.set(Calendar.MILLISECOND, 0);
+		_referenceTime = c.getTimeInMillis();
 		
-		ThreadPoolManager.getInstance().scheduleGeneralAtFixedRate(new BroadcastSunState(), 0, 600000);
+		super.start();
 	}
 	
-	public boolean isNowNight()
+	public final int getGameTime()
 	{
-		return _isNight;
+		return (getGameTicks() % TICKS_PER_IG_DAY) / MILLIS_IN_TICK;
 	}
 	
-	public int getGameTime()
+	public final int getGameHour()
 	{
-		return _gameTicks / MILLIS_IN_TICK;
+		return getGameTime() / 60;
 	}
 	
-	public static int getGameTicks()
+	public final int getGameMinute()
 	{
-		return _gameTicks;
+		return getGameTime() % 60;
+	}
+	
+	public final boolean isNight()
+	{
+		return getGameHour() < 6;
 	}
 	
 	/**
-	 * Add a L2Character to movingObjects of GameTimeController.<BR>
-	 * <BR>
-	 * <B><U> Concept</U> :</B><BR>
-	 * <BR>
-	 * All L2Character in movement are identified in <B>movingObjects</B> of GameTimeController.<BR>
-	 * <BR>
+	 * The true GameTime tick. Directly taken from current time. This represents the tick of the time.
+	 * @return
+	 */
+	public final int getGameTicks()
+	{
+		return (int) ((System.currentTimeMillis() - _referenceTime) / MILLIS_IN_TICK);
+	}
+	
+	/**
+	 * Add a L2Character to movingObjects of GameTimeController.
 	 * @param cha The L2Character to add to movingObjects of GameTimeController
 	 */
-	public void registerMovingObject(L2Character cha)
+	public final void registerMovingObject(final L2Character cha)
 	{
 		if (cha == null)
 			return;
 		
-		_movingObjects.put(cha.getObjectId(), cha);
+		if (_movingObjects.get(cha.getObjectId()) == null)
+			_movingObjects.put(cha.getObjectId(), cha);
 	}
 	
-	/**
-	 * Move all L2Characters contained in movingObjects of GameTimeController.<BR>
-	 * <BR>
-	 * <B><U> Concept</U> :</B><BR>
-	 * <BR>
-	 * All L2Character in movement are identified in <B>movingObjects</B> of GameTimeController.<BR>
-	 * <BR>
-	 * <B><U> Actions</U> :</B><BR>
-	 * <BR>
-	 * <li>Update the position of each L2Character</li> <li>If movement is finished, the L2Character is removed from movingObjects</li> <li>Create a task to update the _knownObject and _knowPlayers of each L2Character that finished its movement and of their already known L2Object then notify AI with
-	 * EVT_ARRIVED</li>
-	 */
-	protected void moveObjects()
+	public final void stopTimer()
 	{
-		// Go throw the table containing L2Character in movement
-		Iterator<Map.Entry<Integer, L2Character>> it = _movingObjects.entrySet().iterator();
-		while (it.hasNext())
+		super.interrupt();
+		_log.log(Level.INFO, "Stopping " + getClass().getSimpleName());
+	}
+	
+	@Override
+	public final void run()
+	{
+		_log.log(Level.CONFIG, getClass().getSimpleName() + ": Started.");
+		
+		long nextTickTime, sleepTime;
+		boolean isNight = isNight();
+		
+		if (isNight)
 		{
-			// If movement is finished, the L2Character is removed from
-			// movingObjects and added to the ArrayList ended
-			L2Character ch = it.next().getValue();
-			if (ch.updatePosition(_gameTicks))
+			ThreadPoolManager.getInstance().executeAi(new Runnable()
 			{
-				it.remove();
-				ThreadPoolManager.getInstance().executeTask(new MovingObjectArrived(ch));
-			}
-		}
-	}
-	
-	public void stopTimer()
-	{
-		_interruptRequest = true;
-		_timer.interrupt();
-	}
-	
-	class TimerThread extends Thread
-	{
-		public TimerThread()
-		{
-			super("GameTimeController");
-			setDaemon(true);
-			setPriority(MAX_PRIORITY);
+				@Override
+				public final void run()
+				{
+					DayNightSpawnManager.getInstance().notifyChangeMode();
+				}
+			});
 		}
 		
-		@Override
-		public void run()
+		while (true)
 		{
-			int oldTicks;
-			long runtime;
-			int sleepTime;
+			nextTickTime = ((System.currentTimeMillis() / MILLIS_IN_TICK) * MILLIS_IN_TICK) + 100;
 			
-			for (;;)
+			try
+			{
+				for (Map.Entry<Integer, L2Character> e : _movingObjects.entrySet())
+				{
+					L2Character character = e.getValue();
+					
+					if (character.updatePosition(getGameTicks()))
+					{
+						// Destination reached. Remove from map and execute arrive event.
+						_movingObjects.remove(e.getKey());
+						
+						final L2CharacterAI ai = character.getAI();
+						if (ai == null)
+							return;
+						
+						ThreadPoolManager.getInstance().executeAi(new Runnable()
+						{
+							@Override
+							public final void run()
+							{
+								try
+								{
+									ai.notifyEvent(CtrlEvent.EVT_ARRIVED);
+								}
+								catch (final Throwable e)
+								{
+									_log.log(Level.WARNING, "", e);
+								}
+							}
+						});
+					}
+				}
+			}
+			catch (final Throwable e)
+			{
+				_log.log(Level.WARNING, "", e);
+			}
+			
+			sleepTime = nextTickTime - System.currentTimeMillis();
+			if (sleepTime > 0)
 			{
 				try
 				{
-					oldTicks = _gameTicks; // save old ticks value to avoid moving objects 2x in same tick
-					runtime = System.currentTimeMillis() - _gameStartTime; // from server boot to now
-					
-					_gameTicks = (int) (runtime / MILLIS_IN_TICK); // new ticks value (ticks now)
-					
-					if (oldTicks != _gameTicks)
-						moveObjects();
-					
-					runtime = (System.currentTimeMillis() - _gameStartTime) - runtime;
-					
-					// calculate sleep time... time needed to next tick minus time it takes to call moveObjects()
-					sleepTime = 1 + MILLIS_IN_TICK - ((int) runtime) % MILLIS_IN_TICK;
-					
-					if (sleepTime > 0)
-						Thread.sleep(sleepTime);
+					Thread.sleep(sleepTime);
 				}
-				catch (InterruptedException ie)
+				catch (final InterruptedException e)
 				{
-					if (_interruptRequest)
-						return;
+					
 				}
 			}
-		}
-	}
-	
-	/**
-	 * Update the _knownObject and _knowPlayers of each L2Character that finished its movement and of their already known L2Object then notify AI with EVT_ARRIVED.
-	 */
-	private static class MovingObjectArrived implements Runnable
-	{
-		private final L2Character _ended;
-		
-		MovingObjectArrived(L2Character ended)
-		{
-			_ended = ended;
-		}
-		
-		@Override
-		public void run()
-		{
-			if (_ended.hasAI()) // AI could be just disabled due to region turn off
-				_ended.getAI().notifyEvent(CtrlEvent.EVT_ARRIVED);
-		}
-	}
-	
-	class BroadcastSunState implements Runnable
-	{
-		int h;
-		boolean tempIsNight;
-		
-		@Override
-		public void run()
-		{
-			h = ((getGameTime() + 29) / 60) % 24; // Time in hour
-			tempIsNight = (h < 6);
 			
-			if (tempIsNight != _isNight)
+			if (isNight() != isNight)
 			{
-				_isNight = tempIsNight; // Set current day/night variable to value of temp variable
-				DayNightSpawnManager.getInstance().notifyChangeMode();
-			}
-			
-			// "Activate" shadow sense at 00h00 (night) and 06h00 (sunrise)
-			if (h == 0 || h == 6)
-				activateShadowSense();
-		}
-	}
-	
-	protected void activateShadowSense()
-	{
-		for (L2PcInstance onlinePlayer : L2World.getInstance().getAllPlayers().values())
-		{
-			// if a player is a DE, verify if he got the skill
-			if (onlinePlayer != null && onlinePlayer.getRace() == Race.DarkElf)
-			{
-				L2Skill skill = SkillTable.getInstance().getInfo(294, 1);
+				isNight = !isNight;
 				
-				// If player got the skill (exemple : low level DEs haven't it)
-				if (skill != null && onlinePlayer.getSkillLevel(294) == 1)
+				ThreadPoolManager.getInstance().executeAi(new Runnable()
 				{
-					if (isNowNight())
-						onlinePlayer.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.NIGHT_S1_EFFECT_APPLIES).addSkillName(294));
-					else
-						onlinePlayer.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.DAY_S1_EFFECT_DISAPPEARS).addSkillName(294));
-					
-					// You saw nothing and that pack doesn't even exist w_w.
-					onlinePlayer.removeSkill(skill, false);
-					onlinePlayer.addSkill(skill, false);
-				}
+					@Override
+					public final void run()
+					{
+						DayNightSpawnManager.getInstance().notifyChangeMode();
+						
+						// "Activate" shadow sense at 00h00 (night) and 06h00 (sunrise)
+						for (L2PcInstance player : L2World.getInstance().getAllPlayers().values())
+						{
+							// if a player is a DE, verify if he got the skill
+							if (player != null && player.getRace() == Race.DarkElf)
+							{
+								final L2Skill skill = SkillTable.getInstance().getInfo(294, 1);
+								if (skill != null && player.getSkillLevel(294) == 1)
+								{
+									player.sendPacket(SystemMessage.getSystemMessage((isNight()) ? SystemMessageId.NIGHT_S1_EFFECT_APPLIES : SystemMessageId.DAY_S1_EFFECT_DISAPPEARS).addSkillName(294));
+									
+									// You saw nothing and that pack doesn't even exist w_w.
+									player.removeSkill(skill, false);
+									player.addSkill(skill, false);
+								}
+							}
+						}
+					}
+				});
 			}
 		}
 	}

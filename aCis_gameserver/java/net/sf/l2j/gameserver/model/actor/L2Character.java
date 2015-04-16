@@ -640,7 +640,7 @@ public abstract class L2Character extends L2Object
 				}
 				
 				// Verify if the bow can be use
-				if (_disableBowAttackEndTime <= GameTimeController.getGameTicks())
+				if (_disableBowAttackEndTime <= GameTimeController.getInstance().getGameTicks())
 				{
 					// Verify if L2PcInstance owns enough MP
 					int saMpConsume = (int) getStat().calcStat(Stats.MP_CONSUME, 0, null, null);
@@ -661,7 +661,7 @@ public abstract class L2Character extends L2Object
 						getStatus().reduceMp(mpConsume);
 					
 					// Set the period of bow non re-use
-					_disableBowAttackEndTime = 5 * GameTimeController.TICKS_PER_SECOND + GameTimeController.getGameTicks();
+					_disableBowAttackEndTime = 5 * GameTimeController.TICKS_PER_SECOND + GameTimeController.getInstance().getGameTicks();
 				}
 				else
 				{
@@ -674,7 +674,7 @@ public abstract class L2Character extends L2Object
 			}
 			else if (this instanceof L2Npc)
 			{
-				if (_disableBowAttackEndTime > GameTimeController.getGameTicks())
+				if (_disableBowAttackEndTime > GameTimeController.getInstance().getGameTicks())
 					return;
 			}
 		}
@@ -694,7 +694,7 @@ public abstract class L2Character extends L2Object
 		// the hit is calculated to happen halfway to the animation - might need further tuning e.g. in bow case
 		int timeToHit = timeAtk / 2;
 		
-		_attackEndTime = GameTimeController.getGameTicks();
+		_attackEndTime = GameTimeController.getInstance().getGameTicks();
 		_attackEndTime += (timeAtk / GameTimeController.MILLIS_IN_TICK);
 		_attackEndTime -= 1;
 		
@@ -865,7 +865,7 @@ public abstract class L2Character extends L2Object
 		ThreadPoolManager.getInstance().scheduleAi(new HitTask(target, damage1, crit1, miss1, attack.soulshot, shld1), sAtk);
 		
 		// Calculate and set the disable delay of the bow in function of the Attack Speed
-		_disableBowAttackEndTime = (sAtk + reuse) / GameTimeController.MILLIS_IN_TICK + GameTimeController.getGameTicks();
+		_disableBowAttackEndTime = (sAtk + reuse) / GameTimeController.MILLIS_IN_TICK + GameTimeController.getInstance().getGameTicks();
 		
 		// Add this hit to the Server-Client packet Attack
 		attack.hit(attack.createHit(target, damage1, miss1, crit1, shld1));
@@ -1249,7 +1249,7 @@ public abstract class L2Character extends L2Object
 		else
 		{
 			setIsCastingNow(true);
-			_castInterruptTime = -2 + GameTimeController.getGameTicks() + hitTime / GameTimeController.MILLIS_IN_TICK;
+			_castInterruptTime = -2 + GameTimeController.getInstance().getGameTicks() + hitTime / GameTimeController.MILLIS_IN_TICK;
 			setLastSkillCast(skill);
 		}
 		
@@ -1834,7 +1834,7 @@ public abstract class L2Character extends L2Object
 	 */
 	public boolean isAttackingDisabled()
 	{
-		return isFlying() || isStunned() || isImmobileUntilAttacked() || isSleeping() || _attackEndTime > GameTimeController.getGameTicks() || isParalyzed() || isAlikeDead() || isCoreAIDisabled();
+		return isFlying() || isStunned() || isImmobileUntilAttacked() || isSleeping() || _attackEndTime > GameTimeController.getInstance().getGameTicks() || isParalyzed() || isAlikeDead() || isCoreAIDisabled();
 	}
 	
 	public final Calculator[] getCalculators()
@@ -3194,7 +3194,7 @@ public abstract class L2Character extends L2Object
 	 */
 	public final boolean canAbortCast()
 	{
-		return _castInterruptTime > GameTimeController.getGameTicks();
+		return _castInterruptTime > GameTimeController.getInstance().getGameTicks();
 	}
 	
 	/**
@@ -3202,7 +3202,7 @@ public abstract class L2Character extends L2Object
 	 */
 	public boolean isAttackingNow()
 	{
-		return _attackEndTime > GameTimeController.getGameTicks();
+		return _attackEndTime > GameTimeController.getInstance().getGameTicks();
 	}
 	
 	/**
@@ -3324,7 +3324,7 @@ public abstract class L2Character extends L2Object
 		final boolean isFloating = isFlying() || isInsideZone(ZoneId.WATER);
 		
 		// Z coordinate will follow geodata or client values
-		if (Config.GEODATA > 0 && Config.COORD_SYNCHRONIZE == 2 && !isFloating && !m.disregardingGeodata && GameTimeController.getGameTicks() % 10 == 0 // once a second to reduce possible cpu load
+		if (Config.GEODATA > 0 && Config.COORD_SYNCHRONIZE == 2 && !isFloating && !m.disregardingGeodata && GameTimeController.getInstance().getGameTicks() % 10 == 0 // once a second to reduce possible cpu load
 			&& GeoData.getInstance().hasGeo(xPrev, yPrev))
 		{
 			short geoHeight = GeoData.getInstance().getSpawnHeight(xPrev, yPrev, zPrev - 30, zPrev + 30, null);
@@ -3775,7 +3775,7 @@ public abstract class L2Character extends L2Object
 		if (!verticalMovementOnly)
 			setHeading(Util.calculateHeadingFrom(cos, sin));
 		
-		m._moveStartTime = GameTimeController.getGameTicks();
+		m._moveStartTime = GameTimeController.getInstance().getGameTicks();
 		
 		// Set the L2Character _move object to MoveData object
 		_move = m;
@@ -3839,7 +3839,7 @@ public abstract class L2Character extends L2Object
 			setHeading(Util.calculateHeadingFrom(getX(), getY(), m._xDestination, m._yDestination));
 		
 		m._heading = 0; // initial value for coordinate sync
-		m._moveStartTime = GameTimeController.getGameTicks();
+		m._moveStartTime = GameTimeController.getInstance().getGameTicks();
 		
 		// Set the L2Character _move object to MoveData object
 		_move = m;

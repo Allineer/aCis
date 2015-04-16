@@ -304,7 +304,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 	protected void onIntentionAttack(L2Character target)
 	{
 		// Calculate the attack timeout
-		_attackTimeout = MAX_ATTACK_TIMEOUT + GameTimeController.getGameTicks();
+		_attackTimeout = MAX_ATTACK_TIMEOUT + GameTimeController.getInstance().getGameTicks();
 		
 		// Buffs
 		if (Rnd.get(RANDOM_WALK_RATE) == 0)
@@ -519,7 +519,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 		L2Character attackTarget = (L2Character) getTarget();
 		
 		// If target doesn't exist, is dead or if timeout is expired (non-aggro mobs or mobs which are too far stop to attack)
-		if (attackTarget == null || attackTarget.isAlikeDead() || (_attackTimeout < GameTimeController.getGameTicks() && (!npc.isAggressive() || Math.sqrt(npc.getPlanDistanceSq(attackTarget.getX(), attackTarget.getY())) > npc.getAggroRange() * 2)))
+		if (attackTarget == null || attackTarget.isAlikeDead() || (_attackTimeout < GameTimeController.getInstance().getGameTicks() && (!npc.isAggressive() || Math.sqrt(npc.getPlanDistanceSq(attackTarget.getX(), attackTarget.getY())) > npc.getAggroRange() * 2)))
 		{
 			// Stop hating this target after the attack timeout or if target is dead
 			if (attackTarget != null)
@@ -1497,7 +1497,7 @@ public class L2AttackableAI extends L2CharacterAI implements Runnable
 		final L2Attackable me = getActiveChar();
 		
 		// Calculate the attack timeout
-		_attackTimeout = MAX_ATTACK_TIMEOUT + GameTimeController.getGameTicks();
+		_attackTimeout = MAX_ATTACK_TIMEOUT + GameTimeController.getInstance().getGameTicks();
 		
 		// Set the _globalAggro to 0 to permit attack even just after spawn
 		if (_globalAggro < 0)

@@ -157,7 +157,7 @@ public class DayNightSpawnManager
 	{
 		try
 		{
-			if (GameTimeController.getInstance().isNowNight())
+			if (GameTimeController.getInstance().isNight())
 				changeMode(1);
 			else
 				changeMode(0);
@@ -226,7 +226,7 @@ public class DayNightSpawnManager
 		if (_bosses.containsKey(spawnDat))
 			return _bosses.get(spawnDat);
 		
-		if (GameTimeController.getInstance().isNowNight())
+		if (GameTimeController.getInstance().isNight())
 		{
 			L2RaidBossInstance raidboss = (L2RaidBossInstance) spawnDat.doSpawn();
 			_bosses.put(spawnDat, raidboss);

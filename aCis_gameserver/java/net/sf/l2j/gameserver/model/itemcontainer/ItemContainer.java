@@ -228,7 +228,7 @@ public abstract class ItemContainer
 			if (item.getItemId() == 57 && count < 10000 * Config.RATE_DROP_ADENA)
 			{
 				// Small adena changes won't be saved to database all the time
-				if (GameTimeController.getGameTicks() % 5 == 0)
+				if (GameTimeController.getInstance().getGameTicks() % 5 == 0)
 					item.updateDatabase();
 			}
 			else
@@ -274,7 +274,7 @@ public abstract class ItemContainer
 			if (itemId == 57 && count < 10000 * Config.RATE_DROP_ADENA)
 			{
 				// Small adena changes won't be saved to database all the time
-				if (GameTimeController.getGameTicks() % 5 == 0)
+				if (GameTimeController.getInstance().getGameTicks() % 5 == 0)
 					item.updateDatabase();
 			}
 			else
@@ -416,7 +416,7 @@ public abstract class ItemContainer
 				item.setLastChange(ItemInstance.MODIFIED);
 				
 				// don't update often for untraced items
-				if (process != null || GameTimeController.getGameTicks() % 10 == 0)
+				if (process != null || GameTimeController.getInstance().getGameTicks() % 10 == 0)
 				{
 					item.updateDatabase();
 				}

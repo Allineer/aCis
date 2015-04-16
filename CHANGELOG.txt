@@ -1,4 +1,18 @@
 ====================================================================================================
+Changeset 333 @ 2014.11.23
+
+GameTimeController, Misc
+
+GameTimeController
+    - Apply latest L2J version, fixing the moonwalk issue. Keep the DE passive skill system.
+
+Misc
+    - Fix one NPE vulnerability on L2Buffer getScheme() method.
+    - Add the "banned" effect on character selection if a character access is <= -100. Ty RooT.
+    - Fix setNewLeader( duplicate entries (coming with rev 311). Ty SweeTs.
+    - Fix database_installer.bat entries. Ty RooT && Fronex.
+
+====================================================================================================
 Changeset 332 @ 2014.09.14
 
 Quests, Party, Misc
