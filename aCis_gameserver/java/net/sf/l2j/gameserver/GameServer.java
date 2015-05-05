@@ -35,6 +35,7 @@ import net.sf.l2j.gameserver.cache.HtmCache;
 import net.sf.l2j.gameserver.communitybbs.Manager.ForumsBBSManager;
 import net.sf.l2j.gameserver.datatables.AccessLevels;
 import net.sf.l2j.gameserver.datatables.AdminCommandAccessRights;
+import net.sf.l2j.gameserver.datatables.AnnouncementTable;
 import net.sf.l2j.gameserver.datatables.ArmorSetsTable;
 import net.sf.l2j.gameserver.datatables.AugmentationData;
 import net.sf.l2j.gameserver.datatables.BookmarkTable;
@@ -154,8 +155,7 @@ public class GameServer
 		Util.printSection("World");
 		L2World.getInstance();
 		MapRegionTable.getInstance();
-		Announcements.getInstance();
-		BookmarkTable.getInstance();
+		AnnouncementTable.getInstance();
 		
 		Util.printSection("Skills");
 		SkillTable.getInstance();
@@ -171,16 +171,26 @@ public class GameServer
 		FishTable.getInstance();
 		SpellbookTable.getInstance();
 		SoulCrystalsTable.load();
-		
-		Util.printSection("Augments");
 		AugmentationData.getInstance();
+		CursedWeaponsManager.getInstance();
 		
-		Util.printSection("Characters");
+		Util.printSection("Admins");
 		AccessLevels.getInstance();
 		AdminCommandAccessRights.getInstance();
+		BookmarkTable.getInstance();
+		GmListTable.getInstance();
+		MovieMakerManager.getInstance();
+		PetitionManager.getInstance();
+		
+		Util.printSection("Characters");
 		CharTemplateTable.getInstance();
 		CharNameTable.getInstance();
-		GmListTable.getInstance();
+		HennaTable.getInstance();
+		HelperBuffTable.getInstance();
+		TeleportLocationTable.getInstance();
+		HtmCache.getInstance();
+		PartyMatchWaitingList.getInstance();
+		PartyMatchRoomList.getInstance();
 		RaidBossPointsManager.getInstance();
 		
 		Util.printSection("Community server");
@@ -189,18 +199,8 @@ public class GameServer
 		else
 			_log.config("Community server is disabled.");
 		
-		Util.printSection("Cache");
-		HtmCache.getInstance();
-		CrestCache.load();
-		TeleportLocationTable.getInstance();
-		PartyMatchWaitingList.getInstance();
-		PartyMatchRoomList.getInstance();
-		PetitionManager.getInstance();
-		HennaTable.getInstance();
-		HelperBuffTable.getInstance();
-		CursedWeaponsManager.getInstance();
-		
 		Util.printSection("Clans");
+		CrestCache.getInstance();
 		ClanTable.getInstance();
 		AuctionManager.getInstance();
 		ClanHallManager.getInstance();
@@ -306,8 +306,6 @@ public class GameServer
 		Runtime.getRuntime().addShutdownHook(Shutdown.getInstance());
 		ForumsBBSManager.getInstance();
 		_log.config("IdFactory: Free ObjectIDs remaining: " + IdFactory.getInstance().size());
-		
-		MovieMakerManager.getInstance();
 		
 		if (Config.DEADLOCK_DETECTOR)
 		{

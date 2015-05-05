@@ -1,4 +1,36 @@
 ================================================================================
+Changeset 340 @ 2015.01.29
+
+Caches, Announcements, Misc
+
+Caches
+    - Filters are moved back into classes.
+
+    CrestCache
+        - Drop of //admin_fix_cache_crest admincommand.
+        - Drop of OLD_PLEDGE related stuff.
+        - BMP filter edited for DDS one. Crests are stored using correct extension now, they were DDS files with wrong BMP extension. Consider to CHANGE *.bmp extension into *.dds of your crests!
+        - Crests are stored on a Map for an easier management.
+
+Announcements - Ty Sikken, xblx (&& me ofc).
+    - Renamed Announcements > AnnouncementTable, moved into datatables. Addition of Announcement model. General cleanup and rework.
+    - Addition of critical announcement type.
+    - Addition of scheduled announcement. You can schedule your announcement to happen X times, every Y times.
+    - Saved under XML format instead of TXT.
+    - Drop of //reload_announcements (handled directly by AdminAdmin //reload generic admincommand), //announce_menu (no use).
+    - Merge of numerous announcements admincommands, now handled by //announce <list|all|add|add_auto|del>.
+    - Addition of //say admincommand (critical counterpart for //ann).
+    - Old //announce renamed for //ann.
+
+Misc
+    - Little reorganization on Gameserver.java.
+
+PS: so basically, regarding Announcements admincommands, you only have:
+    - //ann && //say for instant announcements type.
+    - //announce <list|all|add|add_auto|del> for advanced mode.
+    - //reload announcement.
+
+================================================================================
 Changeset 339 @ 2014.01.19
 
 Java 8, Libraries / Projects, Misc

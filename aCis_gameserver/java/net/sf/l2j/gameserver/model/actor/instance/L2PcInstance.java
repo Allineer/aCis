@@ -3253,7 +3253,7 @@ public final class L2PcInstance extends L2Playable
 	{
 		if (player.isGM())
 			AdminEditChar.showCharacterInfo(player, this);
-
+		
 		super.onActionShift(player);
 	}
 	

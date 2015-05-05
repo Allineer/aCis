@@ -314,7 +314,7 @@ public class Shutdown extends Thread
 			_log.warning("GM: " + activeChar.getName() + " (" + activeChar.getObjectId() + ") issued shutdown abort, " + MODE_TEXT[_shutdownMode] + " has been stopped.");
 			_counterInstance._abort();
 			
-			Announcements.announceToAll("Server aborts " + MODE_TEXT[_shutdownMode] + " and continues normal operation.");
+			Broadcast.announceToOnlinePlayers("Server aborts " + MODE_TEXT[_shutdownMode] + " and continues normal operation.");
 		}
 	}
 	

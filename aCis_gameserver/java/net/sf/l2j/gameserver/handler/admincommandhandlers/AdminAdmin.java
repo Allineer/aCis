@@ -23,6 +23,7 @@ import net.sf.l2j.Config;
 import net.sf.l2j.gameserver.cache.CrestCache;
 import net.sf.l2j.gameserver.cache.HtmCache;
 import net.sf.l2j.gameserver.datatables.AdminCommandAccessRights;
+import net.sf.l2j.gameserver.datatables.AnnouncementTable;
 import net.sf.l2j.gameserver.datatables.DoorTable;
 import net.sf.l2j.gameserver.datatables.GmListTable;
 import net.sf.l2j.gameserver.datatables.ItemTable;
@@ -193,6 +194,11 @@ public class AdminAdmin implements IAdminCommandHandler
 					AdminCommandAccessRights.getInstance().reload();
 					activeChar.sendMessage("Admin commands rights have been reloaded.");
 				}
+				else if (type.startsWith("announcement"))
+				{
+					AnnouncementTable.getInstance().reload();
+					activeChar.sendMessage("The content of announcements.xml has been reloaded.");
+				}
 				else if (type.startsWith("config"))
 				{
 					Config.load();
@@ -200,7 +206,7 @@ public class AdminAdmin implements IAdminCommandHandler
 				}
 				else if (type.startsWith("crest"))
 				{
-					CrestCache.load();
+					CrestCache.getInstance().reload();
 					activeChar.sendMessage("Crests have been reloaded.");
 				}
 				else if (type.startsWith("cw"))
@@ -274,8 +280,9 @@ public class AdminAdmin implements IAdminCommandHandler
 			}
 			catch (Exception e)
 			{
-				activeChar.sendMessage("Usage : //reload <acar|config|crest|door|htm|item|multisell>");
-				activeChar.sendMessage("Usage : //reload <npc|npcwalker|quest|scripts|skill|teleport|zone>");
+				activeChar.sendMessage("Usage : //reload <acar|announcement|config|crest|door>");
+				activeChar.sendMessage("Usage : //reload <htm|item|multisell|npc|npcwalker|quest>");
+				activeChar.sendMessage("Usage : //reload <scripts|skill|teleport|zone>");
 			}
 		}
 		// This provides a way to load new scripts without having to reboot the server.

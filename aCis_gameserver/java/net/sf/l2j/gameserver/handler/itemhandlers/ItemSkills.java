@@ -101,7 +101,7 @@ public class ItemSkills implements IItemHandler
 					activeChar.sendPacket(SystemMessageId.NOT_ENOUGH_ITEMS);
 					return;
 				}
-
+				
 				playable.getAI().setIntention(CtrlIntention.IDLE);
 				if (!playable.useMagic(itemSkill, forceUse, false))
 					return;

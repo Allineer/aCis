@@ -308,11 +308,11 @@ public class RaidBossSpawnManager
 		try (Connection con = L2DatabaseFactory.getInstance().getConnection())
 		{
 			PreparedStatement statement = con.prepareStatement("UPDATE raidboss_spawnlist SET respawn_time = ?, currentHP = ?, currentMP = ? WHERE boss_id = ?");
-
+			
 			for (Map.Entry<Integer, StatsSet> infoEntry : _storedInfo.entrySet())
 			{
 				final int bossId = infoEntry.getKey();
-
+				
 				final L2RaidBossInstance boss = _bosses.get(bossId);
 				if (boss == null)
 					continue;
@@ -323,7 +323,7 @@ public class RaidBossSpawnManager
 				final StatsSet info = infoEntry.getValue();
 				if (info == null)
 					continue;
-
+				
 				statement.setLong(1, info.getLong("respawnTime"));
 				statement.setDouble(2, info.getDouble("currentHP"));
 				statement.setDouble(3, info.getDouble("currentMP"));

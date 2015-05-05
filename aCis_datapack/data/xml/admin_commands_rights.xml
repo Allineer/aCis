@@ -15,13 +15,9 @@
 	<aCar name="admin_script_load" accessLevel="1" />
 
 	<!-- ANNOUNCEMENTS -->
-	<aCar name="admin_list_announcements" accessLevel="1" />
-	<aCar name="admin_reload_announcements" accessLevel="1" />
-	<aCar name="admin_announce_announcements" accessLevel="1" />
-	<aCar name="admin_add_announcement" accessLevel="1" />
-	<aCar name="admin_del_announcement" accessLevel="1" />
 	<aCar name="admin_announce" accessLevel="1" />
-	<aCar name="admin_announce_menu" accessLevel="1" />
+	<aCar name="admin_ann" accessLevel="1" />
+	<aCar name="admin_say" accessLevel="1" />
 
 	<!-- BAN -->
 	<aCar name="admin_ban" accessLevel="1" />
@@ -50,7 +46,6 @@
 	<!-- CACHE -->
 	<aCar name="admin_reload_cache_path" accessLevel="1" />
 	<aCar name="admin_reload_cache_file" accessLevel="1" />
-	<aCar name="admin_fix_cache_crest" accessLevel="1" />
 
 	<!-- CAMERA -->
 	<aCar name="admin_camera" accessLevel="1" />

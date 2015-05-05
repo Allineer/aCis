@@ -15,9 +15,9 @@
 package net.sf.l2j.gameserver.network.clientpackets;
 
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.Announcements;
 import net.sf.l2j.gameserver.communitybbs.Manager.MailBBSManager;
 import net.sf.l2j.gameserver.datatables.AdminCommandAccessRights;
+import net.sf.l2j.gameserver.datatables.AnnouncementTable;
 import net.sf.l2j.gameserver.datatables.GmListTable;
 import net.sf.l2j.gameserver.datatables.MapRegionTable;
 import net.sf.l2j.gameserver.datatables.SkillTable.FrequentSkill;
@@ -172,7 +172,7 @@ public class EnterWorld extends L2GameClientPacket
 		// Announcements, welcome & Seven signs period messages
 		activeChar.sendPacket(SystemMessageId.WELCOME_TO_LINEAGE);
 		SevenSigns.getInstance().sendCurrentPeriodMsg(activeChar);
-		Announcements.getInstance().showAnnouncements(activeChar);
+		AnnouncementTable.getInstance().showAnnouncements(activeChar);
 		
 		// if player is DE, check for shadow sense skill at night
 		if (activeChar.getRace() == Race.DarkElf && activeChar.getSkillLevel(294) == 1)
